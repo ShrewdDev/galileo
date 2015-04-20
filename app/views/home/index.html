@@ -1,29 +1,29 @@
 {% extends '../layouts/layout.html' %}
 {% block content %}
-<section class="module">
-    <div class="container">
-		<div class="row">
-			<h4 class="font-alt mb-0">Customer Admins</h4>
-			<table class="table table-bordered">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Email</th>
-						<th>Company Name/Alias</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for user in users %}
+	<section class="module">
+	    <div class="container">
+			<div class="row">
+				<h4 class="font-alt mb-0">Customer Admins</h4>
+				<table class="table table-bordered">
+					<thead>
 						<tr>
-							<th scope="row"><input type="checkbox"/></th>
-							<td><a href="/users/{{user.id}}/edit">  {{user.email}}</a></td>
-							<td>{{user.companyName}}</td>
+							<th></th>
+							<th>Email</th>
+							<th>Company Name/Alias</th>
 						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-			<a href="/admin/customer/new" class="btn btn-round btn-d">Add new</a>
+					</thead>
+					<tbody>
+						{% for user in users %}
+							<tr>
+								<th scope="row"><input type="checkbox"/></th>
+								<td><a href="/users/{{user.id}}/edit">  {{user.email}}</a></td>
+								<td>{{user.companyName}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<a href="/admin/customer/new" class="btn btn-round btn-d">Add new</a>
+			</div>
 		</div>
-	</div>
-</section>
+	</section>
 {% endblock %}  

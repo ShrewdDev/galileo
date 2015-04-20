@@ -7,7 +7,7 @@ var  mongoose = require('mongoose')
     ,uniqueValidator = require('mongoose-unique-validator')
     ,nodemailer = require('nodemailer')
     ,roles       = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
-    ,adminEmails = ['khalid.rahmani.mail@gmail.com'];
+    ,adminEmails = ['khalid.rahmani.mail@gmail.com', 'admin@test.com'];
 
 var UserSchema = new Schema({
   email:                { type: String, required: "Email can't be blank", unique: true, validate: validate({validator: 'isEmail'}) },  

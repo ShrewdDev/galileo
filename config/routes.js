@@ -17,13 +17,17 @@ module.exports = function (app, passport) {
       failureFlash: 'Invalid email or password.'
     }), users_controller.session);
  
-  app.get('/users/edit', users_controller.edit);
+  app.get('/users/edit', auth.requiresLogin, users_controller.edit);
   app.post('/users/update', auth.requiresLogin, users_controller.update) 
   app.get('/forgot', users_controller.forgot);
   app.post('/forgot', users_controller.post_forgot);
   app.get('/reset/:token', users_controller.reset);
   app.post('/reset/:token', users_controller.post_reset); 
-   
+
+
+  app.get('/organization/new', auth.requiresLogin, home_controller.new_organization); 
+  app.post('/organization/new', auth.requiresLogin, home_controller.create_organization); 
+
   app.get('/admin/customer/new', auth.siteAdminAuth, users_controller.new_customer_admin);
 
   //app.get('/users/:user_id/edit', auth.siteAdminAuth, users_controller.edit_customer_admin);
