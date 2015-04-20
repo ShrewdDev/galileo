@@ -1,0 +1,40 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+  <section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">New Customer Admin</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form action="/users" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <div class="form-group">
+              <label class="sr-only" for="cname">Company/Name</label>
+              <input type="text" class="form-control" name="companyName" placeholder="Company Name/Alias" value="{{ user.companyName }}"/>                
+              <p class="help-block text-danger">{{ errors.companyName.message }}</p>            
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">Email</label>
+              <input type="text" class="form-control" name="email" placeholder="Email" value="{{ user.email }}"/> 
+              <p class="help-block text-danger">{{ errors.email.message }}</p>             
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cemail">Password</label>
+              <input type="password" name="password" class="form-control" placeholder="password"/>
+              <p class="help-block text-danger">{{ errors.password.message }}</p> 
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+
+
+

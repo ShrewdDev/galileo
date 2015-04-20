@@ -1,0 +1,33 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+  <section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">Reset password</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          {% if (message) %}
+            <div role="alert" class="alert alert-danger">
+              <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+               <strong>Alert!</strong> {{ message }}
+            </div>
+           {% endif %}
+          <form action="/forgot" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <div class="form-group">
+              <label class="sr-only" for="cname">Email</label>
+              <input type="text" class="form-control" name="email" value="{{ email }}" placeholder="Email"/>
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-round btn-d">Send Email</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+

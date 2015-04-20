@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style type="text/css">.gm-style .gm-style-mtc label,.gm-style .gm-style-mtc div{font-weight:400}</style>
+<link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+<style type="text/css">.gm-style .gm-style-cc span,.gm-style .gm-style-cc a,.gm-style .gm-style-mtc div{font-size:10px}</style>
+<style type="text/css">@media print {  .gm-style .gmnoprint, .gmnoprint {    display:none  }}@media screen {  .gm-style .gmnoscreen, .gmnoscreen {    display:none  }}</style>
+<style type="text/css">.gm-style{font-family:Roboto,Arial,sans-serif;font-size:11px;font-weight:400;text-decoration:none}</style>
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<meta content="" name="description">
+	<meta content="" name="author">	
+	<title>S[HR]EWD</title>	
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/css/et-line-font.css">
+	<link href="//cdnjs.cloudflare.com/ajax/libs/flexslider/2.3.0/flexslider-min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/css/animate.css">	
+	<link rel="stylesheet" href="/css/style.css">	
+</head>
+<body>
+	<nav role="navigation" class="navbar navbar-custom navbar-fixed-top one-page">
+		<div class="container">	
+			<div class="navbar-header">
+				<button data-target="#custom-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="/" class="navbar-brand">S[HR]EWD</a>
+			</div>	
+			<div id="custom-collapse" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					{% if (req.isAuthenticated()) %}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">My account</a>
+							<ul class="dropdown-menu">
+								<li><a href="/users/edit">Edit my profile</a></li>
+							</ul>
+						</li>
+						<li><a class="section-scroll" href="/logout">Logout</a></li>
+					{% else %}
+						<li><a href="#totop">Intro</a></li>
+						<li><a class="section-scroll" href="#product">Product</a></li>
+						<li><a class="section-scroll" href="#pricing">Pricing</a></li>
+						<li><a class="section-scroll" href="#about">About</a></li>
+						<li>
+							<a> </a>
+						</li>					
+						<li><a class="section-scroll" href="#">Request Demo</a></li>
+						<li><a class="section-scroll" href="/login">Login</a></li>
+					{% endif %}
+				</ul>
+			</div>	
+		</div>
+	</nav>
+	<div class="main">	
+		{% block content %}{% endblock %}
+		<footer class="footer bg-dark">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-6">
+						<p class="copyright font-alt">&copy; 2015 <a href="index.html">S[HR]EWD</a>, All Rights Reserved.</p>
+					</div>
+					<div class="col-sm-6">
+						<div class="footer-social-links">
+							<a href="#"><i class="fa fa-facebook"></i></a>
+							<a href="#"><i class="fa fa-twitter"></i></a>
+							<a href="#"><i class="fa fa-dribbble"></i></a>
+							<a href="#"><i class="fa fa-skype"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<script src="/js/jquery.simple-text-rotator.min.js"></script>
+	<script src="/js/isotope.pkgd.min.js"></script>
+	<script src="/js/imagesloaded.pkgd.js"></script>
+	<script src="/js/jquery.flexslider-min.js"></script>
+	<script src="/js/wow.min.js"></script>
+	<script src="/js/owl.carousel.min.js"></script>
+	<script src="/js/custom.js"></script>
+	</body>
+</html>
