@@ -13,7 +13,7 @@ exports.load = function (req, res, next, id) {
 
 exports.create = function (req, res) {
   var user = new User(req.body);
-  user.role = 'Customer_Admin';
+  user.role = User.getRoleByCreator(req.user.role)
   user.save(function (err) {
     if (err) {
       return res.render('users/signup', {

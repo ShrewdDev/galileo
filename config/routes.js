@@ -11,11 +11,20 @@ module.exports = function (app, passport) {
   app.get('/signup', users_controller.signup);
   app.get('/logout', users_controller.logout);
   app.post('/users', users_controller.create);
-  app.post('/users/session',
+  /*app.post('/users/session',
     passport.authenticate('local', {
       failureRedirect: '/login',
       failureFlash: 'Invalid email or password.'
-    }), users_controller.session);
+    }), users_controller.session);*/
+  app.post('/users/session', passport.authenticate('local',{
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: 'Invalid email or password.'
+  }),function(req, res){
+        res.render('users/login', {
+          email: "reqemail"
+      });
+  })
  
   app.get('/users/edit', auth.requiresLogin, users_controller.edit);
   app.post('/users/update', auth.requiresLogin, users_controller.update) 

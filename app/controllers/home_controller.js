@@ -30,7 +30,7 @@ exports.new_organization = function (req, res){
 
 exports.create_organization = function (req, res){	
   var organization = new Organization(req.body);
-  organization.user = req.user.id;
+  organization.created_by = req.user.id;
   organization.save(function (err) {
     if (err) {
       return res.render('home/organization_form',{
@@ -40,8 +40,7 @@ exports.create_organization = function (req, res){
     }
     else {
         req.flash('error', 'Organization created!');
-        return res.redirect('/');
-       
-    }    
+        return res.redirect('/');       
+    }
   });		
 }

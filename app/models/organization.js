@@ -10,7 +10,7 @@ var OrganizationSchema = new Schema({
   leaderEmail:          { type: String, required: "Leader email can't be blank", validate: validate({validator: 'isEmail'})},
   teamMembers:          { type: Number },
   location:             { type: String },  
-  user:                 { type: Schema.ObjectId, ref : 'User'},
+  created_by:           { type: Schema.ObjectId, ref : 'User'},
   createdAt:            { type: Date, default : Date.now }
 })
 

@@ -7,11 +7,12 @@ var  mongoose = require('mongoose')
     ,uniqueValidator = require('mongoose-unique-validator')
     ,nodemailer = require('nodemailer')
     ,roles       = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
-    ,adminEmails = ['khalid.rahmani.mail@gmail.com', 'admin@test.com'];
+    ,adminEmails = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
+    ,rolesByCreator = {'Site_Admin':'Customer_Admin', 'Customer_Admin': 'Customer_Manager', 'Customer_Manager':'Customer_TeamMember'}
 
 var UserSchema = new Schema({
   email:                { type: String, required: "Email can't be blank", unique: true, validate: validate({validator: 'isEmail'}) },  
-  companyName:          { type: String, required: "Company Name can't be blank" },
+  companyName:          { type: String, required: "Company Name can't be blank", unique: true },
   firstName:            { type: String },
   lastName:             { type: String },
   role:                 { type: String },
@@ -19,24 +20,25 @@ var UserSchema = new Schema({
   salt:                 { type: String },  
   resetPasswordToken:   { type: String },
   resetPasswordExpires: { type: Date   },
+  created_by:           { type: Schema.ObjectId, ref : 'User'},
   createdAt:            { type: Date, default : Date.now }
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function(next){
   this.salt = this.makeSalt()
   this.password = this.encryptPassword(this.password)
   next()
 })
 
 UserSchema.methods = {
-  hasRole: function (role) {
+  hasRole: function (role){
     if(role == "Site_Admin") return this.role ==  "Site_Admin" || (adminEmails.indexOf(this.email) > -1)
     return this.role == role
   },
-  authenticate: function (plainText) {
+  authenticate: function (plainText){
     return this.encryptPassword(plainText) === this.password
   },
-  makeSalt: function () {
+  makeSalt: function (){
     return Math.round((new Date().valueOf() * Math.random())) + ''
   },
   encryptPassword: function (password) {
@@ -60,6 +62,9 @@ var transporter = nodemailer.createTransport({
 });
 
 UserSchema.statics = {
+  getRoleByCreator: function (role) {    
+    return rolesByCreator[role]
+  }, 
   sendCustomerAdiminWelcomeEmail: function(email, password, cb){
     var mailOptions = {
       from: 'SurveyApp <contact@survey.com>', 
