@@ -1,0 +1,28 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+	<section class="module">
+	    <div class="container">
+			<div class="row">
+				<h4 class="font-alt mb-0">Users</h4>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th></th>							
+							<th>Email</th>							
+							<th>Role</th>	
+						</tr>
+					</thead>
+					<tbody>
+						{% for user in users %}
+							<tr>
+								<th scope="row"><input type="checkbox"/></th>								
+								<td> {{user.email}}</td>
+								<td> {{user.getRole()}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>				
+			</div>
+		</div>
+	</section>
+{% endblock %}

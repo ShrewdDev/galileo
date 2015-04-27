@@ -1,0 +1,68 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+  <section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">Manage Survey</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form action="/users/update" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+          <input type="hidden" name="view"  value="main/managesurveys">
+            <div class="form-group">
+              <label class="sr-only" for="cname">Subscription Level</label>
+              <select class="form-control" name="surveyYearStart">
+                {% for monthOfYear in monthsOfYear %}
+                  <option value="{{ user.surveyYearStart }}" {% if user.surveyYearStart == monthOfYear %} selected {% endif %}>{{ monthOfYear }}</option>
+                {% endfor %}
+            </select>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" name="surveyTotalEmployees" placeholder="Total # Employees in Company" value="{{ user.surveyTotalEmployees }}"/>
+              <p class="help-block text-danger">{{ errors.surveyTotalEmployees.message }}</p>
+            </div>
+            <div class="form-group">
+              Desired Confidence for Survey (0-100) <div id="slider"></div>
+            </div> 
+            <div class="form-group">
+              <div class="row">
+                <div class="col-xs-2 col-xs-offset-5">
+                  <input type="text" id="surveyConfidence" name="surveyConfidence" value="{{ user.surveyConfidence }}"class="form-control">  
+                </div>
+              </div>             
+            </div>
+            <div class="form-group">
+              Likely response rate for survey (0-100) <div id="slider2"></div>
+            </div> 
+            <div class="form-group">
+              <div class="row">
+                <div class="col-xs-2 col-xs-offset-5">
+                  <input type="text" id="surveyLikelyResponseRate" name="surveyLikelyResponseRate" value="{{ user.surveyLikelyResponseRate }}"class="form-control">  
+                </div>
+              </div>             
+            </div> 
+            <div class="form-group">
+              <div class="row">
+                <div class="col-xs-5"> Recommended sample size
+                  <input type="text" class="form-control" name="surveyRecomendedSampleSize" value="{{ user.surveyRecomendedSampleSize }}">  
+                </div>
+                <div class="col-xs-2"> <h3 class="text-center"> = </h3>   </div>
+                <div class="col-xs-5"> Sample Size Accounted for
+                  <input type="text" class="form-control" name="surveySampleSizeAccountedFor" value="{{ user.surveySampleSizeAccountedFor }}">  
+                </div>
+              </div>             
+            </div>                  
+            <div class="text-center">
+              <button type="submit" class="btn btn-round btn-d">Save</button>
+              <a href="/" class="btn btn-round btn-d">Cancel</a>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+{% block js %} <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> {% endblock %}

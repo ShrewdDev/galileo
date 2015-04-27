@@ -1,0 +1,38 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+	<section class="module">
+	    <div class="container">
+			<div class="row">
+				<h4 class="font-alt mb-0">Team members</h4>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th rowspan=2></th>
+							<th rowspan=2>Dept Name</th>
+							<th rowspan=2>Leader's email</th>
+							<th colspan=2># Team Members</th>
+							<th rowspan=2>Location</th>
+						</tr>
+            			<tr>							
+							<th>First Name</th>
+							<th>Last Name</th>							
+						</tr>
+					</thead>
+					<tbody>
+						{% for team_member in team_members %}
+							<tr>
+								<th scope="row"><input type="checkbox"/></th>	
+								<td>{{team_member.department.departmentName}}</td>							
+								<td><a href="/team_member/{{team_member.id}}/edit">{{team_member.email}}</a></td>
+								<td>{{team_member.firstName}}</td>
+								<td>{{team_member.lastName}}</td>
+								<td>{{team_member.department.location}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<a href="/team_member/new" class="btn btn-round btn-d">New member</a>
+			</div>
+		</div>
+	</section>
+{% endblock %}  

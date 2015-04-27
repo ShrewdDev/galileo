@@ -3,7 +3,7 @@
 	<section class="module">
 	    <div class="container">
 			<div class="row">
-				<h4 class="font-alt mb-0">Organization</h4>
+				<h4 class="font-alt mb-0">{{ req.user.getOrganizationName() }} Organization departments :</h4>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -15,18 +15,18 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for organization in organizations %}
+						{% for department in departments %}
 							<tr>
 								<th scope="row"><input type="checkbox"/></th>								
-								<td><a href="/organization/{{organization.id}}/edit">{{organization.departmentName}}</a></td>
-								<td>{{organization.leaderEmail}}</td>
-								<td>{{organization.teamMembers}}</td>
-								<td>{{organization.location}}</td>
+								<td><a href="/department/{{department.id}}/edit">{{department.departmentName}}</a></td>
+								<td>{{department.owner.email}}</td>
+								<td>{{department.teamMembers}}</td>
+								<td>{{department.location}}</td>
 							</tr>
 						{% endfor %}
 					</tbody>
 				</table>
-				<a href="/organization/new" class="btn btn-round btn-d">Add new</a>
+				<a href="/department/new" class="btn btn-round btn-d">New department</a>
 			</div>
 		</div>
 	</section>

@@ -1,0 +1,50 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+  <section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">Department</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form action="{{action}}" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <div class="form-group">
+              <label class="sr-only" for="cname">Company/Name</label>
+              <input type="text" class="form-control" name="departmentName" placeholder="Department name" value="{{ department.departmentName }}"/>                
+              <p class="help-block text-danger">{{ errors.departmentName.message }}</p>        
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">Team members</label>
+              <input type="text" class="form-control" name="teamMembers" placeholder="Team members" value="{{ department.teamMembers }}"/>                
+              <p class="help-block text-danger">{{ errors.teamMembers.message }}</p>            
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">Location</label>
+              <input type="text" class="form-control" name="location" placeholder="Location" value="{{ department.location }}"/>                
+              <p class="help-block text-danger">{{ errors.location.message }}</p>            
+            </div>  
+            <div class="form-group">
+              <label class="sr-only" for="cname">Leader email</label>
+              <input type="text" class="form-control" name="email" placeholder="Leader email" value="{{ department.email || department.owner.email }}"/>                
+              <p class="help-block text-danger">{{ errors.email.message }}</p>            
+            </div> 
+            <div class="form-group">
+              <label class="sr-only" for="cemail">Password</label>
+              <input type="password" name="password" class="form-control" placeholder="password"/>
+              <p class="help-block text-danger">{{ errors.password.message }}</p> 
+            </div>                                             
+            <div class="text-center">
+              <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+
+
+

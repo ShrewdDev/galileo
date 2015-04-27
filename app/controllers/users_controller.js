@@ -2,18 +2,28 @@ var   mongoose = require('mongoose'),
       User = mongoose.model('User'),
       extend = require('util')._extend
 
-exports.load = function (req, res, next, id) {
+/*exports.load = function (req, res, next, id) {
   User.findOne({ _id : id }, function (err, user) {
     if (err) return next(err);
     if (!user) return next(new Error('Failed to load User ' + id));
     req.profile = user;
     next();
   });
+};*/
+
+
+exports.admin_users = function (req, res) {
+  User.find({}, function (err, users) {
+    return res.render('users/admin_users', {
+      users: users
+    })
+  });
 };
+
 
 exports.create = function (req, res) {
   var user = new User(req.body);
-  user.role = User.getRoleByCreator(req.user.role)
+  user.role = User.getRoleByCreator(req.user.getRole())
   user.save(function (err) {
     if (err) {
       return res.render('users/signup', {
@@ -23,11 +33,16 @@ exports.create = function (req, res) {
       });
     }
     else {
-      User.sendCustomerAdiminWelcomeEmail(req.body.email, req.body.password, function(error, message){
-        message = error || 'message sent'
-        req.flash('error', 'Customer created!');
-        return res.redirect('/');
-      });  
+      user.created_by = req.user.id
+      user.salt     = User.makeSalt()
+      user.password = User.encryptPassword(user.password, user.salt)
+      user.save(function (err) {
+        User.sendCustomerAdiminWelcomeEmail(req.body.email, req.body.password, function(error, message){
+          message = error || 'message sent'
+          req.flash('error', 'Customer created!');
+          return res.redirect('/');
+        });  
+      });    
     }
     /*req.logIn(user, function(err) {
       if (err) req.flash('info', 'Sorry! We are not able to log you in!');
@@ -113,7 +128,6 @@ exports.reset = function (req, res) {
 };
 
 exports.post_reset = function (req, res) {
-
   User.resetPassword(req.params.token, req.body.password, req.body.password_confirmation, function(error, message){
     if(error){
       res.render('users/reset', {
@@ -137,12 +151,17 @@ exports.edit = function (req, res) {
 
 exports.update = function (req, res) {
   user = req.user
+  console.log(req.body)  
   user = extend(user, req.body)
   user.save(function (err) {
     if (err) {
-      return res.render('users/edit', {
+      view = req.body.view || 'users/edit'
+      console.log(err)
+      errors = err.errors || err
+      return res.render(view, {
         errors: err.errors,
-        user:  user
+        monthsOfYear:  User.getMonthsOfYear(),
+        user:  req.body
       });
     }
     else {

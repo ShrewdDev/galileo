@@ -1,19 +1,41 @@
 (function($){
 
-	/* ---------------------------------------------- /*
-	 * Preloader
-	/* ---------------------------------------------- */
+	$('.datepicker').datepicker({
+	    format: 'MM,dd yyyy'
+	})
 
+	if(typeof slider !== 'undefined'){	
+		var _slider = $( "#slider" ).slider({		
+			min: 0,
+			max: 100,
+			value: $( "#surveyConfidence" ).val(),	
+			slide: function( event, ui ) {
+				$( "#surveyConfidence" ).val( ui.value );
+			}
+		});
+		$( "#surveyConfidence" ).change(function() {
+			_slider.slider( "value", $( "#surveyConfidence" ).val() );
+		});
+		var _slider2 = $( "#slider2" ).slider({		
+			min: 0,
+			max: 100,
+			value: $( "#surveyLikelyResponseRate" ).val(),	
+			slide: function( event, ui ) {
+				$( "#surveyLikelyResponseRate" ).val( ui.value );
+			}
+		});
+		$( "#surveyLikelyResponseRate" ).change(function() {
+			_slider.slider( "value", $( "#surveyLikelyResponseRate" ).val() );
+		});		
+	}
+			
+	
 	$(window).load(function() {
 		$('.loader').fadeOut();
 		$('.page-loader').delay(350).fadeOut('slow');
 	});
 
 	$(document).ready(function() {
-
-		/* ---------------------------------------------- /*
-		 * Initialization General Scripts for all pages
-		/* ---------------------------------------------- */
 
 		var homeSection = $('.home-section'),
 			navbar      = $('.navbar-custom'),

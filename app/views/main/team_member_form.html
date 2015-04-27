@@ -1,0 +1,42 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+  <section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">Team Member</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form action="/team_member/create" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <div class="form-group">
+              <label class="sr-only" for="cname">Email</label>
+              <input type="text" class="form-control" name="email" placeholder="Email" value="{{ team_member.email }}"/>                
+              <p class="help-block text-danger">{{ errors.email.message }}</p>            
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">First name</label>
+              <input type="text" class="form-control" name="firstName" placeholder="First name" value="{{ team_member.firstName }}"/>                
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">Last name</label>
+              <input type="text" class="form-control" name="lastName" placeholder="Last name" value="{{ team_member.lastName }}"/>                
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">Location</label>
+              <input type="text" class="form-control" name="location" placeholder="Location" value="{{ team_member.location }}"/>                
+            </div>                        
+            <div class="text-center">
+              <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+
+
+

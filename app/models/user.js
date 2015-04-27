@@ -1,40 +1,70 @@
 
-var  mongoose = require('mongoose')
-    ,Schema = mongoose.Schema
-    ,crypto = require('crypto')
-    ,validator = require('validator')
-    ,validate  = require('mongoose-validator')
+var  mongoose        = require('mongoose')
+    ,Schema          = mongoose.Schema
+    ,Organization    = mongoose.model('Organization')
+    ,crypto          = require('crypto')
+    ,moment          = require('moment')
+    ,validator       = require('validator')
+    ,validate        = require('mongoose-validator')
     ,uniqueValidator = require('mongoose-unique-validator')
-    ,nodemailer = require('nodemailer')
-    ,roles       = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
-    ,adminEmails = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
-    ,rolesByCreator = {'Site_Admin':'Customer_Admin', 'Customer_Admin': 'Customer_Manager', 'Customer_Manager':'Customer_TeamMember'}
+    ,nodemailer      = require('nodemailer')
+    ,roles           = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
+    ,adminEmails     = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
+    ,rolesByCreator  = {'Site_Admin':'Customer_Admin', 'Customer_Admin': 'Customer_Manager', 'Customer_Manager':'Customer_TeamMember'}
+    ,subscriptioLevels = {'Level_1':'Level 1($25/user/month)', 'Level_2':'Level 2($30/user/month)', 'Level_3':'Level 3($35/user/month)'}
+    ,monthsOfYear      = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 var UserSchema = new Schema({
   email:                { type: String, required: "Email can't be blank", unique: true, validate: validate({validator: 'isEmail'}) },  
-  companyName:          { type: String, required: "Company Name can't be blank", unique: true },
+  organization:         { type: Schema.ObjectId, ref : 'Organization' },
+  department:           { type: Schema.ObjectId, ref : 'Department'   },
+  role:                 { type: String },
+
   firstName:            { type: String },
   lastName:             { type: String },
-  role:                 { type: String },
-  password:             { type: String, required: "can't be blank"},
-  salt:                 { type: String },  
-  resetPasswordToken:   { type: String },
-  resetPasswordExpires: { type: Date   },
-  created_by:           { type: Schema.ObjectId, ref : 'User'},
-  createdAt:            { type: Date, default : Date.now }
+
+  subscriptionLevel:      { type: String },
+  subscriptionExpiryDate: { type: Date,  },
+
+  surveyYearStart:               { type: String },
+  surveyTotalEmployees:          { type: String, validate: validate({validator: 'isNumeric'}) },
+  surveyConfidence:              { type: String, validate: validate({validator: 'isNumeric'}) },
+  surveyLikelyResponseRate:      { type: String, validate: validate({validator: 'isNumeric'}) },
+  surveyRecomendedSampleSize:    { type: String, validate: validate({validator: 'isNumeric'}) },
+  surveySampleSizeAccountedFor:  { type: String, validate: validate({validator: 'isNumeric'}) },
+
+  password:                       { type: String, required: "Password can't be blank"},
+  salt:                           { type: String },  
+  resetPasswordToken:             { type: String },
+  resetPasswordExpires:           { type: Date   },
+  manager:                        { type: Schema.ObjectId, ref : 'User'},
+  createdAt:                      { type: Date, default : Date.now }
 })
 
-UserSchema.pre('save', function(next){
+//DepartmentSchema.index({ companyName: 1, departmentName: 1, email: 1 }, { unique: true });
+
+/*UserSchema.pre('save', function(next){
   this.salt = this.makeSalt()
   this.password = this.encryptPassword(this.password)
   next()
-})
+})*/
 
 UserSchema.methods = {
+  setPassword:function (){
+    this.salt = this.makeSalt()
+    this.password = this.encryptPassword(this.password)
+  },
+  getSubscriptionExpiryDate:function (){
+    return (this.subscriptionExpiryDate) ? moment(this.subscriptionExpiryDate).format("MMMM,D YYYY") : ''
+  },
   hasRole: function (role){
     if(role == "Site_Admin") return this.role ==  "Site_Admin" || (adminEmails.indexOf(this.email) > -1)
     return this.role == role
   },
+  getRole: function (role){
+    if  (adminEmails.indexOf(this.email) > -1) return "Site_Admin"
+    return this.role
+  },  
   authenticate: function (plainText){
     return this.encryptPassword(plainText) === this.password
   },
@@ -62,6 +92,21 @@ var transporter = nodemailer.createTransport({
 });
 
 UserSchema.statics = {
+  getMonthsOfYear: function (){
+    return monthsOfYear;
+  },  
+  makeSalt: function (){
+    return Math.round((new Date().valueOf() * Math.random())) + ''
+  },
+  encryptPassword: function (password, salt) {    
+    var encrypred
+    try {
+      encrypred = crypto.createHmac('sha1', salt).update(password).digest('hex')
+      return encrypred
+    } catch (err) {
+      return ''
+    }
+  },  
   getRoleByCreator: function (role) {    
     return rolesByCreator[role]
   }, 
@@ -111,8 +156,9 @@ UserSchema.statics = {
     else {
       this.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() }}, function(err, user) {
         if(err || !user) cb('error', 'Password reset token is invalid or has expired.')
-        else {
-          user.password = password
+        else {          
+          user.salt     = User.makeSalt()
+          user.password = User.encryptPassword(password, user.salt)          
           user.resetPasswordToken = undefined
           user.resetPasswordExpires = undefined
           user.save(function(err) {

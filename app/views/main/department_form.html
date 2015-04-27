@@ -4,31 +4,31 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-          <h2 class="module-title font-alt">New Organization</h2>
+          <h2 class="module-title font-alt">Department</h2>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-          <form action="/organization/new" method="post" role="form" novalidate="">
+          <form action="{{action}}" method="post" role="form" novalidate="">
           <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="form-group">
               <label class="sr-only" for="cname">Company/Name</label>
-              <input type="text" class="form-control" name="departmentName" placeholder="Department name" value="{{ organization.departmentName }}"/>                
+              <input type="text" class="form-control" name="departmentName" placeholder="Department name" value="{{ department.departmentName }}"/>                
               <p class="help-block text-danger">{{ errors.departmentName.message }}</p>            
             </div>
             <div class="form-group">
               <label class="sr-only" for="cname">Leader email</label>
-              <input type="text" class="form-control" name="leaderEmail" placeholder="Leader email" value="{{ organization.leaderEmail }}"/>                
+              <input type="text" class="form-control" name="leaderEmail" placeholder="Leader email" value="{{ department.leaderEmail }}"/>                
               <p class="help-block text-danger">{{ errors.leaderEmail.message }}</p>            
             </div>
             <div class="form-group">
               <label class="sr-only" for="cname">Team members</label>
-              <input type="text" class="form-control" name="teamMembers" placeholder="Team members" value="{{ organization.teamMembers }}"/>                
+              <input type="text" class="form-control" name="teamMembers" placeholder="Team members" value="{{ department.teamMembers }}"/>                
               <p class="help-block text-danger">{{ errors.teamMembers.message }}</p>            
             </div>
             <div class="form-group">
               <label class="sr-only" for="cname">Location</label>
-              <input type="text" class="form-control" name="location" placeholder="Location" value="{{ organization.location }}"/>                
+              <input type="text" class="form-control" name="location" placeholder="Location" value="{{ department.location }}"/>                
               <p class="help-block text-danger">{{ errors.location.message }}</p>            
             </div>                        
             <div class="text-center">
