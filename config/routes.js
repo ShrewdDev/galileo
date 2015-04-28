@@ -37,6 +37,7 @@ module.exports = function (app, passport) {
   app.get('/organization/:id/edit', auth.requiresLogin, organization_controller.edit);
   app.post('/organization/:id/update', auth.requiresLogin, organization_controller.update);  
 
+  app.get('/departments', auth.requiresLogin, department_controller.index);
   app.get('/department/new', auth.requiresLogin, department_controller.new);
   app.post('/department/create', auth.requiresLogin, department_controller.create); 
   app.get('/department/:id/edit', auth.requiresLogin, department_controller.edit);

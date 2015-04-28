@@ -5,6 +5,15 @@ var   mongoose     = require('mongoose'),
       extend       = require('util')._extend,
       validator       = require('validator')
 
+
+exports.index = function (req, res){
+	Department.find({ organization:  req.user.organization}).populate('owner').exec(function (err, departments) {
+		res.render('department/index', {
+		    departments: departments
+	});
+		});
+}
+
 exports.new = function (req, res){
 	res.render('department/form', {   
 		department: new Department(),

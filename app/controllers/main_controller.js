@@ -12,12 +12,8 @@ exports.index = function (req, res){
 				});
 			})
 		} else if (req.user.hasRole('Customer_Admin')){
-			console.log(req.user)
-			Department.find({ organization:  req.user.organization}).populate('owner').exec(function (err, departments) {
-				res.render('department/index', {
-				    departments: departments
-				});
-		})}
+			return res.redirect('/departments'); 
+		}
 		else if (req.user.hasRole('Customer_Manager')){
 			return res.redirect('/team_members');  
 		}
