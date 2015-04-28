@@ -89,7 +89,26 @@ exports.logout = function (req, res) {
   res.redirect('/');
 };
 
-exports.session = login;
+exports.session = function (req, res) {
+  User.findOne({ email: req.body.email}, function (err, user) {
+    if(user && user.authenticate(req.body.password)){       
+        req.logIn(user, function(err) {
+          if (err) req.flash('info', 'Sorry! We are not able to log you in!');
+          return res.redirect('/');
+        }); 
+    }
+    else{
+      res.render('users/login', {
+         errors: "Invalid email or password.",
+          user: req.body
+      });
+    }
+    
+  });
+};
+
+
+//exports.session = login;
 
 function login (req, res) {
   var redirectTo = req.session.returnTo ? req.session.returnTo : '/';
