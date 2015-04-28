@@ -1,9 +1,10 @@
 
-var users_controller = require('users_controller');
-var main_controller   = require('main_controller');
-var organization_controller = require('organization_controller');
-var department_controller = require('departments_controller');
-var team_member_controller = require('team_member_controller');
+var users_controller         = require('users_controller');
+var main_controller          = require('main_controller');
+var organization_controller  = require('organization_controller');
+var department_controller    = require('departments_controller');
+var team_member_controller   = require('team_member_controller');
+var survey_controller        = require('survey_controller');
 
 var auth = require('./middlewares/authorization');
 
@@ -46,9 +47,10 @@ module.exports = function (app, passport) {
   app.post('/team_member/create', auth.requiresLogin, team_member_controller.create); 
   app.get('/team_member/:id/edit', auth.requiresLogin, team_member_controller.edit);
   app.post('/team_member/:id/update', auth.requiresLogin, team_member_controller.update);
-    
-  app.get('/departments', auth.requiresLogin, main_controller.departments);
+ 
+  app.get('/survey/index', auth.requiresLogin, survey_controller.index);
 
+  //app.get('/departments', auth.requiresLogin, main_controller.departments);
   //app.get('/team_member/new', auth.requiresLogin, main_controller.new_team_member);  
 
   app.get('/users/account', auth.requiresLogin, main_controller.account);

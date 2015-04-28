@@ -1,0 +1,28 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+	<section class="module">
+	    <div class="container">
+			<div class="row">
+				<h4 class="font-alt mb-0">Surveys</h4>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Company Name/Alias</th>
+							<th>Email</th>							
+						</tr>
+					</thead>
+					<tbody>
+						{% for survey in surveys %}
+							<tr>
+								<th scope="row"><input type="checkbox"/></th>				
+								<td><a href="/organization/{{organization.id}}/edit">{{organization.organization_name}}</a></td>
+								<td> {{organization.owner.email}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>				
+			</div>
+		</div>
+	</section>
+{% endblock %}

@@ -93,7 +93,6 @@ exports.session = function (req, res) {
   User.findOne({ email: req.body.email}, function (err, user) {
     if(user && user.authenticate(req.body.password)){       
         req.logIn(user, function(err) {
-          if (err) req.flash('info', 'Sorry! We are not able to log you in!');
           return res.redirect('/');
         }); 
     }
