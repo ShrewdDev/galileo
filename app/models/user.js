@@ -5,6 +5,7 @@ var  mongoose        = require('mongoose')
     ,crypto          = require('crypto')
     ,moment          = require('moment')
     ,validator       = require('validator')
+    ,randomstring    = require("randomstring")
     ,validate        = require('mongoose-validator')
     ,uniqueValidator = require('mongoose-unique-validator')
     ,nodemailer      = require('nodemailer')
@@ -22,6 +23,7 @@ var UserSchema = new Schema({
 
   firstName:            { type: String },
   lastName:             { type: String },
+  location:             { type: String },
 
   subscriptionLevel:      { type: String },
   subscriptionExpiryDate: { type: Date,  },
@@ -41,8 +43,6 @@ var UserSchema = new Schema({
   createdAt:                      { type: Date, default : Date.now }
 })
 
-//DepartmentSchema.index({ companyName: 1, departmentName: 1, email: 1 }, { unique: true });
-
 /*UserSchema.pre('save', function(next){
   this.salt = this.makeSalt()
   this.password = this.encryptPassword(this.password)
@@ -50,6 +50,7 @@ var UserSchema = new Schema({
 })*/
 
 UserSchema.methods = {
+ 
   setPassword:function (){
     this.salt = this.makeSalt()
     this.password = this.encryptPassword(this.password)
@@ -69,7 +70,7 @@ UserSchema.methods = {
     return this.encryptPassword(plainText) === this.password
   },
   makeSalt: function (){
-    return Math.round((new Date().valueOf() * Math.random())) + ''
+    return randomstring.generate(7)
   },
   encryptPassword: function (password) {
     if (!password) return ''
@@ -92,11 +93,29 @@ var transporter = nodemailer.createTransport({
 });
 
 UserSchema.statics = {
+  createNewDepartmentMembers: function (department){
+    _this = this
+    department.teamMembers.split(",").forEach(function (email) { 
+      _this.findOne({email: email}, function(err, user){
+        if(!user){
+          password       = randomstring.generate(7)
+          var user = new _this({email: email, password: password, role: 'Customer_TeamMember', 
+                                organization: department.organization, department: department})
+          user.setPassword()
+          user.save(function (err){
+            _this.sendCustomerAdiminWelcomeEmail(email, password, function(){
+              console.log("email sent "+ email)  
+            })
+          })
+          }                    
+        })      
+    });          
+  }, 
   getMonthsOfYear: function (){
     return monthsOfYear;
   },  
   makeSalt: function (){
-    return Math.round((new Date().valueOf() * Math.random())) + ''
+    return randomstring.generate(7)
   },
   encryptPassword: function (password, salt) {    
     var encrypred

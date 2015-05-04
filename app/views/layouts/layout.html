@@ -46,10 +46,12 @@
 								{% if (req.user.hasRole('Customer_Admin') ) %}
 									<li><a href="/users/account">Manage Account</a></li>
 									<li><a href="/users/managesurveys">Manage Surveys</a></li>
+									<li><a href="/admin/surveys">My Surveys</a></li>
 									<li><a href="/departments">Departments</a></li>
 								{% endif %}
 								{% if (req.user.hasRole('Customer_Manager') ) %}
 									<li><a href="/team_members">Team Members</a></li>
+									<li><a href="/manager/surveys">My Surveys</a></li>
 								{% endif %}
 							</ul>
 						</li>

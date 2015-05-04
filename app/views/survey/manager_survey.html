@@ -8,19 +8,20 @@
 					<thead>
 						<tr>
 							<th>Survey Title</th>
-							<th>Survey Type</th>													
+							<th>status</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 						{% for survey in surveys %}
-							<tr>			
-								<td><a href="/survey/{{survey.id}}/edit">{{survey.title}}</a></td>
-								<td>{{survey.type}}</td>		
+							<tr>
+								<td>{{survey.title}}</td>
+								<td>status</td>
+								<td><a href="/manager/{{survey.id}}/takesurvey/0">Take survey</a></td>						
 							</tr>
 						{% endfor %}
 					</tbody>
-				</table>	
-				<a href="/survey/new" class="btn btn-round btn-d">Add new</a>			
+				</table>
 			</div>
 		</div>
 	</section>

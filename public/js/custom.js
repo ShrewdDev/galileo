@@ -1,14 +1,71 @@
 (function($){
-
+	var index = 0;
 	$('.datepicker').datepicker({
 	    format: 'MM,dd yyyy'
-	})
+	});
 
-	if(typeof slider !== 'undefined'){	
-		var _slider = $( "#slider" ).slider({		
+
+  $("#add_survey_question").click(function(e) {
+  	e.preventDefault() 
+	$.ajax({
+		url: "/survey/question_partial",
+		cache: false,
+		data: {question_index : $('.question_group').length}
+	}).done(function( data ) {
+		$(".questions").append(data);
+		setInputNames()
+		console.log("data");
+		});
+	});
+
+	function setInputNames(){
+		$('.question_group').each(function(question_index, element) {
+			$(this).find( "input.question" ).attr("name", "questions["+question_index+"][question]");
+			$(this).find( "select.type" ).attr("name", "questions["+question_index+"][type]");
+			$(this).find( "input.response" ).each(function(response_index, element) {
+				$(this).attr("name", "questions["+question_index+"][responses]["+response_index+"][response]");
+			});
+		});
+	}
+ 
+  $("#survey").on('change', '.type', function(event) {
+  	event.preventDefault()
+  	if($( event.target ).val() == "date"){
+  		$( event.target ).closest( "div.question_group" ).find('div.response_div').remove()  		
+  	}	
+  })
+
+  $("#survey").on('click', '.delete_response', function(event) {
+  	event.preventDefault()
+  	target =  $( event.target ).closest( "div.response_div" )
+  	target.hide('slow', function(){ target.remove(); setInputNames();});
+  })
+
+  $("#survey").on('click', '.delete_question', function(event) {
+  	event.preventDefault()
+  	target =  $( event.target ).closest( "div.question_group" )
+  	target.hide('slow', function(){ target.remove(); setInputNames();});
+  })
+
+  $("#survey").on('click', '.add_question_response', function(event) {
+  	event.preventDefault() 
+  	//console.log("add_question_response")
+  	//$( event.target ).closest( "div.question_group" ).append("<p>hello</p>")
+	$.ajax({
+		url: "/survey/question_response_partial",
+		cache: false,
+		data: {question_index : 0, response_index : 0}
+		}).done(function( data ) {
+				$( event.target ).closest( "div.question_group" ).append(data);
+				setInputNames();
+			});
+		});
+
+	if(typeof slider !== 'undefined'){
+		var _slider = $( "#slider" ).slider({
 			min: 0,
 			max: 100,
-			value: $( "#surveyConfidence" ).val(),	
+			value: $( "#surveyConfidence" ).val(),
 			slide: function( event, ui ) {
 				$( "#surveyConfidence" ).val( ui.value );
 			}
@@ -16,19 +73,18 @@
 		$( "#surveyConfidence" ).change(function() {
 			_slider.slider( "value", $( "#surveyConfidence" ).val() );
 		});
-		var _slider2 = $( "#slider2" ).slider({		
+		var _slider2 = $( "#slider2" ).slider({
 			min: 0,
 			max: 100,
-			value: $( "#surveyLikelyResponseRate" ).val(),	
-			slide: function( event, ui ) {
+			value: $( "#surveyLikelyResponseRate" ).val(),
+			slide: function( event, ui ){
 				$( "#surveyLikelyResponseRate" ).val( ui.value );
 			}
 		});
 		$( "#surveyLikelyResponseRate" ).change(function() {
 			_slider.slider( "value", $( "#surveyLikelyResponseRate" ).val() );
-		});		
+		});
 	}
-			
 	
 	$(window).load(function() {
 		$('.loader').fadeOut();

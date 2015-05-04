@@ -6,7 +6,7 @@ var  mongoose         = require('mongoose')
 
 var OrganizationSchema = new Schema({
   organization_name:    { type: String, required: "Company name can't be blank", unique: true },
-  owner:                { type: Schema.ObjectId, ref : 'User'}
+  admin:                { type: Schema.ObjectId, ref : 'User'}
 })
 
 mongoose.model('Organization', OrganizationSchema)

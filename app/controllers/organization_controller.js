@@ -30,7 +30,7 @@ exports.create = function (req, res){
 	    	user.setPassword()
 	    	user.organization = organization
 	    	user.save(function (err2) {
-		    	organization.owner = user
+		    	organization.admin = user
 		    	organization.save(function (err1) {
 		        	return res.redirect('/');     
 		        })  
@@ -41,7 +41,7 @@ exports.create = function (req, res){
 }
 
 exports.edit = function (req, res){
-	Organization.findOne({ _id:  req.params.id}).populate('owner').exec(function (err, organization) {
+	Organization.findOne({ _id:  req.params.id}).populate('admin').exec(function (err, organization) {
 		console.log(organization)
 		res.render('organization/form', {
 			organization: organization,
@@ -51,9 +51,9 @@ exports.edit = function (req, res){
 }
 
 exports.update = function (req, res){
-	Organization.findOne({ _id:  req.params.id}).populate('owner').exec(function (err, organization) {
+	Organization.findOne({ _id:  req.params.id}).populate('admin').exec(function (err, organization) {
 		organization = extend(organization, req.body)
-		user         = extend(organization.owner, req.body)
+		user         = extend(organization.admin, req.body)
 		organization.validate(function (err1) {
 			user.validate(function (err2) {
 		    if (err1 || err2) {

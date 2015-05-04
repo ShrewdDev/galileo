@@ -18,7 +18,7 @@
             </div>
             <div class="form-group">
               <label class="sr-only" for="cname">Email</label>
-              <input type="text" class="form-control" name="email" placeholder="Email" value="{{ organization.email || organization.owner.email }}"/> 
+              <input type="text" class="form-control" name="email" placeholder="Email" value="{{ organization.email || organization.admin.email }}"/> 
               <p class="help-block text-danger">{{ errors.email.message }}</p>             
             </div>
             <div class="form-group">

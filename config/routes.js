@@ -1,12 +1,12 @@
 
-var users_controller         = require('users_controller');
-var main_controller          = require('main_controller');
-var organization_controller  = require('organization_controller');
-var department_controller    = require('departments_controller');
-var team_member_controller   = require('team_member_controller');
-var survey_controller        = require('survey_controller');
+var users_controller         = require('users_controller'),
+    main_controller          = require('main_controller'),
+    organization_controller  = require('organization_controller'),
+    department_controller    = require('departments_controller'),
+    team_member_controller   = require('team_member_controller'),
+    survey_controller        = require('survey_controller')
 
-var auth = require('./middlewares/authorization');
+var auth                     = require('./middlewares/authorization');
 
 module.exports = function (app, passport) {
 
@@ -49,7 +49,20 @@ module.exports = function (app, passport) {
   app.get('/team_member/:id/edit', auth.requiresLogin, team_member_controller.edit);
   app.post('/team_member/:id/update', auth.requiresLogin, team_member_controller.update);
  
-  app.get('/survey/index', auth.requiresLogin, survey_controller.index);
+  //app.get('/survey/index', auth.requiresLogin, survey_controller.index);
+  
+  app.get('/admin/surveys', auth.requiresLogin, survey_controller.customer_admin_surveys);
+  app.get('/survey/new', auth.requiresLogin, survey_controller.new);
+  app.post('/survey/create', auth.requiresLogin, survey_controller.create); 
+  app.get('/survey/:id/edit', auth.requiresLogin, survey_controller.edit);
+  app.post('/survey/:id/update', auth.requiresLogin, survey_controller.update);
+
+  app.get('/survey/question_partial', auth.requiresLogin, survey_controller.survey_question_partial);
+  app.get('/survey/question_response_partial', auth.requiresLogin, survey_controller.question_response_partial);
+
+  app.get('/manager/surveys', auth.requiresLogin, survey_controller.manager_surveys);
+  app.get('/manager/:id/takesurvey/:step', auth.requiresLogin, survey_controller.take_manager_survey);
+  app.post('/manager/:id/takesurvey/:step', auth.requiresLogin, survey_controller.post_survey_result);
 
   //app.get('/departments', auth.requiresLogin, main_controller.departments);
   //app.get('/team_member/new', auth.requiresLogin, main_controller.new_team_member);  

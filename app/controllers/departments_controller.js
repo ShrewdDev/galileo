@@ -5,9 +5,8 @@ var   mongoose     = require('mongoose'),
       extend       = require('util')._extend,
       validator    = require('validator')
 
-
 exports.index = function (req, res){
-	Department.find({ organization:  req.user.organization}).populate('owner').exec(function (err, departments) {
+	Department.find({ organization:  req.user.organization}).populate('manager').exec(function (err, departments) {
 		res.render('department/index', {
 		    departments: departments
 		});
@@ -41,14 +40,16 @@ exports.create = function (req, res){
 	    else {
 	    	user.role         = 'Customer_Manager'
 	    	user.setPassword()
-	    	user.department = department
+	    	user.department   = department
+	    	user.organization = req.user.organization	    	
 	    	user.save(function (err2) {
-		    	department.owner = user
+		    	department.manager = user
 		    	department.organization = req.user.organization
 		    	department.save(function (err1) {
 		    		console.log(err1)
 		        	return res.redirect('/');     
 		        })  
+		        User.createNewDepartmentMembers(department)
 	    	})
 	     }	    
 	})
@@ -56,8 +57,7 @@ exports.create = function (req, res){
 }
 
 exports.edit = function (req, res){
-	Department.findOne({ _id:  req.params.id}).populate('owner').exec(function (err, department) {
-		console.log(department)
+	Department.findOne({ _id:  req.params.id}).populate('manager').exec(function (err, department) {		
 		res.render('department/form', {
 			department: department,
 			action: "/department/"+department.id+"/update"
@@ -66,9 +66,9 @@ exports.edit = function (req, res){
 }
 
 exports.update = function (req, res){
-	Department.findOne({ _id:  req.params.id}).populate('owner').exec(function (err, department) {
+	Department.findOne({ _id:  req.params.id}).populate('manager').exec(function (err, department) {
 		department   = extend(department, req.body)
-		user         = extend(department.owner, req.body)
+		user         = extend(department.manager, req.body)
 		department.validate(function (err1) {
 			user.validate(function (err2) {
 		    if (err1 || err2) {
@@ -86,7 +86,8 @@ exports.update = function (req, res){
 		    	user.save(function (err2) {
 			    	department.save(function (err1) {
 			        	return res.redirect('/');     
-			        })  
+			        }) 
+			        User.createNewDepartmentMembers(department)			        
 		    	})
 		     }	    
 		})

@@ -12,10 +12,23 @@
           <form action="{{action}}" method="post" role="form" novalidate="">
           <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="form-group">
+              <label class="sr-only" for="cname">Department</label>
+              <input type="text" class="form-control" value="{{ user.departmentName || user.department.departmentName }}" disabled/>
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="cname">Location</label>
+              <input type="text" class="form-control" name="location" placeholder="Location" value="{{ user.location }}"/>
+            </div>                      
+            <div class="form-group">
               <label class="sr-only" for="cname">Email</label>
               <input type="text" class="form-control" name="email" placeholder="Email" value="{{ user.email }}"/> 
               <p class="help-block text-danger">{{ errors.email.message }}</p>             
             </div>
+            <div class="form-group">
+              <label class="sr-only" for="cemail">Password</label>
+              <input type="password" name="password" class="form-control" placeholder="password"/>
+              <p class="help-block text-danger">{{ errors.password.message }}</p> 
+            </div>            
             <div class="form-group">
               <label class="sr-only" for="cname">First name</label>
               <input type="text" class="form-control" name="firstName" placeholder="First name" value="{{ user.firstName }}"/>              
@@ -23,11 +36,6 @@
             <div class="form-group">
               <label class="sr-only" for="cname">Last name</label>
               <input type="text" class="form-control" name="lastName" placeholder="Last name" value="{{ user.lastName }}"/>
-            </div>                        
-            <div class="form-group">
-              <label class="sr-only" for="cemail">Password</label>
-              <input type="password" name="password" class="form-control" placeholder="password"/>
-              <p class="help-block text-danger">{{ errors.password.message }}</p> 
             </div>
             <div class="text-center">
               <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>

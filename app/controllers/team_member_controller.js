@@ -12,9 +12,15 @@ exports.index = function (req, res){
 	})	
 }
 exports.new = function (req, res){
-	res.render('team_member/form', {   
-		user: new User(),
-		action: "/team_member/create"
+	user = new User()
+	Department.findOne({_id: req.user.department}, function(err, department){
+		user.departmentName = department.departmentName
+		user.location = department.location
+		console.log(user)
+		res.render('team_member/form', {   
+			user: user,
+			action: "/team_member/create"
+		})
 	})
 }
 
@@ -22,8 +28,9 @@ exports.create = function (req, res) {
   var user = new User(req.body);
   user.role = 'Customer_TeamMember'
   user.setPassword()
-  user.manager    = req.user
-  user.department = req.user.department
+  user.manager      = req.user
+  user.department   = req.user.department
+  user.organization = req.user.organization
   user.save(function (err){
     if (err) {
       return res.render('team_member/form', {

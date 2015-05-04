@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 exports.index = function (req, res){	
 	if(req.isAuthenticated()){
 		if(req.user.hasRole('Site_Admin')){
-			Organization.find({}).populate('owner').exec(function (err, organizations) {
+			Organization.find({}).populate('admin').exec(function (err, organizations) {
 				res.render('organization/index', {	    
 				    organizations: organizations
 				});
@@ -49,7 +49,6 @@ exports.new_department = function (req, res){
 
 exports.create_department = function (req, res){	
   var department           = new Department(req.body);
-  department.created_by    = req.user.id;
   department.organization  = req.user.companyName;
   department.save(function (err) {
     if (err) {

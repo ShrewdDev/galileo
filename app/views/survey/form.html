@@ -1,0 +1,73 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+<section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">Survey</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form id="survey" action="{{action}}" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <div class="form-group">
+              <label class="sr-only" for="cname">Title</label>
+              <input type="text" class="form-control" name="title" placeholder="Survey Title" value="{{ survey.title }}"/> 
+              <p class="help-block text-danger">{{ errors.title.message }}</p>   
+            </div>
+            <div class="form-group">
+              <select type="text" class="form-control" name="type">       
+                <option value="" >Survey Type</option>    
+                {% for type in survey.getSurveyTypes() %}
+                   <option value="{{type}}" {% if survey.type == type %} selected {% endif %}>{{type}}</option>
+                {% endfor %}
+                </select>
+              <p class="help-block text-danger">{{ errors.type.message }}</p> 
+            </div>
+            {% for question in survey.questions %}
+              {% set index = loop.index0 %}
+              {% set error_index = 'questions.0.question' %}
+              <div class="question_group">
+                <a class="delete_question" href="#">x</a>
+                <div class="form-group">
+                  <input type="text" class="form-control question"  value="{{ question.question }}" name="questions[{{index}}][question]" />      
+                  <p class="help-block text-danger">
+                    {% if errors["questions."+index+".question"] %}  
+                      {{ errors["questions."+index+".question"].message }} 
+                    {% endif %}
+                  </p>          
+                </div>
+                <div class="form-group">
+                  <select type="text" class="form-control type"  name="questions[{{index}}][type]">
+                    <option value="unique_choice" {% if question.type == "unique_choice" %} selected {% endif %}>Unique choice</option>
+                    <option value="multiple_choices" {% if question.type == "multiple_choices" %} selected {% endif %}>Multiple choices</option>
+                    <option value="date" {% if question.type == "date" %} selected {% endif %}>Date</option>
+                  </select>            
+                </div>
+                <div class="form-group">
+                  <a class="add_question_response">Add response</a>       
+                </div>
+                {% for response in question.responses %}
+                  <div class="form-group response_div">
+                    <a class="delete_response" href="#">x</a> 
+                    <input type="text" class="form-control response" placeholder="response" value="{{response.response}}" name="questions[{{index}}][responses][{{loop.index0}}][response]" />  
+                  </div>
+              {% endfor %} 
+              </div>   
+                                             
+            {% endfor %}      
+            <div class="questions">  </div>                           
+            <a id="add_survey_question">Add question</a>
+            <div class="text-center">
+              <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+
+
+

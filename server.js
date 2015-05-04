@@ -12,9 +12,7 @@ var connect = function () {
   mongoose.connect(config.db, options);
 };
 connect();
-console.log("process.env.MONGOLAB_URI")
-console.log(process.env.MONGOLAB_URI)
-console.log("process.env.MONGOLAB_URI")
+
 mongoose.connection.on('error', console.log);
 mongoose.connection.on('disconnected', connect);
 

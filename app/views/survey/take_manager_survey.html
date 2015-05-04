@@ -1,0 +1,51 @@
+{% extends '../layouts/layout.html' %}
+{% block content %}
+<section class="module">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h2 class="module-title font-alt">{{ survey.type }} : {{ survey.title }}</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form id="survey" action="/manager/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
+          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+          <input type="hidden" value="{{survey.id}}" name="survey">
+          <input type="hidden" value="{{step}}" name="step">
+          <input type="hidden" value="{{question.id}}" name="question">
+                <h3>{{ question.question }}</h3>
+                {% if question.type == 'unique_choice' %}                  
+                  {% for response in question.responses %}
+                      <p>
+                        <input type="radio" value="{{response.id}}" name="response" 
+                        {% if result.response == response.id %} checked {% endif %}/> {{ response.response }} 
+                      </p>
+                  {% endfor %}
+                {% endif %} 
+                {% if question.type == 'multiple_choices' %}
+                  {% for response in question.responses %}
+                      <p> <input type="checkbox" value="{{response.id}}" name="response"
+                      {% if result.response.indexOf(response.id) > -1 %} checked {% endif %}> {{ response.response }} </p>
+                  {% endfor %}
+                {% endif %}    
+                {% if question.type == 'date' %}                  
+                      <div class="form-group"> 
+                        <input type="text"  class="form-control datepicker" value="{{result.response}}" name="response"> 
+                      </div>  
+                {% endif %}                        
+            <div class="text-center">             
+              {% if step > 0 %}
+                <a href="/manager/{{survey.id}}/takesurvey/{{step -1}}" class="btn btn-round btn-d"> < Back</a>
+              {% endif %}  
+                <button type="submit" class="btn btn-round btn-d">Next > </button>
+            </div>
+          </form>          
+        </div>
+      </div>
+    </div>
+  </section>  
+{% endblock %}
+
+
+
