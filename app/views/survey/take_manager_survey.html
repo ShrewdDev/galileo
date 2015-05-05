@@ -26,7 +26,7 @@
                 {% if question.type == 'multiple_choices' %}
                   {% for response in question.responses %}
                       <p> <input type="checkbox" value="{{response.id}}" name="response"
-                      {% if result.response.indexOf(response.id) > -1 %} checked {% endif %}> {{ response.response }} </p>
+                      {% if result.response && (result.response.indexOf(response.id) > -1) %} checked {% endif %}>  {{ response.response }} </p>
                   {% endfor %}
                 {% endif %}    
                 {% if question.type == 'date' %}                  

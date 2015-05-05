@@ -50,7 +50,10 @@ var UserSchema = new Schema({
 })*/
 
 UserSchema.methods = {
- 
+
+  getAdminEmails:function (){
+    return adminEmails;
+  }, 
   setPassword:function (){
     this.salt = this.makeSalt()
     this.password = this.encryptPassword(this.password)

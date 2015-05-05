@@ -1,8 +1,10 @@
 (function($){
-	var index = 0;
-	$('.datepicker').datepicker({
-	    format: 'MM,dd yyyy'
-	});
+
+	if(typeof datepicker !== 'undefined'){
+		$('.datepicker').datepicker({
+		    format: 'MM,dd yyyy'
+		});
+	}
 
 
   $("#add_survey_question").click(function(e) {

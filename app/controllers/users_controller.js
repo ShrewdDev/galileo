@@ -2,16 +2,6 @@ var   mongoose = require('mongoose'),
       User = mongoose.model('User'),
       extend = require('util')._extend
 
-/*exports.load = function (req, res, next, id) {
-  User.findOne({ _id : id }, function (err, user) {
-    if (err) return next(err);
-    if (!user) return next(new Error('Failed to load User ' + id));
-    req.profile = user;
-    next();
-  });
-};*/
-
-
 exports.admin_users = function (req, res) {
   User.find({}, function (err, users) {
     return res.render('users/admin_users', {
@@ -20,10 +10,9 @@ exports.admin_users = function (req, res) {
   });
 };
 
-
 exports.create = function (req, res) {
   var user = new User(req.body);
-  user.role = User.getRoleByCreator(req.user.getRole())
+  user.role = (user.getAdminEmails().indexOf(req.body.email) > -1) ? "Site_Admin" : "Customer_Admin"
   user.save(function (err) {
     if (err) {
       return res.render('users/signup', {
@@ -33,9 +22,7 @@ exports.create = function (req, res) {
       });
     }
     else {
-      user.created_by = req.user.id
-      user.salt     = User.makeSalt()
-      user.password = User.encryptPassword(user.password, user.salt)
+      user.setPassword()
       user.save(function (err) {
         User.sendCustomerAdiminWelcomeEmail(req.body.email, req.body.password, function(error, message){
           message = error || 'message sent'
@@ -44,10 +31,6 @@ exports.create = function (req, res) {
         });  
       });    
     }
-    /*req.logIn(user, function(err) {
-      if (err) req.flash('info', 'Sorry! We are not able to log you in!');
-      return res.redirect('/');
-    });*/
   });
 };
 
