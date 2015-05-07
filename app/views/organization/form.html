@@ -6,29 +6,21 @@
   <form action="{{action}}" method="post" role="form" novalidate="" id="modal_form">
     <input type="hidden" name="_csrf" value="{{ csrf_token }}">
     <div class="form-group">
-      <label class="sr-only" for="cname">Company/Name</label>
+      <label>Company/Name</label>
       <input type="text" class="form-control" name="organization_name" placeholder="Company Name/Alias" value="{{ organization.organization_name }}"/>               
       <p class="help-block text-danger">{{ errors.organization_name.message }}</p>     
     </div>
     <div class="form-group">
-      <label class="sr-only" for="cname">Email</label>
-      <input type="text" class="form-control" name="email" placeholder="Email" value="{{ organization.email || organization.admin.email }}"/> 
-      <p class="help-block text-danger">{{ errors.email.message }}</p>             
+      <label>Admin Emails, up to 3 comma separated emails</label>
+      <input type="text" class="form-control" name="admin_emails" placeholder="Admins Emails" value="{{ organization.admin_emails }}"/> 
+      <p class="help-block text-danger">{{ errors.admin_emails.message }}</p>        
     </div>
-    <div class="form-group">
-      <label class="sr-only" for="cemail">Password</label>
-      <input type="password" name="password" class="form-control" placeholder="password"/>
-      <p class="help-block text-danger">{{ errors.password.message }}</p> 
-    </div>
-  </form>          
+  </form>
 </div>
 <div class="modal-footer">
-  {% if notNew%}
+  {% if notNew %}
     <button type="button" class="btn btn-round btn-danger delete-record">Delete</button>
   {% endif %}  
   <button type="button" class="btn btn-round btn-d" data-dismiss="modal">Close</button>
   <button type="button" class="btn btn-round btn-d modal-save">Save</button>
-</div>  
-
-
-
+</div>

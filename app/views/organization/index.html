@@ -15,7 +15,7 @@
 					{% for organization in organizations %}
 						<tr>						
 							<td><a class="open-modal" data-url="/organization/{{organization.id}}/edit" href="#">{{organization.organization_name}}</a></td>
-							<td> {{organization.admin.email}}</td>
+							<td> {{organization.admin_emails}}</td>
 						</tr>
 					{% endfor %}
 				</tbody>
