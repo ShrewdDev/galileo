@@ -43,12 +43,6 @@ var UserSchema = new Schema({
   createdAt:                      { type: Date, default : Date.now }
 })
 
-/*UserSchema.pre('save', function(next){
-  this.salt = this.makeSalt()
-  this.password = this.encryptPassword(this.password)
-  next()
-})*/
-
 UserSchema.methods = {
 
   getAdminEmails:function (){
@@ -95,6 +89,27 @@ var transporter = nodemailer.createTransport({
 });
 
 UserSchema.statics = {
+
+  createUpdateOrganizationAdmins: function (organization){
+    console.log('inside')
+    _this = this
+    organization.admin_emails.split(",").forEach(function (email) { 
+      _this.findOne({email: email, organization: organization.id, role: 'Customer_Admin'}, function(err, user){
+        if(!user){
+          password       = randomstring.generate(7)
+          var user       = new _this({email: email, password: password, role: 'Customer_Admin', 
+                                organization: organization.id})
+          user.setPassword()
+          user.save(function (err){
+            _this.sendCustomerAdiminWelcomeEmail(email, password, function(){
+              console.log("email sent "+ email)  
+            })
+          })
+          }                    
+        })      
+    });          
+  },
+
   createNewDepartmentMembers: function (department){
     _this = this
     department.teamMembers.split(",").forEach(function (email) { 

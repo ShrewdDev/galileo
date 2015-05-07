@@ -33,6 +33,8 @@ exports.create = function (req, res){
 	      });
 		}
 		else{
+			User.createUpdateOrganizationAdmins(organization);
+			// create users from organization.admin_emails, delete users with role ADMIN and organization self
     		req.flash('message', {type: 'success', message: 'Organization created !'});   
         	res.send({status: "saved", url: "/organizations"})			
 		}
@@ -64,6 +66,7 @@ exports.update = function (req, res){
 		      });
 			}
 			else{
+				User.createUpdateOrganizationAdmins(organization);
 	    		req.flash('message', {type: 'success', message: 'Organization updated !'});  
 	        	res.send({status: "saved", url: "/organizations"})			
 			}
