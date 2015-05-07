@@ -62,7 +62,6 @@ UserSchema.methods = {
     return (this.subscriptionExpiryDate) ? moment(this.subscriptionExpiryDate).format("MMMM,D YYYY") : ''
   },
   hasRole: function (role){
-    if(role == "Site_Admin") return this.role ==  "Site_Admin" || (adminEmails.indexOf(this.email) > -1)
     return this.role == role
   },
   getRole: function (role){

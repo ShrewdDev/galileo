@@ -1,29 +1,27 @@
 {% extends '../layouts/layout.html' %}
 {% block content %}
-	<section class="module">
-	    <div class="container">
-			<div class="row">
-				<h4 class="font-alt mb-0">Organizations</h4>
-				<table class="table table-bordered">
-					<thead>
-						<tr>
-							<th></th>
-							<th>Company Name/Alias</th>
-							<th>Email</th>							
+<section class="module">
+    <div class="container">
+		<div class="row">
+			<h4 class="font-alt mb-0">Organizations</h4>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Company Name/Alias</th>
+						<th>Email</th>							
+					</tr>
+				</thead>
+				<tbody>
+					{% for organization in organizations %}
+						<tr>						
+							<td><a class="open-modal" data-url="/organization/{{organization.id}}/edit" href="#">{{organization.organization_name}}</a></td>
+							<td> {{organization.admin.email}}</td>
 						</tr>
-					</thead>
-					<tbody>
-						{% for organization in organizations %}
-							<tr>
-								<th scope="row"><input type="checkbox"/></th>				
-								<td><a href="/organization/{{organization.id}}/edit">{{organization.organization_name}}</a></td>
-								<td> {{organization.admin.email}}</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-				<a href="/organization/new" class="btn btn-round btn-d">Add new</a>
-			</div>
+					{% endfor %}
+				</tbody>
+			</table>
+			<button class="btn btn-round btn-d open-modal" data-url="/organization/new"> Add new organization </button>
 		</div>
-	</section>
+	</div>
+</section>
 {% endblock %}

@@ -3,14 +3,11 @@ var mongoose = require('mongoose'),
     Department = mongoose.model('Department'),
     Organization = mongoose.model('Organization')
 
-exports.index = function (req, res){	
+exports.index = function (req, res){
+	req.flash('info', "main")	
 	if(req.isAuthenticated()){
 		if(req.user.hasRole('Site_Admin')){
-			Organization.find({}).populate('admin').exec(function (err, organizations) {
-				res.render('organization/index', {	    
-				    organizations: organizations
-				});
-			})
+			return res.redirect('/organizations');
 		} else if (req.user.hasRole('Customer_Admin')){
 			return res.redirect('/departments'); 
 		}
@@ -19,7 +16,7 @@ exports.index = function (req, res){
 		}
 		else if (req.user.hasRole('Customer_TeamMember')){
 			return res.redirect('/survey/index');  
-		}		
+		}
 	}
 	else{
 		res.render('main/home', {
@@ -91,7 +88,7 @@ exports.new_team_member = function (req, res){
 exports.create_team_member = function (req, res){
 	res.render('main/team_member_form', {
 		
-	})		
+	})	
 }
 
 exports.edit_department = function (req, res){
@@ -111,10 +108,6 @@ exports.update_department = function (req, res){
 		})		
 	})
 }
-
-
-
-
 
 exports.destroy = function (req, res){
 	var article = req.article;

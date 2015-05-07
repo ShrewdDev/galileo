@@ -166,7 +166,7 @@ exports.update = function (req, res) {
       });
     }
     else {
-        req.flash('message', 'Profile updated!');
+        req.flash('message', {type: 'success', message: 'Profile updated!'});
         return res.redirect('/');
       };  
     })

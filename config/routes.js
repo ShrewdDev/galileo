@@ -16,11 +16,6 @@ module.exports = function (app, passport) {
   app.get('/signup', users_controller.signup);
   app.get('/logout', users_controller.logout);
   app.post('/users', users_controller.create);
-  /*app.post('/users/session',
-    passport.authenticate('local', {
-      failureRedirect: '/login',
-      failureFlash: 'Invalid email or password.'
-    }), users_controller.session);*/
   
   app.post('/users/session', users_controller.session);
  
@@ -32,10 +27,12 @@ module.exports = function (app, passport) {
   app.post('/reset/:token', users_controller.post_reset); 
   app.get('/admin/users', auth.requiresLogin, users_controller.admin_users) 
 
-  app.get('/organization/new', auth.requiresLogin, organization_controller.new);
-  app.post('/organization/create', auth.requiresLogin, organization_controller.create); 
-  app.get('/organization/:id/edit', auth.requiresLogin, organization_controller.edit);
-  app.post('/organization/:id/update', auth.requiresLogin, organization_controller.update);  
+  app.get('/organizations', auth.isSiteAdmin, organization_controller.index);
+  app.get('/organization/new', auth.isSiteAdmin, organization_controller.new);
+  app.post('/organization/create', auth.isSiteAdmin, organization_controller.create); 
+  app.get('/organization/:id/edit', auth.isSiteAdmin, organization_controller.edit);
+  app.post('/organization/:id/update', auth.isSiteAdmin, organization_controller.update);  
+  app.delete('/organization/:id/update', auth.isSiteAdmin, organization_controller.destroy);
 
   app.get('/departments', auth.requiresLogin, department_controller.index);
   app.get('/department/new', auth.requiresLogin, department_controller.new);

@@ -10,6 +10,12 @@ exports.siteAdminAuth = function (req, res, next) {
   res.redirect('/login')
 }
 
+exports.isSiteAdmin = function (req, res, next) {
+  if (req.isAuthenticated() && req.user.hasRole("Site_Admin")) return next()
+  req.flash('message', {type: 'danger', message: 'You are not authorized'})
+  res.redirect('/')
+}
+
 exports.user = {
   hasAuthorization: function (req, res, next) {
     if (req.profile.id != req.user.id) {

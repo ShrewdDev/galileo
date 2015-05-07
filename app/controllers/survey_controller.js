@@ -28,7 +28,6 @@ exports.new = function (req, res){
 }
 
 exports.survey_question_partial = function (req, res){
-	console.log(req)
 	res.render('survey/_question_partial', {   		
 		question_index: req.query.question_index
 	})

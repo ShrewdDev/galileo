@@ -6,17 +6,62 @@
 		});
 	}
 
+  	$(".open-modal").click(function(e) {
+  		_this = $(this)
+		$.ajax({
+			url: _this.data("url"),
+			cache: false
+		}).done(function( data ) {			
+			$('#myModal').find('div.modal-content').html(data)
+	  		$('#myModal').modal('show')
+		});  		
+	});
 
-  $("#add_survey_question").click(function(e) {
-  	e.preventDefault() 
-	$.ajax({
-		url: "/survey/question_partial",
-		cache: false,
-		data: {question_index : $('.question_group').length}
-	}).done(function( data ) {
-		$(".questions").append(data);
-		setInputNames()
-		console.log("data");
+	$("#myModal").on('click', '.delete-record', function(event) {
+		if (confirm('Are you sure?')) {
+			var form = $("#modal_form")	
+			data     = form.serializeJSON()
+			data._method = "DELETE"
+			$.ajax({
+				type: "DELETE",
+				url: form.attr("action"),
+				data: data
+			}).done(function( data ) {		
+				if(data.status == "saved")	{ 
+					$('#myModal').modal('hide') 
+					window.location.href = data.url;
+				}
+				else $('#myModal').find('div.modal-content').html(data)
+			});
+    	}
+	});
+
+	$("#myModal").on('click', '.modal-save', function(event) {
+  		var form = $("#modal_form")	
+  		data     = form.serializeJSON()
+		$.ajax({
+			type: "POST",
+			url: form.attr("action"),
+			data: data
+		}).done(function( data ) {		
+			if(data.status == "saved")	{ 
+				$('#myModal').modal('hide') 
+				window.location.href = data.url;
+			}
+			else $('#myModal').find('div.modal-content').html(data)
+		});  		
+	});
+
+  	$("#add_survey_question").click(function(e) {
+  		e.preventDefault() 
+		$.ajax({
+			url: "/survey/question_partial",
+			cache: false,
+			data: {question_index : $('.question_group').length}
+		}).done(function( data ) {
+			$(".questions").append(data);
+			setInputNames()
+			console.log("data");
 		});
 	});
 
@@ -98,7 +143,6 @@
 		var homeSection = $('.home-section'),
 			navbar      = $('.navbar-custom'),
 			navHeight   = navbar.height(),
-			//worksgrid   = $('#works-grid'),
 			width       = Math.max($(window).width(), window.innerWidth),
 			mobileTest;
 
@@ -153,56 +197,6 @@
 				}
 			}
 		};
-
-		/* ---------------------------------------------- /*
-		 * Intro slider setup
-		/* ---------------------------------------------- */
-
-		if( $('.hero-slider').length > 0 ) {
-			$('.hero-slider').flexslider( {
-				animation: "fade",
-				animationSpeed: 1000,
-				animationLoop: true,
-				prevText: '',
-				nextText: '',
-				before: function(slider) {
-					$('.hs-caption').fadeOut().animate({top:'-80px'},{queue:false, easing: 'swing', duration: 700});
-					slider.slides.eq(slider.currentSlide).delay(500);
-					slider.slides.eq(slider.animatingTo).delay(500);
-				},
-				after: function(slider) {
-					$('.hs-caption').fadeIn().animate({top:'0'},{queue:false, easing: 'swing', duration: 700});
-				},
-				useCSS: true
-			});
-		};
-
-		/* ---------------------------------------------- /*
-		 * Youtube video background
-		/* ---------------------------------------------- */
-/*
-		$(function(){
-			$(".video-player").mb_YTPlayer();
-		});
-
-		$('#video-play').click(function(event) {
-			event.preventDefault();
-			if ($(this).hasClass('fa-play')) {
-				$('.video-player').playYTP();
-			} else {
-				$('.video-player').pauseYTP();
-			}
-			$(this).toggleClass('fa-play fa-pause');
-			return false;
-		});
-
-		$('#video-volume').click(function(event) {
-			event.preventDefault();
-			$('.video-player').toggleVolume();
-			$(this).toggleClass('fa-volume-off fa-volume-up');
-			return false;
-		});
-*/
 		/* ---------------------------------------------- /*
 		 * Transparent navbar animation
 		/* ---------------------------------------------- */
@@ -277,9 +271,6 @@
 			}
 		};
 
-		/* ---------------------------------------------- /*
-		 * Navbar collapse on click
-		/* ---------------------------------------------- */
 
 		$(document).on('click','.navbar-collapse.in',function(e) {
 			if( $(e.target).is('a') && $(e.target).attr('class') != 'dropdown-toggle' ) {
@@ -287,9 +278,6 @@
 			}
 		});
 
-		/* ---------------------------------------------- /*
-		 * Set sections backgrounds
-		/* ---------------------------------------------- */
 
 		var module = $('.home-section, .module, .module-small, .side-image');
 		module.each(function(i) {
@@ -313,114 +301,6 @@
 				$(this).find('.count-to').countTo({from: 0, to: number, speed: 1200, refreshInterval: 30});
 			});
 		});
-
-		/* ---------------------------------------------- /*
-		 * Testimonials, Post sliders
-		/* ---------------------------------------------- */
-
-		if ($('.testimonials-slider').length > 0 ) {
-			$('.testimonials-slider').flexslider( {
-				animation: "slide",
-				smoothHeight: true,
-			});
-		};
-
-		$('.post-images-slider').flexslider( {
-			animation: "slide",
-			smoothHeight: true,
-		});
-
-		/* ---------------------------------------------- /*
-		 * Owl slider
-		/* ---------------------------------------------- */
-
-		$('.owl-carousel').each(function(i) {
-
-			// Check items number
-			if ($(this).data('items') > 0) {
-				items = $(this).data('items');
-			} else {
-				items = 4;
-			}
-
-			// Check pagination true/false
-			if (($(this).data('pagination') > 0) && ($(this).data('pagination') == true)) {
-				pagination = true;
-			} else {
-				pagination = false;
-			}
-
-			// Check navigation true/false
-			if (($(this).data('navigation') > 0) && ($(this).data('navigation') == true)) {
-				navigation = true;
-			} else {
-				navigation = false;
-			}
-
-			// Build carousel
-			$(this).owlCarousel( {
-				navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
-				navigation: navigation,
-				pagination: pagination,
-				paginationSpeed: 400,
-				singleItem: false,
-				items: items,
-				slideSpeed: 300,
-				autoPlay: 5000
-			});
-
-		});
-
-		/* ---------------------------------------------- /*
-		 * Video popup, Gallery
-		/* ---------------------------------------------- */
-/*
-		$('.video-pop-up').magnificPopup({
-			type: 'iframe',
-		});
-
-		$('a.gallery').magnificPopup({
-			type: 'image',
-			gallery: {
-				enabled: true,
-				navigateByImgClick: true,
-				preload: [0,1]
-			},
-			image: {
-				titleSrc: 'title',
-				tError: 'The image could not be loaded.',
-			}
-		});
-*/
-		/* ---------------------------------------------- /*
-		 * WOW Animation When You Scroll
-		/* ---------------------------------------------- */
-
-		wow = new WOW({
-			mobile: false
-		});
-		wow.init();
-
-		/* ---------------------------------------------- /*
-		 * Rotate
-		/* ---------------------------------------------- */
-/*
-		$(".rotate").textrotator({
-			animation: "dissolve",
-			separator: "|",
-			speed: 3000
-		});
-*/
-		/* ---------------------------------------------- /*
-		 * A jQuery plugin for fluid width video embeds
-		/* ---------------------------------------------- */
-
-		//$('body').fitVids();
-
-		/* ---------------------------------------------- /*
-		 * Scroll Animation
-		/* ---------------------------------------------- */
-
 		$('.section-scroll').bind('click', function(e) {
 			var anchor = $(this);
 			$('html, body').stop().animate({
@@ -428,10 +308,6 @@
 			}, 1000);
 			e.preventDefault();
 		});
-
-		/* ---------------------------------------------- /*
-		 * Scroll top
-		/* ---------------------------------------------- */
 
 		$(window).scroll(function() {
 			if ($(this).scrollTop() > 100) {
@@ -445,10 +321,6 @@
 			$('html, body').animate({ scrollTop: 0 }, 'slow');
 			return false;
 		});
-
-		/* ---------------------------------------------- /*
-		 * Subscribe form ajax
-		/* ---------------------------------------------- */
 
 		$('#subscription-form').submit(function(e) {
 
@@ -481,47 +353,6 @@
 			});
 
 		});
-
-		/* ---------------------------------------------- /*
-		 * Google Map
-		/* ---------------------------------------------- */
-/*
-		var mapLocation = new google.maps.LatLng(34.031428,-118.2071542,17);
-
-		var $mapis = $('#map');
-
-		if ($mapis.length > 0) {
-
-			map = new GMaps({
-				streetViewControl : true,
-				overviewMapControl: true,
-				mapTypeControl: true,
-				zoomControl : true,
-				panControl : true,
-				scrollwheel: false,
-				center: mapLocation,
-				el: '#map',
-				zoom: 16,
-				styles: [{"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]
-			});
-
-			var image = new google.maps.MarkerImage('assets/images/map-icon.png',
-				new google.maps.Size(59, 65),
-				new google.maps.Point(0, 0),
-				new google.maps.Point(24, 42)
-			);
-
-			map.addMarker({
-				position: mapLocation,
-				icon: image,
-				title: 'Rival',
-				infoWindow: {
-					content: '<p><strong>Rival</strong><br/>121 Somewhere Ave, Suite 123<br/>P: (123) 456-7890<br/>Australia</p>'
-				}
-			});
-
-		}
-*/
 
 	});
 

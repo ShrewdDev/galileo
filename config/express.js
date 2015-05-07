@@ -2,7 +2,7 @@ var express = require('express');
 var session = require('express-session');
 var compression = require('compression');
 var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+//var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var csrf = require('csurf');
@@ -71,7 +71,7 @@ module.exports = function (app, passport) {
   }));
 
   app.use(cookieParser());
-  app.use(cookieSession({ secret: 'secret22' }));
+  //app.use(cookieSession({ secret: 'secret22' }));
   app.use(session({
     resave: true,
     saveUninitialized: true,
