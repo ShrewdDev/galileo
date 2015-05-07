@@ -59,6 +59,7 @@ exports.edit = function (req, res){
 		res.render('organization/form', {
 			organization: organization,
 			label: 'Update Organization',
+			notNew: true,
 			action: "/organization/"+organization.id+"/update"
 		})		
 	})
@@ -77,6 +78,7 @@ exports.update = function (req, res){
 		      return res.render('organization/form',{
 		        errors: errors,
 		        organization: req.body,
+		        notNew: true,
 		        label: 'Update Organization',
 		        action: "/organization/"+organization.id+"/update"
 		      });
