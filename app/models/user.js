@@ -1,26 +1,32 @@
 
 var  mongoose        = require('mongoose')
     ,Schema          = mongoose.Schema
-    ,Organization    = mongoose.model('Organization')
-    ,crypto          = require('crypto')
-    ,moment          = require('moment')
-    ,validator       = require('validator')
-    ,randomstring    = require("randomstring")
-    ,validate        = require('mongoose-validator')
-    ,uniqueValidator = require('mongoose-unique-validator')
-    ,nodemailer      = require('nodemailer')
-    ,roles           = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
-    ,adminEmails     = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
-    ,rolesByCreator  = {'Site_Admin':'Customer_Admin', 'Customer_Admin': 'Customer_Manager', 'Customer_Manager':'Customer_TeamMember'}
+    ,Organization      = mongoose.model('Organization')
+    ,crypto            = require('crypto')
+    ,moment            = require('moment')
+    ,validator         = require('validator')
+    ,randomstring      = require("randomstring")
+    ,validate          = require('mongoose-validator')
+    ,uniqueValidator   = require('mongoose-unique-validator')
+    ,nodemailer        = require('nodemailer')
+    ,roles             = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
+    ,adminEmails       = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
     ,subscriptioLevels = {'Level_1':'Level 1($25/user/month)', 'Level_2':'Level 2($30/user/month)', 'Level_3':'Level 3($35/user/month)'}
     ,monthsOfYear      = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'no.reply.smtp.222@gmail.com',
+        pass: 'password0511'
+    }
+});
 
 var UserSchema = new Schema({
   email:                { type: String, required: "Email can't be blank", unique: true, validate: validate({validator: 'isEmail'}) },  
   organization:         { type: Schema.ObjectId, ref : 'Organization' },
   department:           { type: Schema.ObjectId, ref : 'Department'   },
   role:                 { type: String },
-
   firstName:            { type: String },
   lastName:             { type: String },
   location:             { type: String },
@@ -35,12 +41,21 @@ var UserSchema = new Schema({
   surveyRecomendedSampleSize:    { type: String, validate: validate({validator: 'isNumeric'}) },
   surveySampleSizeAccountedFor:  { type: String, validate: validate({validator: 'isNumeric'}) },
 
-  password:                       { type: String, required: "Password can't be blank"},
+  password:                       { type: String },
   salt:                           { type: String },  
   resetPasswordToken:             { type: String },
   resetPasswordExpires:           { type: Date   },
-  manager:                        { type: Schema.ObjectId, ref : 'User'},
   createdAt:                      { type: Date, default : Date.now }
+})
+
+UserSchema.pre('save', function(next) {
+  if (!this.password){
+    var password  = randomstring.generate(7)
+    this.password = password
+    this.setPassword()
+    this.sendWelcomeEmail(this.email, password)    
+  } 
+  next()
 })
 
 UserSchema.methods = {
@@ -77,38 +92,36 @@ UserSchema.methods = {
     } catch (err) {
       return ''
     }
-  }
+  },
+  sendWelcomeEmail: function(email, password){
+    var mailOptions = {
+      from: 'SurveyApp <contact@survey.com>', 
+      to: email,
+      subject: 'Account Created',
+      text: 'Your account was created. you can login to your account using you email address, your password is : '+password+' '
+    };
+    transporter.sendMail(mailOptions, function(error, info){});          
+  },  
 }
-
-var transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: 'no.reply.smtp.222@gmail.com',
-        pass: 'password0511'
-    }
-});
 
 UserSchema.statics = {
 
   createUpdateOrganizationAdmins: function (organization){
-    console.log('inside')
-    _this = this
-    organization.admin_emails.split(",").forEach(function (email) { 
-      _this.findOne({email: email, organization: organization.id, role: 'Customer_Admin'}, function(err, user){
-        if(!user){
-          password       = randomstring.generate(7)
-          var user       = new _this({email: email, password: password, role: 'Customer_Admin', 
-                                organization: organization.id})
-          user.setPassword()
-          user.save(function (err){
-            _this.sendCustomerAdiminWelcomeEmail(email, password, function(){
-              console.log("email sent "+ email)  
-            })
-          })
-          }                    
-        })      
-    });          
-  },
+    _this  = this
+    emails = organization.admin_emails.split(",") 
+    emails.forEach(function (email) { 
+      _this.findOne({email: email}, function(err, user){
+        if(!user){            
+          var user = new _this({email: email, role: 'Customer_Admin'})
+        }
+        user.organization = organization.id
+        user.save(function (err){ 
+          if(err) console.log(err)
+        })          
+      })      
+    });
+             
+},
 
   createNewDepartmentMembers: function (department){
     _this = this

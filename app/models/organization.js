@@ -15,7 +15,9 @@ extend('isLessThan3CommaSeparatedEmails', function (val) {
 
 var OrganizationSchema = new Schema({
   organization_name:    { type: String, required: "Company name can't be blank", unique: true },
-  admin_emails:         { type: String, required: "Admins emails can't be blank", validate: validate({validator: 'isLessThan3CommaSeparatedEmails'}) }
+  admin_emails:         { type: String, required: "Admins emails can't be blank", 
+                          validate: validate({validator: 'isLessThan3CommaSeparatedEmails'}) }
 })
 
+OrganizationSchema.plugin(uniqueValidator, { message: '{PATH} already in use.' })
 mongoose.model('Organization', OrganizationSchema)
