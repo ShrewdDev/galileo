@@ -10,6 +10,7 @@
       <input type="text" class="form-control" name="email" placeholder="Email" value="{{ user.email }}"/> 
       <p class="help-block text-danger">{{ errors.email.message }}</p>        
     </div>
+    {% if !notNew %}
     <div class="form-group">
       <label>Organization</label>
       <select class="form-control" name="organization">
@@ -17,7 +18,8 @@
           <option value="{{ organization.id }}" {% if user.organization == organization.id %} selected {% endif %}>{{ organization.organization_name }}</option>
         {% endfor %}
       </select>
-    </div>     
+    </div> 
+    {% endif %}         
     <div class="form-group">
       <label>Role</label>
       <select class="form-control" name="role">
