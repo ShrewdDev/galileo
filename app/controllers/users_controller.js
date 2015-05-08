@@ -1,14 +1,89 @@
-var   mongoose = require('mongoose'),
-      User = mongoose.model('User'),
-      extend = require('util')._extend
+var   mongoose      = require('mongoose'),
+      User          = mongoose.model('User'),
+      Organization  = mongoose.model('Organization'),
+      extend        = require('util')._extend
+
 
 exports.admin_users = function (req, res) {
-  User.find({}, function (err, users) {
+  User.find({}).populate('organization').exec(function (err, users) {
     return res.render('users/admin_users', {
-      users: users
+      users: users,
+      message: req.flash('message')
     })
   });
 };
+
+exports.admin_new_user = function (req, res) {
+  Organization.find({}, function(err, organizations){
+    var user = new User()
+    res.render('users/admin_user_form', { 
+      user: user,
+      roles: user.getRoles(),
+      organizations: organizations,
+      label: 'New User',
+      action: '/admin/users/create'
+    })
+  })
+};
+
+exports.admin_create_user = function (req, res) {
+  var user = new User(req.body);
+  user.save(function (err) {
+    if(err){
+      Organization.find({}, function(err2, organizations){
+          return res.render('users/admin_user_form',{
+            errors: err.errors,
+            roles: user.getRoles(),
+            organizations: organizations,
+            user: req.body,
+            label: 'New User',
+            action: '/admin/users/create'
+          })
+        })
+    }
+    else{
+        req.flash('message', {type: 'success', message: 'User created !'});   
+        res.send({status: "saved", url: "/admin/users"})
+    }
+  })
+}
+
+exports.admin_edit_user = function (req, res){
+  User.findOne({ _id:  req.params.id}, function (err, user){   
+    Organization.find({}, function(err, organizations){
+      res.render('users/admin_user_form', {
+        user: user,
+        roles: user.getRoles(),
+        organizations: organizations,
+        notNew: true,
+        label: 'Update User',
+        action: '/admin/users/'+user.id+'/update'
+      })    
+    })
+  })
+}
+
+exports.admin_update_user = function (req, res){
+  User.findOne({ _id:  req.params.id}, function (err, user){   
+    user       = extend(user, req.body)
+    user.save(function (err) {
+      if(err){      
+        res.render('users/admin_user_form', {
+          user: user,
+          roles: user.getRoles(),
+          organizations: organizations,
+          notNew: true,
+          label: 'Update User',
+          action: '/admin/users/'+user.id+'/update'
+        })
+      }
+      else{
+        req.flash('message', {type: 'success', message: 'User updated !'});   
+        res.send({status: "saved", url: "/admin/users"})        
+      }
+    })
+  })
+}
 
 exports.create = function (req, res) {
   var user = new User(req.body);
@@ -171,3 +246,12 @@ exports.update = function (req, res) {
       };  
     })
 };
+
+exports.destroy = function (req, res){
+  User.findOne({ _id:  req.params.id}, function (err, user) {
+    user.remove(function (err){
+        req.flash('message', {type: 'success', message: 'User deleted !'});   
+        res.send({status: "saved", url: "/admin/users"})     
+    })
+  })
+}

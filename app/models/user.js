@@ -9,7 +9,7 @@ var  mongoose        = require('mongoose')
     ,validate          = require('mongoose-validator')
     ,uniqueValidator   = require('mongoose-unique-validator')
     ,nodemailer        = require('nodemailer')
-    ,roles             = ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember']
+    ,roles             = ['Customer_Admin', 'Customer_Manager', 'Customer_TeamMember'] // remove 'Site_Admin', 
     ,adminEmails       = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
     ,subscriptioLevels = {'Level_1':'Level 1($25/user/month)', 'Level_2':'Level 2($30/user/month)', 'Level_3':'Level 3($35/user/month)'}
     ,monthsOfYear      = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -60,7 +60,6 @@ UserSchema.pre('save', function(next) {
 })
 
 UserSchema.methods = {
-
   getAdminEmails:function (){
     return adminEmails;
   }, 
@@ -73,11 +72,10 @@ UserSchema.methods = {
   },
   hasRole: function (role){
     return this.role == role
-  },
-  getRole: function (role){
-    if  (adminEmails.indexOf(this.email) > -1) return "Site_Admin"
-    return this.role
-  },  
+  }, 
+  getRoles: function (){
+    return roles
+  },   
   authenticate: function (plainText){
     return this.encryptPassword(plainText) === this.password
   },
@@ -173,9 +171,6 @@ UserSchema.statics = {
       return ''
     }
   },  
-  getRoleByCreator: function (role) {    
-    return rolesByCreator[role]
-  }, 
   sendCustomerAdiminWelcomeEmail: function(email, password, cb){
     var mailOptions = {
       from: 'SurveyApp <contact@survey.com>', 

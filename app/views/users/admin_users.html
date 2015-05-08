@@ -7,21 +7,24 @@
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th></th>							
-							<th>Email</th>							
+							<th>Email</th>
+							<th>Organization</th>
 							<th>Role</th>	
 						</tr>
 					</thead>
 					<tbody>
 						{% for user in users %}
 							<tr>
-								<th scope="row"><input type="checkbox"/></th>								
-								<td> {{user.email}}</td>
-								<td> {{user.getRole()}}</td>
+								<td>
+									<a class="open-modal" data-url="/admin/users/{{user.id}}/edit" href="#">{{user.email}}</a>
+								</td>								
+								<td> {{user.organization.organization_name}}</td>
+								<td> {{user.role}}</td>
 							</tr>
 						{% endfor %}
 					</tbody>
-				</table>				
+				</table>	
+				<button class="btn btn-round btn-d open-modal" data-url="/admin/users/new"> Add new user </button>	
 			</div>
 		</div>
 	</section>
