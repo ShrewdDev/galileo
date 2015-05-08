@@ -22,7 +22,7 @@ var QuestionSchema = new Schema({
   question:         { type: String, required: "Question can't be blank" },
   type:             { type: String, required: "Question type can't be blank" },
   defaultResponse:  { type: String   },
-  responses:        [ ResponseSchema ]  
+  responses:        [ ResponseSchema ]
 })
 
 var SurveySchema = new Schema({

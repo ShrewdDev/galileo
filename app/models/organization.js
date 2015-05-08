@@ -5,7 +5,7 @@ var  mongoose         = require('mongoose')
     ,uniqueValidator  = require('mongoose-unique-validator')
     ,extend           = require('mongoose-validator').extend
 
-extend('isLessThan3CommaSeparatedEmails', function (val) {
+extend('is3CommaSeparatedEmailsMax', function (val) {
   var valid = true;
   var emailsArray = val.split(",");
   if (emailsArray.length > 3) valid = false;
@@ -16,7 +16,7 @@ extend('isLessThan3CommaSeparatedEmails', function (val) {
 var OrganizationSchema = new Schema({
   organization_name:    { type: String, required: "Company name can't be blank", unique: true },
   admin_emails:         { type: String, required: "Admins emails can't be blank", 
-                          validate: validate({validator: 'isLessThan3CommaSeparatedEmails'}) }
+                          validate: validate({validator: 'is3CommaSeparatedEmailsMax'}) }
 })
 
 OrganizationSchema.plugin(uniqueValidator, { message: '{PATH} already in use.' })

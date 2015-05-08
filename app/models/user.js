@@ -1,7 +1,7 @@
 
 var  mongoose        = require('mongoose')
     ,Schema          = mongoose.Schema
-    ,Organization      = mongoose.model('Organization')
+    //,Organization      = mongoose.model('Organization')
     ,crypto            = require('crypto')
     ,moment            = require('moment')
     ,validator         = require('validator')
@@ -13,6 +13,7 @@ var  mongoose        = require('mongoose')
     ,adminEmails       = ['khalid.rahmani.mail@gmail.com', 'admin@test.com']
     ,subscriptioLevels = {'Level_1':'Level 1($25/user/month)', 'Level_2':'Level 2($30/user/month)', 'Level_3':'Level 3($35/user/month)'}
     ,monthsOfYear      = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    ,async             = require("async")
 
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -106,6 +107,21 @@ UserSchema.methods = {
 
 UserSchema.statics = {
 
+  validateUniqueAdminsEmails: function (emails, old_admin_emails, callback){
+      _this  = this
+      async.each(emails, function (email, cb) {
+        if(old_admin_emails.indexOf(email) > -1) cb()
+        else{
+          var user = new _this({email: email, role: 'Customer_Admin'})
+          user.validate(function(err){
+            if(err) callback("Duplicate email : "+ email)
+            else cb()  
+          })          
+        }              
+      },function(err){
+        callback (null)
+      });               
+  },
   createUpdateOrganizationAdmins: function (organization){
     _this  = this
     emails = organization.admin_emails.split(",") 

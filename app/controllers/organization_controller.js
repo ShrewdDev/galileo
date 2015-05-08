@@ -23,22 +23,34 @@ exports.new = function (req, res){
 
 exports.create = function (req, res){
 	var organization = new Organization(req.body)
-	organization.save(function (err) {
+	User.validateUniqueAdminsEmails(organization.admin_emails.split(","), "", function(err){
 		if(err){
-	      return res.render('organization/form',{
-	        errors: err.errors,
-	        organization: req.body,
-	        label: 'New Organization',
-	        action: "/organization/create"
-	      });
+		      return res.render('organization/form',{
+		        errors: {admin_emails:{message: err}},
+		        organization: req.body,
+		        label: 'New Organization',
+		        action: "/organization/create"
+		      });				
 		}
 		else{
-			User.createUpdateOrganizationAdmins(organization);
-			// create users from organization.admin_emails, delete users with role ADMIN and organization self
-    		req.flash('message', {type: 'success', message: 'Organization created !'});   
-        	res.send({status: "saved", url: "/organizations"})			
+			organization.save(function (err) {
+				if(err){
+			      return res.render('organization/form',{
+			        errors: err.errors,
+			        organization: req.body,
+			        label: 'New Organization',
+			        action: "/organization/create"
+			      });
+				}
+				else{
+					User.createUpdateOrganizationAdmins(organization);
+		    		req.flash('message', {type: 'success', message: 'Organization created !'});   
+		        	res.send({status: "saved", url: "/organizations"})			
+				}
+			})			
 		}
 	})
+
 }
 
 exports.edit = function (req, res){
@@ -54,23 +66,37 @@ exports.edit = function (req, res){
 
 exports.update = function (req, res){
 	Organization.findOne({ _id:  req.params.id}, function (err, organization) {
-		organization = extend(organization, req.body)
-		organization.save(function (err) {
-			if(err){
-		      return res.render('organization/form',{
-		        errors: err.errors,
-		        organization: req.body,
-				label: 'Update Organization',
-				notNew: true,
-				action: "/organization/"+organization.id+"/update"
-		      });
-			}
-			else{
-				User.createUpdateOrganizationAdmins(organization);
-	    		req.flash('message', {type: 'success', message: 'Organization updated !'});  
-	        	res.send({status: "saved", url: "/organizations"})			
-			}
-		})
+		old_admin_emails   = organization.admin_emails
+		organization       = extend(organization, req.body)
+		User.validateUniqueAdminsEmails(organization.admin_emails.split(","), old_admin_emails, function(err){
+				if(err){
+				      return res.render('organization/form',{
+				        errors: {admin_emails:{message: err}},
+				        organization: req.body,
+						label: 'Update Organization',
+						notNew: true,
+						action: "/organization/"+organization.id+"/update"
+				      });				
+				}
+				else{
+					organization.save(function (err) {
+						if(err){
+					      return res.render('organization/form',{
+					        errors: err.errors,
+					        organization: req.body,
+							label: 'Update Organization',
+							notNew: true,
+							action: "/organization/"+organization.id+"/update"
+					      });
+						}
+						else{
+							User.createUpdateOrganizationAdmins(organization);
+				    		req.flash('message', {type: 'success', message: 'Organization updated !'});  
+				        	res.send({status: "saved", url: "/organizations"})				
+						}
+					})			
+				}
+			})
 	})	
 }
 
