@@ -11,7 +11,7 @@ extend('is3CommaSeparatedEmailsMax', function (val) {
   if (emailsArray.length > 3) valid = false;
   emailsArray.forEach(function (email) { if (! validator.isEmail(email)) valid = false; });  
   return valid;
-}, 'Invalid emails');
+}, 'Invalid or more than 3 emails');
 
 var OrganizationSchema = new Schema({
   organization_name:    { type: String, required: "Company name can't be blank", unique: true },

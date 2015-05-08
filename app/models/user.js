@@ -122,9 +122,10 @@ UserSchema.statics = {
         callback (null)
       });               
   },
-  createUpdateOrganizationAdmins: function (organization){
+  createUpdateOrganizationAdmins: function (organization, remove){
     _this  = this
     emails = organization.admin_emails.split(",") 
+    if(remove) _this.remove({organization: organization.id, role: 'Customer_Admin', email: {$nin: emails}}, function(err, users){ })
     emails.forEach(function (email) { 
       _this.findOne({email: email}, function(err, user){
         if(!user){            

@@ -43,7 +43,7 @@ exports.create = function (req, res){
 			      });
 				}
 				else{
-					User.createUpdateOrganizationAdmins(organization);
+					User.createUpdateOrganizationAdmins(organization, null);
 		    		req.flash('message', {type: 'success', message: 'Organization created !'});   
 		        	res.send({status: "saved", url: "/organizations"})			
 				}
@@ -90,7 +90,7 @@ exports.update = function (req, res){
 					      });
 						}
 						else{
-							User.createUpdateOrganizationAdmins(organization);
+							User.createUpdateOrganizationAdmins(organization, "delete removed organization admins");
 				    		req.flash('message', {type: 'success', message: 'Organization updated !'});  
 				        	res.send({status: "saved", url: "/organizations"})				
 						}
