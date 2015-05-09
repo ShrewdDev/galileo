@@ -10,14 +10,14 @@ var auth                     = require('./middlewares/authorization');
 
 module.exports = function (app, passport) {
 
-  app.get('/profile', users_controller.profile);
-
-  app.get('/login', users_controller.login);
-  app.get('/signup', users_controller.signup);
-  app.get('/logout', users_controller.logout);
-  app.post('/users', users_controller.create);
+  app.get('/signup', users_controller.signup)
+  app.post('/signup', users_controller.post_signup)
+  app.get('/login', users_controller.login)  
+  app.get('/logout', users_controller.logout)
   
   app.post('/users/session', users_controller.session);
+
+  app.get('/users', auth.usersResponsible, users_controller.index);
 
   app.get('/admin/users/new', auth.isSiteAdmin, users_controller.admin_new_user);
   app.post('/admin/users/create', auth.isSiteAdmin, users_controller.admin_create_user);  
@@ -31,7 +31,7 @@ module.exports = function (app, passport) {
   app.post('/forgot', users_controller.post_forgot);
   app.get('/reset/:token', users_controller.reset);
   app.post('/reset/:token', users_controller.post_reset); 
-  app.get('/admin/users', auth.requiresLogin, users_controller.admin_users) 
+  //app.get('/admin/users', auth.requiresLogin, users_controller.admin_users) 
 
   app.get('/organizations', auth.isSiteAdmin, organization_controller.index);
   app.get('/organization/new', auth.isSiteAdmin, organization_controller.new);
@@ -73,7 +73,7 @@ module.exports = function (app, passport) {
   app.get('/users/account', auth.requiresLogin, main_controller.account);
   app.get('/users/managesurveys', auth.requiresLogin, main_controller.managesurveys);
 
-  app.get('/admin/customer/new', auth.siteAdminAuth, users_controller.new_customer_admin);
+  //app.get('/admin/customer/new', auth.siteAdminAuth, users_controller.new_customer_admin);
 
   //app.get('/users/:user_id/edit', auth.siteAdminAuth, users_controller.edit_customer_admin);
 

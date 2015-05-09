@@ -1,7 +1,6 @@
 var   mongoose      = require('mongoose'),
       User          = mongoose.model('User'),
       Organization  = mongoose.model('Organization'),
-      validator     = require('validator'),
       extend        = require('util')._extend
 
 
@@ -14,49 +13,19 @@ exports.index = function (req, res) {
       users: users,
       message: req.flash('message')
     })
-  })
-}
-
-exports.new = function (req, res) {
-  Organization.find({}, function(err, organizations){
-    var user = new User()
-    res.render('users/admin_user_form', { 
-      user: user,
-      roles: user.getRoles(),
-      organizations: organizations,
-      label: 'New User',
-      action: '/admin/users/create'
-    })
-  })
-};
-
-exports.edit = function (req, res) {
-  res.render('users/edit', {
-    user: req.user
   });
 };
 
-exports.update = function (req, res) {
-  user = req.user
-  console.log(req.body)  
-  user = extend(user, req.body)
-  user.save(function (err) {
-    if (err) {
-      view = req.body.view || 'users/edit'
-      console.log(err)
-      errors = err.errors || err
-      return res.render(view, {
-        errors: err.errors,
-        monthsOfYear:  User.getMonthsOfYear(),
-        user:  req.body
-      });
-    }
-    else {
-        req.flash('message', {type: 'success', message: 'Profile updated!'});
-        return res.redirect('/');
-      };  
+/*
+exports.admin_users = function (req, res) {
+  User.find({}).populate('organization').exec(function (err, users) {
+    return res.render('users/admin_users', {
+      users: users,
+      message: req.flash('message')
     })
+  });
 };
+*/
 
 exports.admin_new_user = function (req, res) {
   Organization.find({}, function(err, organizations){
@@ -152,8 +121,31 @@ exports.create = function (req, res) {
   })
 }
 
-
 /*
+exports.create = function (req, res) {
+  var user = new User(req.body);
+  user.role = (user.getAdminEmails().indexOf(req.body.email) > -1) ? "Site_Admin" : "Customer_Admin"
+  user.save(function (err) {
+    if (err) {
+      return res.render('users/signup', {
+        errors: err.errors,
+        user:  user,
+        title: 'Sign up'
+      });
+    }
+    else {
+      user.setPassword()
+      user.save(function (err) {
+        User.sendCustomerAdiminWelcomeEmail(req.body.email, req.body.password, function(error, message){
+          message = error || 'message sent'
+          req.flash('error', 'Customer created!');
+          return res.redirect('/');
+        });  
+      });    
+    }
+  });
+};
+*/
 exports.profile = function (req, res) {
   var user = req.user;
   res.render('users/profile', {
@@ -161,16 +153,10 @@ exports.profile = function (req, res) {
     user: user
   });
 };
-*/
 
-exports.new_customer_admin = function (req, res) {
-  res.render('users/signup', {
-    title: 'new customer admin',
-    user: new User()
-  });
-};
+exports.signin = function (req, res) {};
 
-/*********************************************************************************/
+exports.authCallback = login;
 
 exports.login = function (req, res) {
   console.log(req.flash)
@@ -183,39 +169,15 @@ exports.signup = function (req, res) {
   res.render('users/signup', {
     title: 'Sign up',
     user: new User()
-  })
-}
+  });
+};
 
-exports.post_signup = function (req, res) {
-  var organization      = new Organization(req.body)
-  var user              = new User(req.body)
-  organization.validate(function(err1){
-    user.validate(function(err2){
-      if(err1 || err2){
-        err1 = err1 || {}
-        err2 = err2 || {}
-        err  = extend(err1.errors, err2.errors)
-        res.render('users/signup', {
-          user: req.body,
-          errors: err
-        })              
-      } 
-      else{
-        user.setPassword()
-        user.role = (user.getAdminEmails().indexOf(user.email) > -1) ? 'Site_Admin' : 'Customer_Admin'
-        organization.admin_emails = user.email
-        organization.save(function(err){
-          user.organization = organization.id
-          user.save(function(err){
-            req.logIn(user, function(err) {
-              return res.redirect('/');
-            })
-          })
-        })
-      }     
-    })
-  })
-}
+exports.new_customer_admin = function (req, res) {
+  res.render('users/signup', {
+    title: 'new customer admin',
+    user: new User()
+  });
+};
 
 exports.logout = function (req, res) {
   req.logout();
@@ -237,6 +199,15 @@ exports.session = function (req, res) {
     }
     
   });
+};
+
+
+//exports.session = login;
+
+function login (req, res) {
+  var redirectTo = req.session.returnTo ? req.session.returnTo : '/';
+  delete req.session.returnTo;
+  res.redirect(redirectTo);
 };
 
 exports.forgot = function (req, res) {
@@ -283,6 +254,34 @@ exports.post_reset = function (req, res) {
       res.redirect('/');
     } 
   })  
+};
+
+exports.edit = function (req, res) {
+  res.render('users/edit', {
+    user: req.user
+  });
+};
+
+exports.update = function (req, res) {
+  user = req.user
+  console.log(req.body)  
+  user = extend(user, req.body)
+  user.save(function (err) {
+    if (err) {
+      view = req.body.view || 'users/edit'
+      console.log(err)
+      errors = err.errors || err
+      return res.render(view, {
+        errors: err.errors,
+        monthsOfYear:  User.getMonthsOfYear(),
+        user:  req.body
+      });
+    }
+    else {
+        req.flash('message', {type: 'success', message: 'Profile updated!'});
+        return res.redirect('/');
+      };  
+    })
 };
 
 exports.destroy = function (req, res){

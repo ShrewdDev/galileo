@@ -60,8 +60,11 @@ UserSchema.pre('save', function(next) {
 })
 
 UserSchema.methods = {
+  usersResponsible:function (){
+    return ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember'].indexOf(this.role) > -1
+  },   
   getAdminEmails:function (){
-    return adminEmails;
+    return adminEmails
   }, 
   setPassword:function (){
     this.salt = this.makeSalt()

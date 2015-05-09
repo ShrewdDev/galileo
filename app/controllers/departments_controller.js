@@ -5,8 +5,8 @@ var   mongoose     = require('mongoose'),
       extend       = require('util')._extend,
       validator    = require('validator')
 
+
 exports.index = function (req, res){	
-	//console.log(req.flash('message') )	
 	Department.find({ organization:  req.user.organization}).populate('manager').exec(function (err, departments) {
 		res.render('department/index', {
 		    departments: departments,
