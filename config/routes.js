@@ -19,11 +19,11 @@ module.exports = function (app, passport) {
 
   app.get('/users', auth.usersResponsible, users_controller.index);
 
-  app.get('/admin/users/new', auth.isSiteAdmin, users_controller.admin_new_user);
-  app.post('/admin/users/create', auth.isSiteAdmin, users_controller.admin_create_user);  
-  app.get('/admin/users/:id/edit', auth.isSiteAdmin, users_controller.admin_edit_user);
-  app.post('/admin/users/:id/update', auth.isSiteAdmin, users_controller.admin_update_user);  
-  app.delete('/admin/users/:id/update', auth.isSiteAdmin, users_controller.destroy);
+  app.get('/admin/users/new', auth.usersResponsible, users_controller.admin_new_user);
+  app.post('/admin/users/create', auth.usersResponsible, users_controller.admin_create_user);  
+  app.get('/admin/users/:id/edit', auth.usersResponsible, users_controller.admin_edit_user);
+  app.post('/admin/users/:id/update', auth.usersResponsible, users_controller.admin_update_user);  
+  app.delete('/admin/users/:id/update', auth.usersResponsible, users_controller.destroy);
 
   app.get('/users/edit', auth.requiresLogin, users_controller.edit);
   app.post('/users/update', auth.requiresLogin, users_controller.update) 

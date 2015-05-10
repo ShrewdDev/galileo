@@ -1,6 +1,7 @@
 var   mongoose      = require('mongoose'),
       User          = mongoose.model('User'),
       Organization  = mongoose.model('Organization'),
+      Department    = mongoose.model('Department'),
       extend        = require('util')._extend
 
 exports.index = function (req, res) {
@@ -26,13 +27,13 @@ exports.new = function (req, res) {
       action: '/admin/users/create'
     })
   })
-};
+}
 
 exports.edit = function (req, res) {
   res.render('users/edit', {
     user: req.user
-  });
-};
+  })
+}
 
 exports.update = function (req, res) {
   user = req.user
@@ -47,14 +48,14 @@ exports.update = function (req, res) {
         errors: err.errors,
         monthsOfYear:  User.getMonthsOfYear(),
         user:  req.body
-      });
+      })
     }
     else {
-        req.flash('message', {type: 'success', message: 'Profile updated!'});
-        return res.redirect('/');
-      };  
+        req.flash('message', {type: 'success', message: 'Profile updated!'})
+        return res.redirect('/')
+      }
     })
-};
+}
 
 exports.admin_new_user = function (req, res) {
   Organization.find({}, function(err, organizations){
@@ -94,13 +95,16 @@ exports.admin_create_user = function (req, res) {
 exports.admin_edit_user = function (req, res){
   User.findOne({ _id:  req.params.id}, function (err, user){   
     Organization.find({}, function(err, organizations){
-      res.render('users/admin_user_form', {
-        user: user,
-        roles: user.getRoles(),
-        organizations: organizations,
-        notNew: true,
-        label: 'Update User',
-        action: '/admin/users/'+user.id+'/update'
+      Department.find({organization: req.user.organization}, function(err, departments){
+        res.render('users/admin_user_form', {
+          user: user,
+          roles: user.getRoles(),
+          organizations: organizations,
+          departments: departments,
+          notNew: true,
+          label: 'Update User',
+          action: '/admin/users/'+user.id+'/update'
+        })    
       })    
     })
   })

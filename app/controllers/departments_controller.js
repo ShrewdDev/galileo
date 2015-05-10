@@ -82,7 +82,6 @@ exports.edit = function (req, res){
 
 exports.update = function (req, res){
 	Department.findOne({ _id:  req.params.id}, function (err, department) {
-
 	User.validateUniqueAdminsEmails([req.body.manager_email], [department.manager_email], function(err){
 		if(err){
 		      return res.render('department/_form',{
@@ -96,7 +95,7 @@ exports.update = function (req, res){
 		else{
 			User.validateUniqueAdminsEmails(req.body.teamMembers.split(","), department.teamMembers.split(","), function(err){
 			if(err){
-		      return res.render('department/_form',{
+		      res.render('department/_form',{
 		        errors: {teamMembers:{message: err}},
 		        department: req.body,
 				label: 'Update Department',
@@ -107,7 +106,7 @@ exports.update = function (req, res){
 		else{
 			department.save(function (err) {
 				if(err){
-			      return res.render('department/_form',{
+			      res.render('department/_form',{
 			        errors: err.errors,
 			        department: req.body,
 					label: 'Update Department',
@@ -118,7 +117,7 @@ exports.update = function (req, res){
 				else{
 					//User.createUpdateUsers([department.manager_email], {organization: department.organization, department: department.id, role: 'Customer_Manager'})
 					//User.createUpdateUsers(department.teamMembers.split(','), {organization: department.organization, department: department.id,	role: 'Customer_TeamMember'})
-		    		req.flash('message', {type: 'success', message: 'Department updated !'});   
+		    		req.flash('message', {type: 'success', message: 'Department updated !'})
 		        	res.send({status: "saved", url: "/departments"})			
 				 }
 				})
@@ -126,29 +125,14 @@ exports.update = function (req, res){
 			})		
 		}
 	})
-
-
-
-
-
-		department   = extend(department, req.body)
-    	department.save(function (err) {
-    		if(err){
-
-    		}
-    		else{
-	    		req.flash('message', {type: 'success', message: 'Department updated !'})
-	        	res.send({status: "saved", url: "/departments"})       			
-    		}
-        })
 	})	
 }
 
 exports.destroy = function (req, res){
-	Department.findOne({ _id:  req.params.id}).populate('admin').exec(function (err, department) {
-		department.remove(function (err){
-    		req.flash('message', {type: 'success', message: 'Department deleted !'})
-        	res.send({status: "saved", url: "/departments"})     
-		})
+	Department.findOneAndRemove({ _id:  req.params.id}, function (err, department) {		
+		User.remove({ department: department.id }, function(err, users){
+			req.flash('message', {type: 'success', message: 'Organization deleted !'})
+	    	res.send({status: "saved", url: "/organizations"})     					
+		})			
 	})
 }

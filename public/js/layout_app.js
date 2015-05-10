@@ -13,7 +13,7 @@
 		}).done(function( data ) {			
 			$('#myModal').find('div.modal-content').html(data)
 	  		$('#myModal').modal('show')
-	  		initialize()
+	  		if (typeof initialize == 'function') { initialize() }
 		});  		
 	});
 

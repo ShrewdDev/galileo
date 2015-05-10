@@ -9,6 +9,7 @@
 						<tr>
 							<th>Email</th>
 							<th>Organization</th>
+							<th>Department</th>
 							<th>Role</th>	
 						</tr>
 					</thead>
@@ -18,8 +19,9 @@
 								<td>
 									<a class="open-modal" data-url="/admin/users/{{user.id}}/edit" href="#">{{user.email}}</a>
 								</td>								
-								<td> {{user.organization.organization_name}}</td>
-								<td> {{user.role}}</td>
+								<td> {{user.organization.organization_name}} </td>
+								<td> {{user.department.departmentName}} </td>
+								<td> {{user.role}} </td>
 							</tr>
 						{% endfor %}
 					</tbody>

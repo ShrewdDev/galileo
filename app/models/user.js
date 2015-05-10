@@ -77,7 +77,8 @@ UserSchema.methods = {
     return this.role == role
   }, 
   getRoles: function (){
-    return roles
+    if(this.role == 'Customer_Admin') return roles
+    else  return ['Customer_Manager', 'Customer_TeamMember']
   },   
   authenticate: function (plainText){
     return this.encryptPassword(plainText) === this.password
