@@ -46,7 +46,7 @@
                   </select>            
                 </div>
                 <div class="form-group">
-                  <a class="add_question_response">Add response</a>       
+                  <a class="add_question_response" >Add response</a>       
                 </div>
                 {% for response in question.responses %}
                   <div class="form-group response_div">
@@ -58,7 +58,10 @@
                                              
             {% endfor %}      
             <div class="questions">  </div>                           
-            <a id="add_survey_question">Add question</a>
+            <a id="add_survey_question" href="#">Add question</a>
+            <div class="form-group">
+               <input type="checkbox" value="confirmed"> Confirm and send notification       
+            </div>
             <div class="text-center">
               <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
             </div>
