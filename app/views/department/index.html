@@ -7,7 +7,6 @@
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th></th>
 							<th>Dept Name</th>
 							<th>Leader's email</th>
 							<th># Team Members</th>
@@ -17,16 +16,15 @@
 					<tbody>
 						{% for department in departments %}
 							<tr>
-								<th scope="row"><input type="checkbox"/></th>								
-								<td><a href="/department/{{department.id}}/edit">{{department.departmentName}}</a></td>
-								<td>{{department.manager.email}}</td>
+							<td><a class="open-modal" data-url="/department/{{department.id}}/edit" href="#">{{department.departmentName}}</a></td>				
+								<td>{{department.manager_email}}</td>
 								<td>{{department.teamMembers}}</td>
 								<td>{{department.location}}</td>
 							</tr>
 						{% endfor %}
 					</tbody>
 				</table>
-				<a href="/department/new" class="btn btn-round btn-d">New department</a>
+				<button class="btn btn-round btn-d open-modal" data-url="/department/new"> Add new department </button>
 			</div>
 		</div>
 	</section>

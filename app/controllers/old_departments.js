@@ -16,59 +16,12 @@ exports.index = function (req, res){
 }
 
 exports.new = function (req, res){
-	res.render('department/_form', { 
+	res.render('department/form', {   
 		department: new Department(),
-		label: 'New Department',
-		action: '/department/create'
+		action: "/department/create"
 	})
 }
 
-exports.create = function (req, res){
-	var department = new Department(req.body)
-	User.validateUniqueAdminsEmails([req.body.manager_email], "", function(err){
-		if(err){
-		      return res.render('department/_form',{
-		        errors: {manager_email:{message: err}},
-		        department: req.body,
-		        label: 'New Department',
-		        action: "/department/create"
-		      });				
-		}
-		else{
-			User.validateUniqueAdminsEmails(req.body.teamMembers.split(","), "", function(err){
-			if(err){
-		      return res.render('department/_form',{
-		        errors: {teamMembers:{message: err}},
-		        department: req.body,
-		        label: 'New Department',
-		        action: "/department/create"
-		      });				
-			}
-		else{
-			department.organization = req.user.organization
-			department.save(function (err) {
-				if(err){
-					console.log(err)
-			      return res.render('department/_form',{
-			        errors: err.errors,
-			        department: req.body,
-			        label: 'New Department',
-			        action: "/department/create"
-			      });
-				}
-				else{
-					User.createUpdateUsers([department.manager_email], {organization: department.organization, department: department.id, role: 'Customer_Manager'})
-					User.createUpdateUsers(department.teamMembers.split(','), {organization: department.organization, department: department.id,	role: 'Customer_TeamMember'})
-		    		req.flash('message', {type: 'success', message: 'Department created !'});   
-		        	res.send({status: "saved", url: "/departments"})			
-				}
-			})	
-			}
-			})		
-		}
-	})
-}
-/*
 exports.create = function (req, res){
 	var department   = new Department(req.body)
 	var user         = new User(req.body)
@@ -80,7 +33,7 @@ exports.create = function (req, res){
 	    errors = extend(err1, err2)	
 	    console.log("errors")
 	    console.log(errors)
-	      return res.render('department/_form',{
+	      return res.render('department/form',{
 	        errors: errors,
 	        department: req.body,
 	        action: "/department/create"
@@ -104,13 +57,11 @@ exports.create = function (req, res){
 	})
   });
 }
-*/
+
 exports.edit = function (req, res){
 	Department.findOne({ _id:  req.params.id}).populate('manager').exec(function (err, department) {		
-		res.render('department/_form', {
+		res.render('department/form', {
 			department: department,
-			label: 'Update Department',
-			notNew: true,			
 			action: "/department/"+department.id+"/update"
 		})		
 	})
@@ -144,12 +95,4 @@ exports.update = function (req, res){
 		})
 	  })
 	})	
-}
-exports.destroy = function (req, res){
-	Department.findOne({ _id:  req.params.id}).populate('admin').exec(function (err, department) {
-		department.remove(function (err){
-    		req.flash('message', {type: 'success', message: 'Department deleted !'})
-        	res.send({status: "saved", url: "/departments"})     
-		})
-	})
 }

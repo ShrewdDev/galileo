@@ -16,6 +16,7 @@ var DepartmentSchema = new Schema({
   departmentName:       { type: String, required: "Department Name can't be blank" },
   organization:         { type: Schema.ObjectId, ref : 'Organization' },
   manager:              { type: Schema.ObjectId, ref : 'User'},
+  manager_email:        { type: String, validate: validate({validator: 'isEmail'})},
   teamMembers:          { type: String, validate: validate({validator: 'isCommaSeparatedEmails'}) },
   location:             { type: String }
 })

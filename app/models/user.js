@@ -113,9 +113,9 @@ UserSchema.statics = {
       async.each(emails, function (email, cb) {
         if(old_admin_emails.indexOf(email) > -1) cb()
         else{
-          var user = new _this({email: email, role: 'Customer_Admin'})
+          var user = new _this({email: email})
           user.validate(function(err){
-            if(err) callback("Duplicate email : "+ email)
+            if(err) callback("Invalid or duplicate email : "+ email)
             else cb()  
           })          
         }              
@@ -137,10 +137,18 @@ UserSchema.statics = {
           if(err) console.log(err)
         })          
       })      
-    });
-             
+    })             
 },
-
+  createUpdateUsers: function (emails, data){
+    _this  = this
+    emails.forEach(function (email) {            
+        var user = new _this(data)
+        user.email = email
+        user.save(function (err){ 
+          if(err) console.log(err)
+        })          
+      })  
+  }, 
   createNewDepartmentMembers: function (department){
     _this = this
     department.teamMembers.split(",").forEach(function (email) { 
@@ -157,7 +165,7 @@ UserSchema.statics = {
           })
           }                    
         })      
-    });          
+    })       
   }, 
   getMonthsOfYear: function (){
     return monthsOfYear;

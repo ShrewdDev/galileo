@@ -1,9 +1,7 @@
 var   mongoose      = require('mongoose'),
       User          = mongoose.model('User'),
       Organization  = mongoose.model('Organization'),
-      validator     = require('validator'),
       extend        = require('util')._extend
-
 
 exports.index = function (req, res) {
   query = {}
@@ -88,7 +86,7 @@ exports.admin_create_user = function (req, res) {
     }
     else{
         req.flash('message', {type: 'success', message: 'User created !'});   
-        res.send({status: "saved", url: "/admin/users"})
+        res.send({status: "saved", url: "/users"})
     }
   })
 }
@@ -107,7 +105,7 @@ exports.admin_edit_user = function (req, res){
     })
   })
 }
-
+// from Organization Admin to Manager => needs to remove email from organization admin emails
 exports.admin_update_user = function (req, res){
   User.findOne({ _id:  req.params.id}, function (err, user){   
     user       = extend(user, req.body)
@@ -124,12 +122,12 @@ exports.admin_update_user = function (req, res){
       }
       else{
         req.flash('message', {type: 'success', message: 'User updated !'});   
-        res.send({status: "saved", url: "/admin/users"})        
+        res.send({status: "saved", url: "/users"})        
       }
     })
   })
 }
-
+/*
 exports.create = function (req, res) {
   var user = new User(req.body)
   user.save(function (err) {
@@ -147,11 +145,11 @@ exports.create = function (req, res) {
     }
     else{
         req.flash('message', {type: 'success', message: 'User created !'});   
-        res.send({status: "saved", url: "/admin/users"})
+        res.send({status: "saved", url: "/users"})
     }
   })
 }
-
+*/
 
 /*
 exports.profile = function (req, res) {
