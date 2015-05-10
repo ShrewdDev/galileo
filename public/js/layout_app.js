@@ -1,5 +1,4 @@
 (function($){
-
 	if(typeof datepicker !== 'undefined'){
 		$('.datepicker').datepicker({
 		    format: 'MM,dd yyyy'
@@ -14,6 +13,7 @@
 		}).done(function( data ) {			
 			$('#myModal').find('div.modal-content').html(data)
 	  		$('#myModal').modal('show')
+	  		initialize()
 		});  		
 	});
 

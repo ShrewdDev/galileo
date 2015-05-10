@@ -287,7 +287,7 @@ exports.destroy = function (req, res){
   User.findOne({ _id:  req.params.id}, function (err, user) {
     user.remove(function (err){
         req.flash('message', {type: 'success', message: 'User deleted !'});   
-        res.send({status: "saved", url: "/admin/users"})     
+        res.send({status: "saved", url: "/users"})     
     })
   })
 }

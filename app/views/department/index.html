@@ -1,5 +1,6 @@
 {% extends '../layouts/layout.html' %}
 {% block content %}
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false&libraries=places"></script>
 	<section class="module">
 	    <div class="container">
 			<div class="row">
@@ -28,4 +29,13 @@
 			</div>
 		</div>
 	</section>
+
+<script>
+var autocomplete
+function initialize() {
+  autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), { })
+}
+function geolocate() {}
+</script>
+
 {% endblock %}  

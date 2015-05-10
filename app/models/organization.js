@@ -18,13 +18,5 @@ var OrganizationSchema = new Schema({
   admin_emails:         { type: String, validate: validate({validator: 'is3CommaSeparatedEmailsMax'}) }
 })
 
-OrganizationSchema.statics = {
-  getAll: function (){
-    this.find({}, function(err, organizations){
-      return organizations
-    })  
-  }
-}
-
 OrganizationSchema.plugin(uniqueValidator, { message: '{PATH} already in use.' })
 mongoose.model('Organization', OrganizationSchema)

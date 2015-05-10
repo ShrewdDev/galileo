@@ -51,7 +51,7 @@ var UserSchema = new Schema({
 
 UserSchema.pre('save', function(next) {
   if (!this.password){
-    var password  = randomstring.generate(7)
+    var password  = "password"//randomstring.generate(7)
     this.password = password
     this.setPassword()
     this.sendWelcomeEmail(this.email, password)    
