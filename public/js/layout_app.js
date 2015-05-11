@@ -98,9 +98,6 @@
   })
 
   $("#survey").on('click', '.add_question_response', function(event) {
-  	event.preventDefault() 
-  	//console.log("add_question_response")
-  	//$( event.target ).closest( "div.question_group" ).append("<p>hello</p>")
 	$.ajax({
 		url: "/survey/question_response_partial",
 		cache: false,
@@ -111,31 +108,6 @@
 			});
 		});
 
-	if(typeof slider !== 'undefined'){
-		var _slider = $( "#slider" ).slider({
-			min: 0,
-			max: 100,
-			value: $( "#surveyConfidence" ).val(),
-			slide: function( event, ui ) {
-				$( "#surveyConfidence" ).val( ui.value );
-			}
-		});
-		$( "#surveyConfidence" ).change(function() {
-			_slider.slider( "value", $( "#surveyConfidence" ).val() );
-		});
-		var _slider2 = $( "#slider2" ).slider({
-			min: 0,
-			max: 100,
-			value: $( "#surveyLikelyResponseRate" ).val(),
-			slide: function( event, ui ){
-				$( "#surveyLikelyResponseRate" ).val( ui.value );
-			}
-		});
-		$( "#surveyLikelyResponseRate" ).change(function() {
-			_slider.slider( "value", $( "#surveyLikelyResponseRate" ).val() );
-		});
-	}
-	
 	$(window).load(function() {
 		$('.loader').fadeOut();
 		$('.page-loader').delay(350).fadeOut('slow');

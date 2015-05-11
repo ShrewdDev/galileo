@@ -119,13 +119,12 @@ exports.post_survey_result = function (req, res){
 	var survey_id = req.params.id
 	Result.findOneAndUpdate({ user: req.user.id, survey: survey_id, question: req.body.question }, 
 							{ response: req.body.response },
-							{ upsert: true }, 
-    	function(err, doc) {		
-			if(err){
+							{ upsert: true }, function(err, doc) {		
+					if(err){
 
-			}
-			else{
-				return res.redirect('/manager/'+survey_id+'/takesurvey/'+step); 
-			}
-    });
+					}
+					else{
+						return res.redirect('/manager/'+survey_id+'/takesurvey/'+step); 
+					}
+		    });
 }

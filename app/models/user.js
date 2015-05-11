@@ -243,6 +243,5 @@ UserSchema.statics = {
   }
 }
 
-
 UserSchema.plugin(uniqueValidator, { message: '{PATH} already in use.' })
 mongoose.model('User', UserSchema)

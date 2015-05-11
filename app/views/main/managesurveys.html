@@ -65,4 +65,31 @@
     </div>
   </section>  
 {% endblock %}
-{% block js %} <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> {% endblock %}
+{% block script %} 
+<script type="text/javascript">
+  if(typeof slider !== 'undefined'){
+    var _slider = $( "#slider" ).slider({
+      min: 0,
+      max: 100,
+      value: $( "#surveyConfidence" ).val(),
+      slide: function( event, ui ) {
+        $( "#surveyConfidence" ).val( ui.value );
+      }
+    });
+    $( "#surveyConfidence" ).change(function() {
+      _slider.slider( "value", $( "#surveyConfidence" ).val() );
+    });
+    var _slider2 = $( "#slider2" ).slider({
+      min: 0,
+      max: 100,
+      value: $( "#surveyLikelyResponseRate" ).val(),
+      slide: function( event, ui ){
+        $( "#surveyLikelyResponseRate" ).val( ui.value );
+      }
+    });
+    $( "#surveyLikelyResponseRate" ).change(function() {
+      _slider.slider( "value", $( "#surveyLikelyResponseRate" ).val() );
+    });
+  }
+</script>
+{% endblock %}
