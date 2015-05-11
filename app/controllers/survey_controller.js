@@ -99,6 +99,7 @@ exports.take_manager_survey = function (req, res){
 		if(step < survey.questions.length){
 			question = survey.questions[step]
 			Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
+				result = result ? result.response : null
 				res.render('survey/take_manager_survey',{
 					survey:      survey,
 					question:    question,
@@ -116,9 +117,8 @@ exports.post_survey_result = function (req, res){
 	console.log(req.body)
 	var step = parseInt(req.params.step) + 1
 	var survey_id = req.params.id
-
 	Result.findOneAndUpdate({ user: req.user.id, survey: survey_id, question: req.body.question }, 
-							{ response: req.body.response }, 
+							{ response: req.body.response },
 							{ upsert: true }, 
     	function(err, doc) {		
 			if(err){

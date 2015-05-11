@@ -19,23 +19,39 @@
                   {% for response in question.responses %}
                       <p>
                         <input type="radio" value="{{response.id}}" name="response" 
-                        {% if result.response == response.id %} checked {% endif %}/> {{ response.response }} 
+                        {% if result == response.id %} checked {% endif %}/> {{ response.response }} 
                       </p>
                   {% endfor %}
                 {% endif %} 
                 {% if question.type == 'multiple_choices' %}
                   {% for response in question.responses %}
                       <p> <input type="checkbox" value="{{response.id}}" name="response"
-                      {% if result.response && (result.response.indexOf(response.id) > -1) %} checked {% endif %}>  {{ response.response }} </p>
+                      {% if result && (result.indexOf(response.id) > -1) %} checked {% endif %}>  {{ response.response }} </p>
                   {% endfor %}
                 {% endif %}    
-                {% if question.type == 'card_sort' %}    
-                  <ul id="sortable">              
-                  {% for response in question.responses %}
-<li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-{{ response.response }} 
-</li>                   
-                  {% endfor %}
+                {% if question.type == 'card_sort' %}
+                  <ul id="sortable">
+                      {% if result %}            
+                        {% for key in Object.keys(result["0"]) %}
+                          <li class="ui-state-default">
+                          <input type="hidden" value="{{ key }}" name="response[{{ key }}]">
+                          <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+                          {% for response in question.responses %}
+                            {% if response.id == key %}
+                              {{ response.response }}
+                            {% endif %}
+                          {% endfor %}  
+                          </li>
+                        {% endfor %}   
+                      {% else %}
+                        {% for response in question.responses %}
+                            <li class="ui-state-default">
+                            <input type="hidden" value="{{ response.id }}" name="response[{{ response.id }}]">
+                            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+                            {{ response.response }}
+                            </li>
+                        {% endfor %}  
+                      {% endif %}                 
                   </ul>
                 {% endif %}                        
             <div class="text-center">             
