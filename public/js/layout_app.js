@@ -77,12 +77,22 @@
 			});
 		});
 	}
- 
-  $("#survey").on('change', '.type', function(event) {
-  	event.preventDefault()
-  	if($( event.target ).val() == "date"){
-  		$( event.target ).closest( "div.question_group" ).find('div.response_div').remove()  		
-  	}	
+	var previous;
+ 	$("#survey").on('click', '.type', function(event){
+ 		previous = $(event.target ).val()
+ 	}).on('change', '.type', function(event) { 	
+	  	if($( event.target ).val() == "slider"){
+	  		min_name = $( event.target ).attr("name").replace("type", "responses")+"[0][response]"
+	  		max_name = $( event.target ).attr("name").replace("type", "responses")+"[1][response]"
+	  		var min_max_input = '<div class="form-group slider_min_max"><input type="text" name="'+min_name+'" placeholder="Min value" class="form-control question"> <input type="text" name="'+max_name+'" placeholder="Max value" class="form-control question">  </form>'
+	  		$( event.target ).closest( "div.question_group" ).find('div.response_div').remove()  
+	  		$( event.target ).closest( "div.question_group" ).find('a.add_question_response').remove() 		
+	  		$( event.target ).closest( "div.question_group" ).append(min_max_input)
+	  	}
+	  	else if (previous == "slider"){
+	  		$( event.target ).closest( "div.question_group" ).find('div.slider_min_max').remove()  
+	  		$( event.target ).closest( "div.question_group" ).append('<div class="form-group"><a class="add_question_response">Add response</a></div>')
+	  	}	
   })
 
   $("#survey").on('click', '.delete_response', function(event) {
