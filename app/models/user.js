@@ -1,7 +1,6 @@
 
 var  mongoose        = require('mongoose')
     ,Schema          = mongoose.Schema
-    //,Organization      = mongoose.model('Organization')
     ,crypto            = require('crypto')
     ,moment            = require('moment')
     ,validator         = require('validator')
@@ -230,8 +229,8 @@ UserSchema.statics = {
       this.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() }}, function(err, user) {
         if(err || !user) cb('error', 'Password reset token is invalid or has expired.')
         else {          
-          user.salt     = User.makeSalt()
-          user.password = User.encryptPassword(password, user.salt)          
+          user.salt     = user.makeSalt()
+          user.password = user.encryptPassword(password, user.salt)          
           user.resetPasswordToken = undefined
           user.resetPasswordExpires = undefined
           user.save(function(err) {

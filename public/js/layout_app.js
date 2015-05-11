@@ -1,4 +1,7 @@
 (function($){
+    $( "#sortable" ).sortable();
+    $( "#sortable" ).disableSelection();
+    
 	if(typeof datepicker !== 'undefined'){
 		$('.datepicker').datepicker({
 		    format: 'MM,dd yyyy'
