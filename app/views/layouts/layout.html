@@ -51,8 +51,11 @@
 								{% if (req.user.hasRole('Customer_Manager') ) %}
 									<li><a href="/users">Team Members</a></li>
 									<li><a href="/team_members">Team Members</a></li>
-									<li><a href="/manager/surveys">My Surveys</a></li>
+									<li><a href="/surveys">My Surveys</a></li>
 								{% endif %}
+								{% if (req.user.hasRole('Customer_TeamMember') ) %}
+									<li><a href="/surveys">My Surveys</a></li>
+								{% endif %}								
 							</ul>
 						</li>
 						<li><a class="section-scroll" href="/logout">Logout</a></li>

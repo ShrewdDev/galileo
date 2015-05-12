@@ -29,7 +29,9 @@
               {% set index = loop.index0 %}
               {% set error_index = 'questions.0.question' %}
               <div class="question_group">
-                <a class="delete_question" href="#">x</a>
+                {% if !(survey.confirmed)%}
+                  <a class="delete_question" href="#">x</a>
+                {% endif %}
                 <div class="form-group">
                   <input type="text" class="form-control question"  value="{{ question.question }}" name="questions[{{index}}][question]" />      
                   <p class="help-block text-danger">
@@ -46,20 +48,26 @@
                     <option value="card_sort" {% if question.type == "card_sort" %} selected {% endif %}>Card Sort</option>
                   </select>            
                 </div>
-                <div class="form-group">
-                  <a class="add_question_response" >Add response</a>       
-                </div>
+                {% if !(survey.confirmed)%}
+                  <div class="form-group">
+                    <a class="add_question_response" >Add response</a>       
+                  </div>
+                {% endif %}    
                 {% for response in question.responses %}
                   <div class="form-group response_div">
+                  {% if !(survey.confirmed)%}
                     <a class="delete_response" href="#">x</a> 
+                  {% endif %}      
                     <input type="text" class="form-control response" placeholder="response" value="{{response.response}}" name="questions[{{index}}][responses][{{loop.index0}}][response]" />  
                   </div>
               {% endfor %} 
               </div>   
                                              
             {% endfor %}      
-            <div class="questions">  </div>                           
-            <a id="add_survey_question" href="#">Add question</a>
+            {% if !(survey.confirmed)%}
+              <div class="questions">  </div>
+              <a id="add_survey_question" href="#">Add question</a>
+            {% endif %}
             <div class="form-group">
                <input type="checkbox" value="confirmed" id="confirmed" name="confirmed" {% if survey.confirmed %} checked="true" {% endif %}> Confirm and send notification (can't be updated later)
             </div>

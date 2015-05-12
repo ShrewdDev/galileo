@@ -87,7 +87,8 @@ exports.update = function (req, res){
 	})
 }
 
-exports.manager_surveys = function (req, res){
+exports.user_surveys = function (req, res){
+
 	Survey.find({ organization:  req.user.organization, type: 'Manager Survey', confirmed: true}).exec(function (err, surveys) {	
 		res.render('survey/manager_survey', {
 			surveys: surveys
@@ -95,7 +96,7 @@ exports.manager_surveys = function (req, res){
 	});	
 }
 
-exports.take_manager_survey = function (req, res){
+exports.take_survey = function (req, res){
 	var step = req.params.step
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
 		if(step < survey.questions.length){
@@ -110,7 +111,7 @@ exports.take_manager_survey = function (req, res){
 				});
 			})
 		}else{
-			return res.redirect('/manager/surveys');
+			return res.redirect('/surveys');
 		}
 	});	
 }
@@ -126,7 +127,7 @@ exports.post_survey_result = function (req, res){
 
 					}
 					else{
-						return res.redirect('/manager/'+survey_id+'/takesurvey/'+step); 
+						return res.redirect('/surveys/'+survey_id+'/takesurvey/'+step); 
 					}
 		    });
 }

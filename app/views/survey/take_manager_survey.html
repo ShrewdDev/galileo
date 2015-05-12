@@ -9,7 +9,7 @@
       </div>
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-          <form id="survey" action="/manager/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
+          <form id="survey" action="/surveys/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
           <input type="hidden" name="_csrf" value="{{ csrf_token }}">
           <input type="hidden" value="{{survey.id}}" name="survey">
           <input type="hidden" value="{{step}}" name="step">
@@ -64,7 +64,7 @@
                 {% endif %}                        
             <div class="text-center" style="padding: 20px;">             
               {% if step > 0 %}
-                <a href="/manager/{{survey.id}}/takesurvey/{{step -1}}" class="btn btn-round btn-d"> < Back</a>
+                <a href="/surveys/{{survey.id}}/takesurvey/{{step -1}}" class="btn btn-round btn-d"> < Back</a>
               {% endif %}  
                 <button type="submit" class="btn btn-round btn-d">Next > </button>
             </div>

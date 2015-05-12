@@ -62,6 +62,7 @@ module.exports = function (app, passport) {
   //app.get('/survey/index', auth.requiresLogin, survey_controller.index);
   
   app.get('/admin/surveys', auth.requiresLogin, survey_controller.customer_admin_surveys);
+  app.get('/users/managesurveys', auth.requiresLogin, main_controller.managesurveys);  
   app.get('/survey/new', auth.requiresLogin, survey_controller.new);
   app.post('/survey/create', auth.requiresLogin, survey_controller.create); 
   app.get('/survey/:id/edit', auth.requiresLogin, survey_controller.edit);
@@ -70,15 +71,14 @@ module.exports = function (app, passport) {
   app.get('/survey/question_partial', auth.requiresLogin, survey_controller.survey_question_partial);
   app.get('/survey/question_response_partial', auth.requiresLogin, survey_controller.question_response_partial);
 
-  app.get('/manager/surveys', auth.requiresLogin, survey_controller.manager_surveys);
-  app.get('/manager/:id/takesurvey/:step', auth.requiresLogin, survey_controller.take_manager_survey);
-  app.post('/manager/:id/takesurvey/:step', auth.requiresLogin, survey_controller.post_survey_result);
+  app.get('/surveys', auth.requiresLogin, survey_controller.user_surveys);
+  app.get('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.take_survey);
+  app.post('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.post_survey_result);
 
   //app.get('/departments', auth.requiresLogin, main_controller.departments);
   //app.get('/team_member/new', auth.requiresLogin, main_controller.new_team_member);  
 
   app.get('/users/account', auth.requiresLogin, main_controller.account);
-  app.get('/users/managesurveys', auth.requiresLogin, main_controller.managesurveys);
 
   //app.get('/admin/customer/new', auth.siteAdminAuth, users_controller.new_customer_admin);
 
