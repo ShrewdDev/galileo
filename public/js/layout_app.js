@@ -108,6 +108,7 @@
   })
 
   $("#survey").on('click', '.add_question_response', function(event) {
+  	event.preventDefault()
 	$.ajax({
 		url: "/survey/question_response_partial",
 		cache: false,
@@ -116,12 +117,16 @@
 				$( event.target ).closest( "div.question_group" ).append(data);
 				setInputNames();
 			});
-		});
+	});
 
-	$(window).load(function() {
+	if($("#confirmed").is( ":checked" )) {
+		$("#survey :input").prop("disabled", true);
+	}
+
+	/*$(window).load(function() {
 		$('.loader').fadeOut();
 		$('.page-loader').delay(350).fadeOut('slow');
-	});
+	});*/
 
 	$(document).ready(function() {
 

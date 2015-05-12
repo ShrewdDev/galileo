@@ -10,7 +10,7 @@
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
           <form id="survey" action="{{action}}" method="post" role="form" novalidate="">
-          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="form-group">
               <label class="sr-only" for="cname">Title</label>
               <input type="text" class="form-control" name="title" placeholder="Survey Title" value="{{ survey.title }}"/> 
@@ -61,11 +61,17 @@
             <div class="questions">  </div>                           
             <a id="add_survey_question" href="#">Add question</a>
             <div class="form-group">
-               <input type="checkbox" value="confirmed"> Confirm and send notification       
+               <input type="checkbox" value="confirmed" id="confirmed" name="confirmed" {% if survey.confirmed %} checked="true" {% endif %}> Confirm and send notification (can't be updated later)
             </div>
-            <div class="text-center">
-              <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
-            </div>
+            {% if !(survey.confirmed)%}
+              <div class="text-center">
+                <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
+              </div>
+            {% else %}  
+              <div class="text-center">
+                <button type="submit" class="btn btn-block btn-round btn-d" disabled>Survey confirmed, can't be updated</button>
+              </div>              
+            {% endif %}
           </form>          
         </div>
       </div>

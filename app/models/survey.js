@@ -29,7 +29,8 @@ var SurveySchema = new Schema({
     title:             { type : String, required: "Title can't be blank" },
     type:              { type : String, required: "Survey type can't be blank"  },
     questions:         [ QuestionSchema ],
-    organization:      { type : Schema.ObjectId, ref : 'Organization'},    
+    organization:      { type : Schema.ObjectId, ref : 'Organization'},  
+    confirmed:         { type : Boolean, default : false},
     totalParticipants: { type : Number, default : 0},
     createdAt:         { type : Date, default : Date.now},
 })
