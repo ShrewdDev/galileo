@@ -41,12 +41,6 @@ SurveySchema.methods = {
   }
 }
 
-SurveySchema.methods = {
-  getSurveyTypes:function (){
-    return surveyTypes;
-  }
-}
-
 ResultSchema.index({user: 1, survey: 1, question: 1}, {unique: true})
 
 mongoose.model('Result',    ResultSchema)

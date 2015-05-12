@@ -13,6 +13,7 @@ var  mongoose        = require('mongoose')
     ,subscriptioLevels = {'Level_1':'Level 1($25/user/month)', 'Level_2':'Level 2($30/user/month)', 'Level_3':'Level 3($35/user/month)'}
     ,monthsOfYear      = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     ,async             = require("async")
+    ,sendgrid          = require('sendgrid')("app36066965@heroku.com", "gehrdtdn1302")
 
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -107,7 +108,26 @@ UserSchema.methods = {
 }
 
 UserSchema.statics = {
-
+  sendSurveyNotification: function(survey){
+    _this = this
+    types = {'Manager Survey': 'Customer_Manager', 'Employee Survey':'Customer_TeamMember'}
+    this.find({organization: survey.organization, role: types[survey.type]}, function(err, users){
+        console.log(users)
+        for(user in users){
+          _user = users[user]
+          sendgrid.send({
+            to:       _user.email,
+            from:     'admin@shrwed.com',
+            subject:  'Survey Invitation',
+            text:     'You have been invited to participate in the survey  : '+ survey. title+'. \n\n' +
+                      'Please login to your account to take the survey. \n\n'
+          }, function(err, json) {
+            if (err) { console.error(err); }
+            console.log(json);
+          })
+        }
+      })
+  },
   validateUniqueAdminsEmails: function (emails, old_admin_emails, callback){
       _this  = this
       async.each(emails, function (email, cb) {

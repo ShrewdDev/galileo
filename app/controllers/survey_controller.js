@@ -28,7 +28,7 @@ exports.new = function (req, res){
 }
 
 exports.survey_question_partial = function (req, res){
-	res.render('survey/_question_partial', {   		
+	res.render('survey/_question_partial', {		
 		question_index: req.query.question_index
 	})
 }
@@ -39,30 +39,31 @@ exports.question_response_partial = function (req, res){
 		response_index: req.query.response_index
 	})
 }
+
 exports.create = function (req, res) {	
   var survey = new Survey(req.body);
   survey.organization = req.user.organization
   survey.save(function (err){
     if (err) {
-    	console.log(err)
       return res.render('survey/form', {
         errors: err.errors,
         survey:  survey,
         action: "/survey/create"
-      });
+      })
     }
-    else {     
-      return res.redirect('/admin/surveys');            
+    else {
+      if(survey.confirmed) User.sendSurveyNotification(survey)
+      return res.redirect('/admin/surveys')
     }
-  });
-};
+  })
+}
 
 exports.edit = function (req, res){
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
 		res.render('survey/form', {
 			survey: survey,
 			action: "/survey/"+survey.id+"/update"
-		})		
+		})
 	})
 }
 
@@ -79,7 +80,8 @@ exports.update = function (req, res){
 		  });
 		}
 		else {     
-		  return res.redirect('/admin/surveys');            
+		  if(survey.confirmed) User.sendSurveyNotification(survey) 		
+		  return res.redirect('/admin/surveys')      
 		}
 	  });		
 	})
