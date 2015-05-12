@@ -88,7 +88,7 @@ exports.update = function (req, res){
 }
 
 exports.manager_surveys = function (req, res){
-	Survey.find({ organization:  req.user.organization, type: 'Manager Survey'}).exec(function (err, surveys) {	
+	Survey.find({ organization:  req.user.organization, type: 'Manager Survey', confirmed: true}).exec(function (err, surveys) {	
 		res.render('survey/manager_survey', {
 			surveys: surveys
 		});	
