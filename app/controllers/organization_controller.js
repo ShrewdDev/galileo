@@ -25,7 +25,7 @@ exports.new = function (req, res){
 
 exports.create = function (req, res){
 	var organization = new Organization(req.body)
-	User.validateUniqueAdminsEmails(organization.admin_emails.split(","), "", function(err){
+	User.validateUniqueAdminsEmails(organization.admin_emails.split(","), [], function(err){
 		if(err){
 		      return res.render('organization/form',{
 		        errors: {admin_emails:{message: err}},

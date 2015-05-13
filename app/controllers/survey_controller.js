@@ -6,12 +6,13 @@ var mongoose     = require('mongoose'),
     Organization = mongoose.model('Organization'),
     extend       = require('util')._extend
 
+/*
 exports.index = function (req, res){
 	res.render('survey/index', {
 
 	});	
 }
-
+*/
 exports.customer_admin_surveys = function (req, res){
 	Survey.find({}, function (err, surveys) {
 		res.render('survey/index', {
@@ -90,7 +91,7 @@ exports.update = function (req, res){
 exports.user_surveys = function (req, res){
 
 	Survey.find({ organization:  req.user.organization, type: 'Manager Survey', confirmed: true}).exec(function (err, surveys) {	
-		res.render('survey/manager_survey', {
+		res.render('survey/user_survey', {
 			surveys: surveys
 		});	
 	});	
@@ -103,7 +104,7 @@ exports.take_survey = function (req, res){
 			question = survey.questions[step]
 			Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
 				result = result ? result.response : null
-				res.render('survey/take_manager_survey',{
+				res.render('survey/take_user_survey',{
 					survey:      survey,
 					question:    question,
 					result:    	 result,
