@@ -1,51 +1,38 @@
-{% extends '../layouts/layout.html' %}
-{% block content %}
-<section class="module">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-          <h2 class="module-title font-alt">Member</h2>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-          <form action="{{action}}" method="post" role="form" novalidate="">
-          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel">{{label}}</h4>
+</div>        
+<div class="modal-body">              
+  <form action="{{action}}" method="post" role="form" novalidate="" id="modal_form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="form-group">
-              <label class="sr-only" for="cname">Department</label>
+              <label>Department</label>
               <input type="text" class="form-control" value="{{ user.departmentName || user.department.departmentName }}" disabled/>
             </div>
             <div class="form-group">
-              <label class="sr-only" for="cname">Location</label>
-              <input type="text" class="form-control" name="location" placeholder="Location" value="{{ user.location }}"/>
-            </div>                      
+              <label>Location</label>
+                <input id="autocomplete" type="text" class="form-control" name="location" placeholder="Location" value="{{ user.location }}" onFocus="geolocate()"/>
+            </div> 
             <div class="form-group">
-              <label class="sr-only" for="cname">Email</label>
+              <label>Email</label>
               <input type="text" class="form-control" name="email" placeholder="Email" value="{{ user.email }}"/> 
               <p class="help-block text-danger">{{ errors.email.message }}</p>             
-            </div>
+            </div>    
             <div class="form-group">
-              <label class="sr-only" for="cemail">Password</label>
-              <input type="password" name="password" class="form-control" placeholder="password"/>
-              <p class="help-block text-danger">{{ errors.password.message }}</p> 
-            </div>            
-            <div class="form-group">
-              <label class="sr-only" for="cname">First name</label>
+              <label>First name</label>
               <input type="text" class="form-control" name="firstName" placeholder="First name" value="{{ user.firstName }}"/>              
             </div>
             <div class="form-group">
-              <label class="sr-only" for="cname">Last name</label>
+              <label>Last name</label>
               <input type="text" class="form-control" name="lastName" placeholder="Last name" value="{{ user.lastName }}"/>
             </div>
-            <div class="text-center">
-              <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
-            </div>
-          </form>          
-        </div>
-      </div>
-    </div>
-  </section>  
-{% endblock %}
-
-
+  </form>
+</div>
+<div class="modal-footer">
+  {% if notNew %}
+    <button type="button" class="btn btn-round btn-danger delete-record">Delete</button>
+  {% endif %}  
+  <button type="button" class="btn btn-round btn-d" data-dismiss="modal">Close</button>
+  <button type="button" class="btn btn-round btn-d modal-save">Save</button>
+</div>
 

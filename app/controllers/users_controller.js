@@ -194,8 +194,10 @@ exports.post_signup = function (req, res) {
   organization.validate(function(err1){
     user.validate(function(err2){
       if(err1 || err2){
-        err1 = err1 || {}
-        err2 = err2 || {}
+        console.log(err1)
+        console.log(err2)
+        err1 = err1 || {errors: {}}
+        err2 = err2 || {errors: {}}
         err  = extend(err1.errors, err2.errors)
         res.render('users/signup', {
           user: req.body,

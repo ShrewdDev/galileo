@@ -7,8 +7,9 @@
 				<table class="table table-bordered">
 					<thead>
 						<tr>
+							<th rowspan=2></th>
 							<th rowspan=2>Dept Name</th>
-							<th rowspan=2>Email</th>
+							<th rowspan=2>Leader's email</th>
 							<th colspan=2># Team Members</th>
 							<th rowspan=2>Location</th>
 						</tr>
@@ -20,9 +21,9 @@
 					<tbody>
 						{% for team_member in team_members %}
 							<tr>
-								<td>{{team_member.department.departmentName}}</td>			
-								<td><a class="open-modal" data-url="/team_member/{{team_member.id}}/edit" href="#">{{team_member.email}}</a>
-								</td>
+								<th scope="row"><input type="checkbox"/></th>	
+								<td>{{team_member.department.departmentName}}</td>							
+								<td><a href="/team_member/{{team_member.id}}/edit">{{team_member.email}}</a></td>
 								<td>{{team_member.firstName}}</td>
 								<td>{{team_member.lastName}}</td>
 								<td>{{team_member.location}}</td>
@@ -30,16 +31,8 @@
 						{% endfor %}
 					</tbody>
 				</table>
-			<button class="btn btn-round btn-d open-modal" data-url="/team_member/new"> Add new member </button>
+				<a href="/team_member/new" class="btn btn-round btn-d">New member</a>
 			</div>
 		</div>
 	</section>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false&libraries=places"></script>
-	<script>
-var autocomplete
-function initialize() {
-  autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), { })
-}
-function geolocate() {}
-</script>	
 {% endblock %}  

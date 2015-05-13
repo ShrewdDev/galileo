@@ -57,11 +57,12 @@ exports.create = function (req, res){
 			      })
 				}
 				else{
-					User.createUpdateUsers([department.manager_email], {organization: department.organization, department: department.id, role: 'Customer_Manager'})
-					User.createUpdateUsers(department.teamMembers.split(','), {organization: department.organization, department: department.id,	role: 'Customer_TeamMember'})
+					//User.createUpdateUsers([department.manager_email], {organization: department.organization, department: department.id, role: 'Customer_Manager'})
+					//User.createUpdateUsers(department.teamMembers.split(','), {organization: department.organization, department: department.id,	role: 'Customer_TeamMember'})
+					User.saveDepartmentUsers(department, null)
 		    		req.flash('message', {type: 'success', message: 'Department created !'});   
 		        	res.send({status: "saved", url: "/departments"})			
-				}
+				  }
 				})
 				}
 			})		
@@ -104,6 +105,7 @@ exports.update = function (req, res){
 		      })
 			}
 		else{
+			department  = extend(department, req.body)
 			department.save(function (err) {
 				if(err){
 			      res.render('department/_form',{
@@ -115,8 +117,7 @@ exports.update = function (req, res){
 			      })
 				}
 				else{
-					//User.createUpdateUsers([department.manager_email], {organization: department.organization, department: department.id, role: 'Customer_Manager'})
-					//User.createUpdateUsers(department.teamMembers.split(','), {organization: department.organization, department: department.id,	role: 'Customer_TeamMember'})
+					User.saveDepartmentUsers(department, "update")
 		    		req.flash('message', {type: 'success', message: 'Department updated !'})
 		        	res.send({status: "saved", url: "/departments"})			
 				 }

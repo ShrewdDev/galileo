@@ -51,7 +51,7 @@ var UserSchema = new Schema({
 
 UserSchema.pre('save', function(next) {
   if (!this.password){
-    var password  = "password"//randomstring.generate(7)
+    var password  = "password" //randomstring.generate(7)
     this.password = password
     this.setPassword()
     this.sendWelcomeEmail(this.email, password)    
@@ -59,7 +59,8 @@ UserSchema.pre('save', function(next) {
   next()
 })
 
-UserSchema.methods = {
+UserSchema.methods = {  
+
   usersResponsible:function (){
     return ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember'].indexOf(this.role) > -1
   },   
@@ -108,6 +109,15 @@ UserSchema.methods = {
 }
 
 UserSchema.statics = {
+  getDepartmentMembersEmails:function (department, cb){
+    this.find({department: department, role: 'Customer_TeamMember'}).select('email').lean().exec(function(err, users){
+      emails = []
+      for(user in users){
+        emails.push(users[user].email)
+      }
+      cb(emails.join(','))
+    })
+  },   
   sendSurveyNotification: function(survey){
     _this = this
     types = {'Manager Survey': 'Customer_Manager', 'Employee Survey':'Customer_TeamMember'}
@@ -135,7 +145,7 @@ UserSchema.statics = {
         else{
           var user = new _this({email: email})
           user.validate(function(err){
-            if(err) callback("Invalid or duplicate email : "+ email)
+            if(err) callback("Invalid or duplicate email "+ email)
             else cb()  
           })          
         }              
@@ -145,48 +155,37 @@ UserSchema.statics = {
   },
   createUpdateOrganizationAdmins: function (organization, remove){
     _this  = this
-    emails = organization.admin_emails.split(",") 
+    emails = organization.admin_emails.split(",")
     if(remove) _this.remove({organization: organization.id, role: 'Customer_Admin', email: {$nin: emails}}, function(err, users){ })
     emails.forEach(function (email) { 
       _this.findOne({email: email}, function(err, user){
-        if(!user){            
+        if(!user){
           var user = new _this({email: email, role: 'Customer_Admin'})
         }
         user.organization = organization.id
         user.save(function (err){ 
           if(err) console.log(err)
-        })          
+        })
       })      
     })             
-},
-  createUpdateUsers: function (emails, data){
-    _this  = this
-    emails.forEach(function (email) {            
-        var user = new _this(data)
-        user.email = email
-        user.save(function (err){ 
-          if(err) console.log(err)
-        })          
-      })  
-  }, 
-  createNewDepartmentMembers: function (department){
+  },
+  saveDepartmentUsers: function (department, update){
+    team_members = department.teamMembers.split(',')
     _this = this
-    department.teamMembers.split(",").forEach(function (email) { 
-      _this.findOne({email: email}, function(err, user){
-        if(!user){
-          password       = randomstring.generate(7)
-          var user = new _this({email: email, password: password, role: 'Customer_TeamMember', 
-                                organization: department.organization, department: department})
-          user.setPassword()
-          user.save(function (err){
-            _this.sendCustomerAdiminWelcomeEmail(email, password, function(){
-              console.log("email sent "+ email)  
-            })
-          })
-          }                    
-        })      
-    })       
-  }, 
+    if(update){
+      this.update({department: department.id, role: 'Customer_Manager'}, { email: department.manager_email }, function(){})         
+      this.remove({department: department.id, role: 'Customer_TeamMember', email: {$nin: team_members}}, function(err, users){})
+    }
+    else{
+      var user = new _this({organization: department.organization, location: department.location, department: department.id, role: 'Customer_Manager', email: department.manager_email})
+      user.save(function (err){})
+    }
+    team_members.forEach(function (email) {  
+      data = {email: email, organization: department.organization, department: department.id, location: department.location, role: 'Customer_TeamMember'}          
+      var user = new _this(data)
+      user.save(function (err){ })
+    })
+  },
   getMonthsOfYear: function (){
     return monthsOfYear;
   },  

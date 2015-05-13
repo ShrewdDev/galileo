@@ -58,7 +58,7 @@ module.exports = function (app, passport) {
   app.post('/team_member/create', auth.requiresLogin, team_member_controller.create); 
   app.get('/team_member/:id/edit', auth.requiresLogin, team_member_controller.edit);
   app.post('/team_member/:id/update', auth.requiresLogin, team_member_controller.update);
- 
+  app.delete('/team_member/:id/update', auth.requiresLogin, team_member_controller.destroy); 
   //app.get('/survey/index', auth.requiresLogin, survey_controller.index);
   
   app.get('/admin/surveys', auth.requiresLogin, survey_controller.customer_admin_surveys);
