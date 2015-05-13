@@ -67,7 +67,7 @@ exports.edit = function (req, res){
 
 exports.update = function (req, res){
 	Organization.findOne({ _id:  req.params.id}, function (err, organization) {
-		old_admin_emails   = organization.admin_emails
+		old_admin_emails   = organization.admin_emails.split(",")
 		organization       = extend(organization, req.body)
 		User.validateUniqueAdminsEmails(organization.admin_emails.split(","), old_admin_emails, function(err){
 				if(err){
