@@ -15,7 +15,7 @@ exports.index = function (req, res){
 			return res.redirect('/team_members');  
 		}
 		else if (req.user.hasRole('Customer_TeamMember')){
-			return res.redirect('/survey/index');  
+			return res.redirect('/surveys');  
 		}
 	}
 	else{
