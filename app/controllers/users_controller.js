@@ -125,8 +125,11 @@ exports.admin_update_user = function (req, res){
         })
       }
       else{
+        if(user.role == 'Customer_Manager') {
+          User.update({department: user.department, role: 'Customer_Manager', email: {$ne: user.email}}, { $set: { role: 'Customer_TeamMember' }}, { multi: true }, function(err, numAffected){});
+        }
         req.flash('message', {type: 'success', message: 'User updated !'});   
-        res.send({status: "saved", url: "/users"})        
+        res.send({status: "saved", url: "/users"})      
       }
     })
   })
