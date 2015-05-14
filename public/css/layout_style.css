@@ -19,6 +19,12 @@ General Styles
   /*font-size: 1.4em; height: 18px; */}
   #sortable li span { position: absolute; margin-left: -1.3em; }
 
+  .sortable { background:  #fbf9ee;list-style-type: none; margin: 0; padding: 0; width: 60%;border: 1px solid #eee;min-height: 20px;}
+  .sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em;}
+  
+
+ 
+
 html {
   /*overflow-y: scroll;*/
   overflow-x: hidden;

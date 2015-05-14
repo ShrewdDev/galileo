@@ -35,9 +35,20 @@ var SurveySchema = new Schema({
     createdAt:         { type : Date, default : Date.now},
 })
 
+
 SurveySchema.methods = {
+  getQuestionRessources:function (questionId){
+    question   = this.questions.id(questionId)
+    ressources = question.responses[0].response.split(',')    
+    return ressources
+  },
+  getQuestionBins:function (questionId){    
+    question   = this.questions.id(questionId)
+    bins       = question.responses[1].response.split(',')    
+    return bins
+  },  
   getSurveyTypes:function (){
-    return surveyTypes;
+    return surveyTypes
   }
 }
 

@@ -8,14 +8,14 @@
 					<thead>
 						<tr>
 							<th>Survey Title</th>
-							<th>Survey Type</th>													
+							<th>Survey Type</th>												
 						</tr>
 					</thead>
 					<tbody>
 						{% for survey in surveys %}
 							<tr>			
 								<td><a href="/survey/{{survey.id}}/edit">{{survey.title}}</a></td>
-								<td>{{survey.type}}</td>		
+								<td>{{survey.type}}</td>
 							</tr>
 						{% endfor %}
 					</tbody>

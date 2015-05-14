@@ -32,9 +32,47 @@
 
                 {% if question.type == 'slider' %}    
                     <p>
-                      <label id="range">Range: </label>
-                    </p>                
+                      <label id="range">Range: 
+                      {% if result %} 
+                          {{result["0"].min}} - {{result["0"].max}} 
+                      {% else %} 
+                        {{question.responses["0"].response}} - {{question.responses["1"].response}}
+                      {% endif %}</label>
+                    </p>    
+
+                    <input type="hidden" id="question_min" value="{{question.responses["0"].response}}">   
+                    <input type="hidden" id="question_max" value="{{question.responses["1"].response}}">   
+
+                      <input type="hidden" name="response[min]" id="min" 
+                      {% if result %} 
+                        value="{{result["0"].min}}" 
+                      {% else %} 
+                        value="{{question.responses["0"].response}}"
+                       {% endif %}>            
+                      <input type="hidden" name="response[max]" id="max" 
+                      {% if result %} 
+                        value="{{result["0"].max}}" 
+                      {% else %}  
+                        value="{{question.responses["1"].response}}"
+                       {% endif %}>                    
                       <div id="slider"></div>                 
+                {% endif %}
+
+                {% if question.type == 'bin_sort' %}  
+                    <h4> Ressources :</h4>
+                    <ul class="connectedSortable sortable">
+                      {% for ressource in survey.getQuestionRessources(question.id) %}
+                        <li class="ui-state-default">
+                          <input type="hidden" name="response[{{ ressource }}]" class="ressource">
+                          {{ressource}}
+                        </li>
+                      {% endfor %}   
+                    </ul>           
+                    <h4> Bins :</h4>
+                    {% for bin in survey.getQuestionBins(question.id) %}
+                      {{ bin }} :                       
+                      <ul class="connectedSortable sortable" name="{{ bin }}"> </ul>                      
+                    {% endfor %}
                 {% endif %}
 
                 {% if question.type == 'card_sort' %}
@@ -78,16 +116,35 @@
 {% block script %}
 <script type="text/javascript">
     if(typeof slider !== 'undefined'){
- $( "#slider" ).slider({
-      range: true,
-      min: 0,
-      max: 500,
-      values: [ 75, 300 ],
-      slide: function( event, ui ) {
-        $( "#range" ).html( "Range : " + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-      }
-    });
+      var question_min = parseFloat($( "#question_min" ).val())
+      var question_max = parseFloat($( "#question_max" ).val())
+
+      min = $( "#min" ).val() || question_min
+      max = $( "#max" ).val() || question_max
+
+     $( "#slider" ).slider({
+          range: true,
+          min: question_min,
+          max: question_max,
+          values: [min, max],
+          slide: function( event, ui ) {
+            $( "#min" ).val(ui.values[ 0 ])
+            $( "#max" ).val(ui.values[ 1 ])
+            $( "#range" ).html( "Range : " + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+          }
+        });
     }
+  $(function() {
+    $( ".sortable" ).sortable({
+      connectWith: ".connectedSortable",
+      stop: function( event, ui ) {
+        var ul    = $(ui.item).closest( "ul.sortable" )
+        var name  = ul.attr("name")
+        var input = ul.find('input.ressource')[0]        
+        $(input).val(name)
+      }
+    }).disableSelection();
+  });
 </script>
 {% endblock %}
 

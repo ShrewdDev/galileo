@@ -104,6 +104,7 @@ exports.take_survey = function (req, res){
 			question = survey.questions[step]
 			Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
 				result = result ? result.response : null
+				console.log(result)
 				res.render('survey/take_user_survey',{
 					survey:      survey,
 					question:    question,

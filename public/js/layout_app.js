@@ -77,21 +77,30 @@
 			});
 		});
 	}
+
 	var previous;
  	$("#survey").on('click', '.type', function(event){
  		previous = $(event.target ).val()
- 	}).on('change', '.type', function(event) { 	
+ 	}).on('change', '.type', function(event) {
 	  	if($( event.target ).val() == "slider"){
 	  		min_name = $( event.target ).attr("name").replace("type", "responses")+"[0][response]"
 	  		max_name = $( event.target ).attr("name").replace("type", "responses")+"[1][response]"
-	  		var min_max_input = '<div class="form-group slider_min_max"><input type="text" name="'+min_name+'" placeholder="Min value" class="form-control question"> <input type="text" name="'+max_name+'" placeholder="Max value" class="form-control question">  </form>'
-	  		$( event.target ).closest( "div.question_group" ).find('div.response_div').remove()  
-	  		$( event.target ).closest( "div.question_group" ).find('a.add_question_response').remove() 		
+	  		var min_max_input = '<div class="form-group _added"><input type="text" name="'+min_name+'" placeholder="Min value" class="form-control question"> </div> <div class="form-group _added"> <input type="text" name="'+max_name+'" placeholder="Max value" class="form-control question"> </div>'
+	  		$( event.target ).closest( "div.question_group" ).find('div.response_div').remove()
+	  		$( event.target ).closest( "div.question_group" ).find('a.add_question_response').remove()
 	  		$( event.target ).closest( "div.question_group" ).append(min_max_input)
 	  	}
-	  	else if (previous == "slider"){
-	  		$( event.target ).closest( "div.question_group" ).find('div.slider_min_max').remove()  
-	  		$( event.target ).closest( "div.question_group" ).append('<div class="form-group"><a class="add_question_response">Add response</a></div>')
+	  	if($( event.target ).val() == "bin_sort"){
+	  		ressources = $( event.target ).attr("name").replace("type", "responses")+"[0][response]"
+	  		bins       = $( event.target ).attr("name").replace("type", "responses")+"[1][response]"
+	  		var bin_ressources_input = '<div class="form-group _added"><input type="text" name="'+ressources+'" placeholder="Ressources" class="form-control question"></div> <div class="form-group _added"> <input type="text" name="'+bins+'" placeholder="Bins" class="form-control question">  </div>'
+	  		$( event.target ).closest( "div.question_group" ).find('div.response_div').remove()  
+	  		$( event.target ).closest( "div.question_group" ).find('a.add_question_response').remove() 		
+	  		$( event.target ).closest( "div.question_group" ).append(bin_ressources_input)
+	  	}	  	
+	  	if (previous == "slider" || previous == "bin_sort" ){
+	  		$( event.target ).closest( "div.question_group" ).find('div._added').remove()  
+	  		$( event.target ).closest( "div.question_group" ).append('<div class="form-group"><a class="add_question_response" href="#">Add response</a></div>')
 	  	}	
   })
 

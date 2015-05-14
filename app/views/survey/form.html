@@ -46,16 +46,17 @@
                     <option value="multiple_choices" {% if question.type == "multiple_choices" %} selected {% endif %}>Multiple choices</option>
                     <option value="slider" {% if question.type == "slider" %} selected {% endif %}>Slider</option>
                     <option value="card_sort" {% if question.type == "card_sort" %} selected {% endif %}>Card Sort</option>
+                    <option value="bin_sort" {% if question.type == "bin_sort" %} selected {% endif %}>Bin Sort</option>                    
                   </select>            
                 </div>
-                {% if !(survey.confirmed)%}
+                {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
                   <div class="form-group">
                     <a class="add_question_response" >Add response</a>       
                   </div>
                 {% endif %}    
                 {% for response in question.responses %}
                   <div class="form-group response_div">
-                  {% if !(survey.confirmed)%}
+                  {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
                     <a class="delete_response" href="#">x</a> 
                   {% endif %}      
                     <input type="text" class="form-control response" placeholder="response" value="{{response.response}}" name="questions[{{index}}][responses][{{loop.index0}}][response]" />  
