@@ -134,39 +134,6 @@ exports.admin_update_user = function (req, res){
     })
   })
 }
-/*
-exports.create = function (req, res) {
-  var user = new User(req.body)
-  user.save(function (err) {
-    if(err){
-      Organization.find({}, function(err2, organizations){
-          return res.render('users/admin_user_form',{
-            errors: err.errors,
-            roles: user.getRoles(),
-            organizations: organizations,
-            user: req.body,
-            label: 'New User',
-            action: '/admin/users/create'
-          })
-        })
-    }
-    else{
-        req.flash('message', {type: 'success', message: 'User created !'});   
-        res.send({status: "saved", url: "/users"})
-    }
-  })
-}
-*/
-
-/*
-exports.profile = function (req, res) {
-  var user = req.user;
-  res.render('users/profile', {
-    title: user.email,
-    user: user
-  });
-};
-*/
 
 exports.new_customer_admin = function (req, res) {
   res.render('users/signup', {
@@ -293,19 +260,10 @@ exports.post_reset = function (req, res) {
 };
 
 exports.destroy = function (req, res){
-  User.findOneAndRemove({ _id:  req.params.id}, function (err, user) {
-    Department.findOne({_id: user.department}, function(err, department){
-      if(user.role == 'Customer_Manager'){
-        department.manager_email = ""
-      }
-      if(user.role == 'Customer_TeamMember'){
-        team_members = department.getSpaceCleanedEmails()
-        team_members.splice(team_members.indexOf(user.email), 1)
-        department.teamMembers = team_members.join(', ')
-      }
-      department.save(function(err){})
-      req.flash('message', {type: 'success', message: 'User deleted !'});   
-      res.send({status: "saved", url: "/users"})           
-    })   
+  User.findOne({ _id:  req.params.id}, function (err, user) {
+    user.remove(function (err){
+        req.flash('message', {type: 'success', message: 'User deleted !'});   
+        res.send({status: "saved", url: "/users"})     
+    })
   })
 }

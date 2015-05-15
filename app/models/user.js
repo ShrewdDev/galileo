@@ -1,6 +1,8 @@
 
-var  mongoose        = require('mongoose')
-    ,Schema          = mongoose.Schema
+var  mongoose          = require('mongoose')
+    ,Schema            = mongoose.Schema
+    ,Department        = mongoose.model('Department')
+    ,Organization      = mongoose.model('Organization')
     ,crypto            = require('crypto')
     ,moment            = require('moment')
     ,validator         = require('validator')
@@ -14,6 +16,7 @@ var  mongoose        = require('mongoose')
     ,monthsOfYear      = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     ,async             = require("async")
     ,sendgrid          = require('sendgrid')("app36066965@heroku.com", "gehrdtdn1302")
+    ,_                 = require('underscore')
 
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -47,6 +50,36 @@ var UserSchema = new Schema({
   resetPasswordToken:             { type: String },
   resetPasswordExpires:           { type: Date   },
   createdAt:                      { type: Date, default : Date.now }
+})
+
+UserSchema.post('save remove', function (user) {
+  if(user.department){
+    this.model('User').find({department: user.department, role: 'Customer_TeamMember'}, function(err, users){
+      if(users){
+        emails = []
+        for(_user in users){
+          emails.push(users[_user].email)
+        }
+        var teamMembers = emails.join(', ')
+        Department.update({_id: user.department}, {teamMembers: teamMembers}, function(err, numAffected){})
+      }
+    })
+    this.model('User').findOne({department: user.department, role: 'Customer_Manager'}, function(err, user){
+      if(user){
+        Department.update({_id: user.department}, {manager_email: user.email}, function(err, numAffected){})
+      }
+    })
+  }
+  this.model('User').find({organization: user.organization, role: 'Customer_Admin'}, function(err, users){
+      if(users){
+        emails = []
+        for(_user in users){
+          emails.push(users[_user].email)
+        }
+        var admin_emails = emails.join(', ')
+        Organization.update({_id: user.organization}, {admin_emails: admin_emails}, function(err, numAffected){})
+      }
+  })
 })
 
 UserSchema.pre('save', function(next) {
@@ -115,7 +148,7 @@ UserSchema.statics = {
       for(user in users){
         emails.push(users[user].email)
       }
-      cb(emails.join(','))
+      cb(emails.join(', '))
     })
   },   
   sendSurveyNotification: function(survey){
@@ -173,8 +206,21 @@ UserSchema.statics = {
     team_members = department.getSpaceCleanedEmails()
     _this = this
     if(update){
-      this.update({department: department.id, role: 'Customer_Manager'}, { email: department.manager_email }, function(){})         
-      this.remove({department: department.id, role: 'Customer_TeamMember', email: {$nin: team_members}}, function(err, users){})
+//      this.update({department: department.id, role: 'Customer_Manager'}, { email: department.manager_email }, function(){})         
+      _this.remove({department: department.id, role: 'Customer_TeamMember', email: {$nin: team_members}}, function(err, users){
+        _this.findOne({department: department.id, role: 'Customer_Manager'}, function(err, user){
+          if(user){
+            console.log(user)
+            user.email = department.manager_email
+            user.save(function(err){})
+          }
+          else{
+            data = {email: department.manager_email, organization: department.organization, department: department.id, location: department.location, role: 'Customer_Manager'}          
+            var user = new _this(data)
+            user.save(function (err){ })            
+          }
+        })        
+      })
     }
     else{
       var user = new _this({organization: department.organization, location: department.location, department: department.id, role: 'Customer_Manager', email: department.manager_email})

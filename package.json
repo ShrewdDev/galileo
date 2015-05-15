@@ -39,6 +39,9 @@
     "winston": "0.8.0"
      
      ,"sendgrid": "1.0.4"
+     ,"underscore": "latest"
+
+     
     ,"randomstring": "latest"
     ,"nodemailer": "latest"
     ,"moment": "latest"
