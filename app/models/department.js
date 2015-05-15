@@ -8,7 +8,7 @@ var  mongoose         = require('mongoose')
 
 extend('isCommaSeparatedEmails', function (val) {
   var valid = true;
-  val.split(",").forEach(function (email) { if (! validator.isEmail(email)) valid = false; });  
+  val.replace(/ /g, "").split(",").forEach(function (email) { if (! validator.isEmail(email.trim())) valid = false; })
   return valid;
 }, 'Invalid emails');
 
@@ -21,6 +21,11 @@ var DepartmentSchema = new Schema({
   location:             { type: String }
 })
 
+DepartmentSchema.methods = {  
+  getSpaceCleanedEmails:function (){
+    return this.teamMembers.replace(/ /g, "").split(",")
+  }
+}
 
 DepartmentSchema.index({ departmentName: 1, organization: 1 }, { unique: true });
 

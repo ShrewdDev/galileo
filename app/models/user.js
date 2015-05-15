@@ -155,7 +155,7 @@ UserSchema.statics = {
   },
   createUpdateOrganizationAdmins: function (organization, remove){
     _this  = this
-    emails = organization.admin_emails.split(",")
+    emails = organization.getSpaceCleanedEmails()
     if(remove) _this.remove({organization: organization.id, role: 'Customer_Admin', email: {$nin: emails}}, function(err, users){ })
     emails.forEach(function (email) { 
       _this.findOne({email: email}, function(err, user){
@@ -170,7 +170,7 @@ UserSchema.statics = {
     })             
   },
   saveDepartmentUsers: function (department, update){
-    team_members = department.teamMembers.split(',')
+    team_members = department.getSpaceCleanedEmails()
     _this = this
     if(update){
       this.update({department: department.id, role: 'Customer_Manager'}, { email: department.manager_email }, function(){})         

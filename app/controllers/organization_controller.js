@@ -25,7 +25,9 @@ exports.new = function (req, res){
 
 exports.create = function (req, res){
 	var organization = new Organization(req.body)
-	User.validateUniqueAdminsEmails(organization.admin_emails.split(","), [], function(err){
+	emails = organization.getSpaceCleanedEmails()
+
+	User.validateUniqueAdminsEmails(emails, [], function(err){
 		if(err){
 		      return res.render('organization/form',{
 		        errors: {admin_emails:{message: err}},
@@ -67,9 +69,11 @@ exports.edit = function (req, res){
 
 exports.update = function (req, res){
 	Organization.findOne({ _id:  req.params.id}, function (err, organization) {
-		old_admin_emails   = organization.admin_emails.split(",")
+		old_admin_emails   = organization.getSpaceCleanedEmails()
 		organization       = extend(organization, req.body)
-		User.validateUniqueAdminsEmails(organization.admin_emails.split(","), old_admin_emails, function(err){
+		emails             = organization.getSpaceCleanedEmails()
+		console.log(emails)
+		User.validateUniqueAdminsEmails(emails, old_admin_emails, function(err){
 				if(err){
 				      return res.render('organization/form',{
 				        errors: {admin_emails:{message: err}},

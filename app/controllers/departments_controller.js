@@ -35,7 +35,7 @@ exports.create = function (req, res){
 		      })				
 		}
 		else{
-			User.validateUniqueAdminsEmails(department.teamMembers.split(","), [], function(err){
+			User.validateUniqueAdminsEmails(department.getSpaceCleanedEmails(), [], function(err){
 			if(err){
 		       res.render('department/_form',{
 		        errors: {teamMembers:{message: err}},
@@ -83,6 +83,9 @@ exports.edit = function (req, res){
 
 exports.update = function (req, res){
 	Department.findOne({ _id:  req.params.id}, function (err, department) {
+	old_emails   = department.getSpaceCleanedEmails()
+	department       = extend(department, req.body)
+	emails             = department.getSpaceCleanedEmails()		
 	User.validateUniqueAdminsEmails([req.body.manager_email], [department.manager_email], function(err){
 		if(err){
 		      return res.render('department/_form',{
@@ -94,7 +97,7 @@ exports.update = function (req, res){
 		      })				
 		}
 		else{
-			User.validateUniqueAdminsEmails(req.body.teamMembers.split(","), department.teamMembers.split(","), function(err){
+			User.validateUniqueAdminsEmails(emails, old_emails, function(err){
 			if(err){
 		      res.render('department/_form',{
 		        errors: {teamMembers:{message: err}},
@@ -105,7 +108,6 @@ exports.update = function (req, res){
 		      })
 			}
 		else{
-			department  = extend(department, req.body)
 			department.save(function (err) {
 				if(err){
 			      res.render('department/_form',{
