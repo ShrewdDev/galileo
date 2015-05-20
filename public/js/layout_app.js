@@ -123,7 +123,7 @@
 		cache: false,
 		data: {question_index : 0, response_index : 0}
 		}).done(function( data ) {
-				$( event.target ).closest( "div.question_group" ).append(data);
+				$( event.target ).parent("div").before(data);
 				setInputNames();
 			});
 	});

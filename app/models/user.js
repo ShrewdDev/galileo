@@ -206,11 +206,9 @@ UserSchema.statics = {
     team_members = department.getSpaceCleanedEmails()
     _this = this
     if(update){
-//      this.update({department: department.id, role: 'Customer_Manager'}, { email: department.manager_email }, function(){})         
       _this.remove({department: department.id, role: 'Customer_TeamMember', email: {$nin: team_members}}, function(err, users){
         _this.findOne({department: department.id, role: 'Customer_Manager'}, function(err, user){
           if(user){
-            console.log(user)
             user.email = department.manager_email
             user.save(function(err){})
           }

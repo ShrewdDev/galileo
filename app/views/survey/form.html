@@ -26,44 +26,51 @@
               <p class="help-block text-danger">{{ errors.type.message }}</p> 
             </div>
             {% for question in survey.questions %}
-              {% set index = loop.index0 %}
-              {% set error_index = 'questions.0.question' %}
-              <div class="question_group">
-                {% if !(survey.confirmed)%}
-                  <a class="delete_question" href="#">x</a>
-                {% endif %}
-                <div class="form-group">
-                  <input type="text" class="form-control question"  value="{{ question.question }}" name="questions[{{index}}][question]" />      
-                  <p class="help-block text-danger">
-                    {% if errors["questions."+index+".question"] %}  
-                      {{ errors["questions."+index+".question"].message }} 
-                    {% endif %}
-                  </p>          
-                </div>
-                <div class="form-group">
-                  <select type="text" class="form-control type"  name="questions[{{index}}][type]">
-                    <option value="unique_choice" {% if question.type == "unique_choice" %} selected {% endif %}>Unique choice</option>
-                    <option value="multiple_choices" {% if question.type == "multiple_choices" %} selected {% endif %}>Multiple choices</option>
-                    <option value="slider" {% if question.type == "slider" %} selected {% endif %}>Slider</option>
-                    <option value="card_sort" {% if question.type == "card_sort" %} selected {% endif %}>Card Sort</option>
-                    <option value="bin_sort" {% if question.type == "bin_sort" %} selected {% endif %}>Bin Sort</option>                    
-                  </select>            
-                </div>
-                {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
+              {% if ! question.genericParent %} <!-- created from generic question -->
+                {% set index = loop.index0 %}
+                {% set error_index = 'questions.0.question' %}
+                <div class="question_group">
+                  {% if !(survey.confirmed)%}
+                    <a class="delete_question" href="#">x</a>
+                  {% endif %}
                   <div class="form-group">
-                    <a class="add_question_response" >Add response</a>       
+                    <input type="text" class="form-control question"  value="{{ question.question }}" name="questions[{{index}}][question]" />      
+                    <p class="help-block text-danger">
+                      {% if errors["questions."+index+".question"] %}  
+                        {{ errors["questions."+index+".question"].message }} 
+                      {% endif %}
+                    </p>          
                   </div>
-                {% endif %}    
-                {% for response in question.responses %}
-                  <div class="form-group response_div">
-                  {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
-                    <a class="delete_response" href="#">x</a> 
-                  {% endif %}      
-                    <input type="text" class="form-control response" placeholder="response" value="{{response.response}}" name="questions[{{index}}][responses][{{loop.index0}}][response]" />  
+                  <div class="form-group">
+                    <select type="text" class="form-control type"  name="questions[{{index}}][type]">
+                      <option value="unique_choice" {% if question.type == "unique_choice" %} selected {% endif %}>Unique choice</option>
+                      <option value="multiple_choices" {% if question.type == "multiple_choices" %} selected {% endif %}>Multiple choices</option>
+                      <option value="items_multiple_choices" {% if question.type == "items_multiple_choices" %} selected {% endif %}>Items Multiple choices</option>
+                      <option value="slider" {% if question.type == "slider" %} selected {% endif %}>Slider</option>
+                      <option value="rank" {% if question.type == "rank" %} selected {% endif %}>Rank</option>
+                      <option value="items_rank" {% if question.type == "items_rank" %} selected {% endif %}>Items Rank</option>
+                      <option value="bin_sort" {% if question.type == "bin_sort" %} selected {% endif %}>Bin Sort</option>
+                      <option value="department" {% if question.type == "department" %} selected {% endif %}>Department</option>
+                      <option value="department_response" {% if question.type == "department_response" %} selected {% endif %}>Department Response</option>
+                    </select>            
                   </div>
-              {% endfor %} 
-              </div>   
-                                             
+                  {% if ! question.generic %}  
+                    {% for response in question.responses %}
+                      <div class="form-group response_div">
+                      {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
+                        <a class="delete_response" href="#">x</a> 
+                      {% endif %}      
+                        <input type="text" class="form-control response" placeholder="response" value="{{response.response}}" name="questions[{{index}}][responses][{{loop.index0}}][response]" />  
+                      </div>
+                    {% endfor %} 
+                    {% if question.type == "unique_choice" or question.type == "multiple_choices" or question.type == "rank" or question.type == "department_responses"%}
+                      <div class="form-group">
+                        <a class="add_question_response" >Add response</a>       
+                      </div>
+                    {% endif %}             
+                  {% endif %}                 
+                </div>   
+              {% endif %}                                                
             {% endfor %}      
             {% if !(survey.confirmed)%}
               <div class="questions">  </div>

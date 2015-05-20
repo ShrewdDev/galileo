@@ -39,10 +39,8 @@
                         {{question.responses["0"].response}} - {{question.responses["1"].response}}
                       {% endif %}</label>
                     </p>    
-
                     <input type="hidden" id="question_min" value="{{question.responses["0"].response}}">   
                     <input type="hidden" id="question_max" value="{{question.responses["1"].response}}">   
-
                       <input type="hidden" name="response[min]" id="min" 
                       {% if result %} 
                         value="{{result["0"].min}}" 
@@ -75,7 +73,7 @@
                     {% endfor %}
                 {% endif %}
 
-                {% if question.type == 'card_sort' %}
+                {% if question.type == 'rank' %}
                   <ul id="sortable">
                       {% if result %}            
                         {% for key in Object.keys(result["0"]) %}
