@@ -28,14 +28,6 @@ exports.new = function (req, res){
 	})
 }
 
-exports.new_from_template = function (req, res){
-	template = Survey.getTemplate(req.params.type)
-	res.render('survey/form', {   
-		survey: new Survey(template),
-		action: "/survey/create"
-	})
-}
-
 exports.survey_question_partial = function (req, res){
 	res.render('survey/_question_partial', {		
 		question_index: req.query.question_index
@@ -111,7 +103,20 @@ exports.take_survey = function (req, res){
 		if(step < survey.questions.length){
 			validQuestions 	= survey.validQuestions()
 			question 		= validQuestions[step]
-			survey.setQuestionTitle(req.user.id, question,	
+			/*Result.find({user: req.user.id, survey: survey.id, tag: question.tag}, function(err, prior_results){
+				if(prior_results){
+					var tags = question.question.match(/\{(.*?)\}/g)
+					if(tags.length == 1){
+
+					}
+					console.log(tags)
+					r = prior_results[0]
+					r = r.response
+					console.log(r[0])
+					console.log(question.question)
+					question.question = "prior"
+				}*/
+			//survey.setQuestionTitle(req.user.id, question,	
 				Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
 					result = result ? result.response : null
 					console.log(result)
@@ -121,11 +126,13 @@ exports.take_survey = function (req, res){
 						result:    	 result,
 						step:        step
 					})
-				}))
+				})
+			//	)
+			//})
 		}else{
-			return res.redirect('/surveys')
+			return res.redirect('/surveys');
 		}
-	})
+	});	
 }
 
 exports.post_survey_result = function (req, res){

@@ -54,12 +54,12 @@
                       <option value="department_response" {% if question.type == "department_response" %} selected {% endif %}>Department Response</option>
                     </select>            
                   </div>
-                  {% if ! question.generic %}  
+                  
                     {% for response in question.responses %}
                       <div class="form-group response_div">
                       {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
                         <a class="delete_response" href="#">x</a> 
-                      {% endif %}      
+                      {% endif %}
                         <input type="text" class="form-control response" placeholder="response" value="{{response.response}}" name="questions[{{index}}][responses][{{loop.index0}}][response]" />  
                       </div>
                     {% endfor %} 
@@ -68,7 +68,7 @@
                         <a class="add_question_response" >Add response</a>       
                       </div>
                     {% endif %}             
-                  {% endif %}                 
+                                   
                 </div>   
               {% endif %}                                                
             {% endfor %}      

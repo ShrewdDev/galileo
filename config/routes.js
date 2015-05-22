@@ -64,6 +64,8 @@ module.exports = function (app, passport) {
   app.get('/admin/surveys', auth.requiresLogin, survey_controller.customer_admin_surveys);
   app.get('/users/managesurveys', auth.requiresLogin, main_controller.managesurveys);  
   app.get('/survey/new', auth.requiresLogin, survey_controller.new);
+  app.get('/survey/:type/new', auth.requiresLogin, survey_controller.new_from_template);  
+  
   app.post('/survey/create', auth.requiresLogin, survey_controller.create); 
   app.get('/survey/:id/edit', auth.requiresLogin, survey_controller.edit);
   app.post('/survey/:id/update', auth.requiresLogin, survey_controller.update);
