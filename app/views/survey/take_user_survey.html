@@ -2,112 +2,125 @@
 {% block content %}
 <section class="module">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-          <h2 class="module-title font-alt">{{ survey.type }} : {{ survey.title }}</h2>
+   <form id="survey" action="/surveys/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <input type="hidden" value="{{survey.id}}" name="survey">
+      <input type="hidden" value="{{step}}" name="step">
+      <input type="hidden" value="{{question.id}}" name="question">
+      <input type="hidden" value="{{question.tag}}" name="tag">
+      <div class="row">   
+        <div class="col-md-12">
+            <h1 class="font-alt">{{ survey.type }} : {{ survey.title }}</h1>
+            <h3 class="font-alt">{{ question.question }}</h3>    
         </div>
       </div>
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-          <form id="survey" action="/surveys/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
-          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-          <input type="hidden" value="{{survey.id}}" name="survey">
-          <input type="hidden" value="{{step}}" name="step">
-          <input type="hidden" value="{{question.id}}" name="question">
-          <input type="hidden" value="{{question.tag}}" name="tag">
-                <h3>{{ question.question }}</h3>
-                {% if question.type == 'unique_choice' %}                  
+          {% if question.type == 'unique_choice' %}                  
+            {% for response in question.responses %}
+                <div class="radio">
+                <label>
+                  <input type="radio" value="{{response.id}}" name="response" 
+                  {% if result == response.id %} checked {% endif %}/> {{ response.response }} 
+                  </label>
+                </div>
+            {% endfor %}
+          {% endif %} 
+          {% if question.type == 'multiple_choices' %}
+            {% for response in question.responses %}
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="response" value="{{response.id}}" {% if result && (result.indexOf(response.id) > -1) %} checked {% endif %}>
+                  {{ response.response }}
+                </label>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          {% if question.type == 'slider' %}    
+              <p>
+                <label id="range">Range: 
+                {% if result %} 
+                    {{result["0"].min}} - {{result["0"].max}} 
+                {% else %} 
+                  {{question.responses["0"].response}} - {{question.responses["1"].response}}
+                {% endif %}</label>
+              </p>    
+              <input type="hidden" id="question_min" value="{{question.responses["0"].response}}">   
+              <input type="hidden" id="question_max" value="{{question.responses["1"].response}}">   
+                <input type="hidden" name="response[min]" id="min" 
+                {% if result %} 
+                  value="{{result["0"].min}}" 
+                {% else %} 
+                  value="{{question.responses["0"].response}}"
+                 {% endif %}>             
+                <input type="hidden" name="response[max]" id="max" 
+                {% if result %} 
+                  value="{{result["0"].max}}" 
+                {% else %}  
+                  value="{{question.responses["1"].response}}"
+                 {% endif %}>                    
+                <div id="slider"></div>                 
+          {% endif %}
+
+          {% if question.type == 'bin_sort' %}  
+              <h4> Ressources :</h4>
+              <ul class="connectedSortable sortable">
+                {% for ressource in survey.getQuestionRessources(question.id) %}
+                  <li class="ui-state-default">
+                    <input type="hidden" name="response[{{ ressource }}]" class="ressource">
+                    {{ressource}}
+                  </li>
+                {% endfor %}   
+              </ul>           
+              <h4> Bins :</h4>
+              {% for bin in survey.getQuestionBins(question.id) %}
+                {{ bin }} :                       
+                <ul class="connectedSortable sortable" name="{{ bin }}"> </ul>                      
+              {% endfor %}
+          {% endif %}
+
+          {% if question.type == 'rank' %}
+            <ul id="sortable">
+                {% if result %}            
+                  {% for key in Object.keys(result["0"]) %}
+                    <li class="ui-state-default">
+                    <input type="hidden" value="{{ key }}" name="response[{{ key }}]">
+                    <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+                    {% for response in question.responses %}
+                      {% if response.id == key %}
+                        {{ response.response }}
+                      {% endif %}
+                    {% endfor %}  
+                    </li>
+                  {% endfor %}   
+                {% else %}
                   {% for response in question.responses %}
-                      <p>
-                        <input type="radio" value="{{response.id}}" name="response" 
-                        {% if result == response.id %} checked {% endif %}/> {{ response.response }} 
-                      </p>
-                  {% endfor %}
-                {% endif %} 
-                {% if question.type == 'multiple_choices' %}
-                  {% for response in question.responses %}
-                      <p> <input type="checkbox" value="{{response.id}}" name="response"
-                      {% if result && (result.indexOf(response.id) > -1) %} checked {% endif %}>  {{ response.response }} </p>
-                  {% endfor %}
-                {% endif %}
-
-                {% if question.type == 'slider' %}    
-                    <p>
-                      <label id="range">Range: 
-                      {% if result %} 
-                          {{result["0"].min}} - {{result["0"].max}} 
-                      {% else %} 
-                        {{question.responses["0"].response}} - {{question.responses["1"].response}}
-                      {% endif %}</label>
-                    </p>    
-                    <input type="hidden" id="question_min" value="{{question.responses["0"].response}}">   
-                    <input type="hidden" id="question_max" value="{{question.responses["1"].response}}">   
-                      <input type="hidden" name="response[min]" id="min" 
-                      {% if result %} 
-                        value="{{result["0"].min}}" 
-                      {% else %} 
-                        value="{{question.responses["0"].response}}"
-                       {% endif %}>             
-                      <input type="hidden" name="response[max]" id="max" 
-                      {% if result %} 
-                        value="{{result["0"].max}}" 
-                      {% else %}  
-                        value="{{question.responses["1"].response}}"
-                       {% endif %}>                    
-                      <div id="slider"></div>                 
-                {% endif %}
-
-                {% if question.type == 'bin_sort' %}  
-                    <h4> Ressources :</h4>
-                    <ul class="connectedSortable sortable">
-                      {% for ressource in survey.getQuestionRessources(question.id) %}
-                        <li class="ui-state-default">
-                          <input type="hidden" name="response[{{ ressource }}]" class="ressource">
-                          {{ressource}}
-                        </li>
-                      {% endfor %}   
-                    </ul>           
-                    <h4> Bins :</h4>
-                    {% for bin in survey.getQuestionBins(question.id) %}
-                      {{ bin }} :                       
-                      <ul class="connectedSortable sortable" name="{{ bin }}"> </ul>                      
-                    {% endfor %}
-                {% endif %}
-
-                {% if question.type == 'rank' %}
-                  <ul id="sortable">
-                      {% if result %}            
-                        {% for key in Object.keys(result["0"]) %}
-                          <li class="ui-state-default">
-                          <input type="hidden" value="{{ key }}" name="response[{{ key }}]">
-                          <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-                          {% for response in question.responses %}
-                            {% if response.id == key %}
-                              {{ response.response }}
-                            {% endif %}
-                          {% endfor %}  
-                          </li>
-                        {% endfor %}   
-                      {% else %}
-                        {% for response in question.responses %}
-                            <li class="ui-state-default">
-                            <input type="hidden" value="{{ response.id }}" name="response[{{ response.id }}]">
-                            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-                            {{ response.response }}
-                            </li>
-                        {% endfor %}  
-                      {% endif %}                 
-                  </ul>
-                {% endif %}                        
-            <div class="text-center" style="padding: 20px;">             
-              {% if step > 0 %}
-                <a href="/surveys/{{survey.id}}/takesurvey/{{step -1}}" class="btn btn-round btn-d"> < Back</a>
-              {% endif %}  
-                <button type="submit" class="btn btn-round btn-d">Next > </button>
+                      <li class="ui-state-default">
+                      <input type="hidden" value="{{ response.id }}" name="response[{{ response.id }}]">
+                      <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+                      {{ response.response }}
+                      </li>
+                  {% endfor %}  
+                {% endif %}                 
+            </ul>
+          {% endif %}  
+          {% if question.type == 'date' %}
+            <div class="row">               
+              <div class="form-group col-md-3">
+                <label for="exampleInputEmail1">1 / 41</label>
+                <input type="text" name="response" class="form-control datepicker" placeholder="Select Date">
+              </div>                  
             </div>
-          </form>          
+          {% endif %}  
+
+          <div class="form-group">             
+            {% if step > 0 %}
+              <a href="/surveys/{{survey.id}}/takesurvey/{{step -1}}" class="btn btn-default"> < Back</a>
+            {% endif %}  
+              <button type="submit" class="btn btn-default">Next > </button>
+          </div>
+                   
         </div>
-      </div>
+      </form> 
     </div>
   </section>  
 {% endblock %}
@@ -146,4 +159,5 @@
   });
 </script>
 {% endblock %}
+
 

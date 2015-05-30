@@ -17,7 +17,7 @@
               <p class="help-block text-danger">{{ errors.title.message }}</p>   
             </div>
             <div class="form-group">
-              <select type="text" class="form-control" name="type">       
+              <select class="form-control" name="type">       
                 <option value="" >Survey Type</option>    
                 {% for type in survey.getSurveyTypes() %}
                    <option value="{{type}}" {% if survey.type == type %} selected {% endif %}>{{type}}</option>
@@ -25,6 +25,19 @@
                 </select>
               <p class="help-block text-danger">{{ errors.type.message }}</p> 
             </div>
+
+            {% if survey.type == 'Employee Survey' %}
+              <div class="form-group">
+                <select class="form-control" name="relatedSurvey">       
+                  <option value="" >related Survey</option>    
+                  {% for manager_survey in manager_surveys %}
+                     <option value="{{manager_survey.id}}" {% if survey.relatedSurvey == manager_survey.id %} selected {% endif %}>{{manager_survey.title}}</option>
+                  {% endfor %}
+                  </select>
+                <p class="help-block text-danger">{{ errors.relatedSurvey.message }}</p> 
+              </div>
+            {% endif %}
+
             {% for question in survey.questions %}
               {% if ! question.genericParent %} <!-- created from generic question -->
                 {% set index = loop.index0 %}
@@ -81,11 +94,14 @@
             </div>
             {% if !(survey.confirmed)%}
               <div class="text-center">
-                <button type="submit" class="btn btn-block btn-round btn-d">Submit</button>
+                <button type="submit" class="btn btn-round btn-d">Submit</button>
+                {% if !(survey.isNew)%}
+                  <button type="submit" class="btn btn-round btn-danger delete">Delete</button>
+                {% endif %}    
               </div>
             {% else %}  
               <div class="text-center">
-                <button type="submit" class="btn btn-block btn-round btn-d" disabled>Survey confirmed, can't be updated</button>
+                <button class="btn btn-block btn-round btn-d" disabled>Survey confirmed, can't be updated</button>
               </div>              
             {% endif %}
           </form>          

@@ -73,26 +73,20 @@ module.exports = function (app, passport) {
   app.get('/survey/question_partial', auth.requiresLogin, survey_controller.survey_question_partial);
   app.get('/survey/question_response_partial', auth.requiresLogin, survey_controller.question_response_partial);
 
-  app.get('/surveys', auth.requiresLogin, survey_controller.user_surveys);
-  app.get('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.take_survey);
-  app.post('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.post_survey_result);
+  app.get('/surveys', auth.requiresLogin, survey_controller.user_surveys)
+  app.get('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.take_survey)
+  app.post('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.post_survey_result)
+  app.delete('/survey/:id/update', auth.requiresLogin, survey_controller.destroy)
 
-  //app.get('/departments', auth.requiresLogin, main_controller.departments);
-  //app.get('/team_member/new', auth.requiresLogin, main_controller.new_team_member);  
+  app.get('/users/account', auth.requiresLogin, main_controller.account)
 
-  app.get('/users/account', auth.requiresLogin, main_controller.account);
-
-  //app.get('/admin/customer/new', auth.siteAdminAuth, users_controller.new_customer_admin);
-
-  //app.get('/users/:user_id/edit', auth.siteAdminAuth, users_controller.edit_customer_admin);
-
-  app.get('/', main_controller.index);
+  app.get('/', main_controller.index)
 
   app.use(function (err, req, res, next) {
     if (err.message
       && (~err.message.indexOf('not found')
       || (~err.message.indexOf('Cast to ObjectId failed')))) {
-      return next();
+      return next()
     }
     console.error(err.stack);
     res.status(500).render('500', { error: err.stack });

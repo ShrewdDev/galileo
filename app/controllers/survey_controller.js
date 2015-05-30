@@ -4,19 +4,14 @@ var mongoose     = require('mongoose'),
     Result       = mongoose.model('Result'),
     Department   = mongoose.model('Department'),
     Organization = mongoose.model('Organization'),
+    //SurveyStep	 = mongoose.model('SurveyStep'),
     extend       = require('util')._extend
 
-/*
-exports.index = function (req, res){
-	res.render('survey/index', {
-
-	});	
-}
-*/
 exports.customer_admin_surveys = function (req, res){
-	Survey.find({}, function (err, surveys) {
+	Survey.find({organization: req.user.organization}, function (err, surveys) {
 		res.render('survey/index', {
-			surveys: surveys
+			surveys: surveys,
+			message: req.flash('message')
 		});
 	});
 }
@@ -30,10 +25,13 @@ exports.new = function (req, res){
 
 exports.new_from_template = function (req, res){
 	template = Survey.getTemplate(req.params.type)
-	res.render('survey/form', {   
-		survey: new Survey(template),
-		action: "/survey/create"
-	})
+	req.user.getManagerSurveys(function(manager_surveys){
+		res.render('survey/form', {   
+			survey: new Survey(template),
+			manager_surveys: manager_surveys,
+			action: "/survey/create"
+		})
+	})	
 }
 
 exports.survey_question_partial = function (req, res){
@@ -54,24 +52,33 @@ exports.create = function (req, res) {
   survey.organization = req.user.organization
   survey.save(function (err){
     if (err) {
-      return res.render('survey/form', {
-        errors: err.errors,
-        survey:  survey,
-        action: "/survey/create"
+		console.log(err)
+		req.user.getManagerSurveys(function(manager_surveys){
+	      return res.render('survey/form', {
+	        errors: err.errors,
+	        survey:  survey,
+	        manager_surveys: manager_surveys,
+	        action: "/survey/create"
+	      })
       })
     }
     else {
-      if(survey.confirmed) User.sendSurveyNotification(survey)
-      return res.redirect('/admin/surveys')
+    	survey.generateQuestions(function(){
+    		if(survey.confirmed) User.sendSurveyNotification(survey, 'Customer_Manager')
+      		return res.redirect('/admin/surveys')		
+    	})      
     }
   })
 }
 
 exports.edit = function (req, res){
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
-		res.render('survey/form', {
-			survey: survey,
-			action: "/survey/"+survey.id+"/update"
+		req.user.getManagerSurveys(function(manager_surveys){
+			res.render('survey/form', {
+				survey: survey,
+				manager_surveys: manager_surveys,
+				action: "/survey/"+survey.id+"/update"
+			})
 		})
 	})
 }
@@ -82,54 +89,64 @@ exports.update = function (req, res){
 		survey.save(function (err){
 		if (err) {
 			console.log(err)
-		  return res.render('survey/form', {
-		    errors: err.errors,
-		    survey:  survey,
-		    action: "/survey/"+survey.id+"/update"
-		  });
+			req.user.getManagerSurveys(function(manager_surveys){
+			  return res.render('survey/form', {
+			    errors: err.errors,
+			    survey:  survey,
+			    manager_surveys: manager_surveys,
+			    action: "/survey/"+survey.id+"/update"
+			  })
+		  })
 		}
-		else {     
-		  if(survey.confirmed) User.sendSurveyNotification(survey) 		
-		  return res.redirect('/admin/surveys')      
+		else { 
+	    	survey.generateQuestions(function(){
+	    		if(survey.confirmed) User.sendSurveyNotification(survey, 'Customer_Manager') 		
+			  	return res.redirect('/admin/surveys')      
+	    	}) 		  
 		}
-	  });		
+	  })
 	})
 }
 
 exports.user_surveys = function (req, res){
-
-	Survey.find({ organization:  req.user.organization, type: 'Manager Survey', confirmed: true}).exec(function (err, surveys) {	
+	types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}
+	
+	Survey.find({ organization:  req.user.organization, type: types[req.user.role], confirmed: true}).exec(function (err, surveys) {	
 		res.render('survey/user_survey', {
-			surveys: surveys
-		});	
-	});	
+			surveys: surveys,
+			message: req.flash('message')
+		})
+
+	})
 }
 
 exports.take_survey = function (req, res){
 	var step = req.params.step
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
-		if(step < survey.questions.length){
+		Survey.updateStep(req.params.id, req.user.id, step, function(){
 			validQuestions 	= survey.validQuestions()
-			question 		= validQuestions[step]
-			survey.setQuestionTitle(req.user.id, question,	
-				Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
-					result = result ? result.response : null
-					console.log(result)
-					res.render('survey/take_user_survey',{
-						survey:      survey,
-						question:    question,
-						result:    	 result,
-						step:        step
+			if(step < validQuestions.length){
+				question 		= validQuestions[step]
+				survey.setQuestionTitle(req.user, question,	function(title){
+					question.question = title
+					Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
+						result = result ? result.response : null
+						res.render('survey/take_user_survey',{
+							survey:      survey,
+							question:    question,
+							result:    	 result,
+							step:        step
+						})
 					})
-				}))
-		}else{
-			return res.redirect('/surveys')
-		}
+				})
+			}else{
+				return res.redirect('/surveys')
+			}
+		})
 	})
 }
 
 exports.post_survey_result = function (req, res){
-	console.log(req.body)
 	var step = parseInt(req.params.step) + 1
 	var survey_id = req.params.id
 	Result.findOneAndUpdate({ user: req.user.id, survey: survey_id, question: req.body.question }, 
@@ -138,8 +155,15 @@ exports.post_survey_result = function (req, res){
 					if(err){
 						console.log(err)
 					}
-					else{
-						return res.redirect('/surveys/'+survey_id+'/takesurvey/'+step); 
-					}
-		    });
+					else{			
+				return res.redirect('/surveys/'+survey_id+'/takesurvey/'+step)			
+		}
+	})
+}
+
+exports.destroy = function (req, res){
+	Survey.findOneAndRemove({ _id:  req.params.id}, function (err, survey) {
+		req.flash('message', {type: 'success', message: 'Survey deleted !'})
+		return res.redirect('/admin/surveys')
+	})
 }

@@ -1,10 +1,29 @@
 (function($){
+
+  	$(".delete").click(function(event) {
+  		event.preventDefault()
+  		if (confirm('Are you sure?')) {
+	  		var form = $(event.target ).closest("form")
+	  		var input = $("<input>").attr("type", "hidden").attr("name", "_method").val("DELETE")
+			form.append($(input))
+			form.submit()
+		}
+	});
+
     $( "#sortable" ).sortable();
     $( "#sortable" ).disableSelection();
-    
-	if(typeof datepicker !== 'undefined'){
-		$('.datepicker').datepicker({
-		    format: 'MM,dd yyyy'
+        
+    var datepicker = $('input.datepicker');
+    var today = new Date();
+    var endDate = new Date(today);
+    endDate.setDate(endDate.getDate()+60);
+	if (datepicker.length > 0) {
+		datepicker.datepicker({
+		    format: 'MM,dd yyyy',
+		    autoclose: true,
+		    startDate: today,
+		    endDate: endDate,
+		    enableOnReadonly: false
 		});
 	}
 

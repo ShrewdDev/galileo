@@ -94,6 +94,11 @@ UserSchema.pre('save', function(next) {
 
 UserSchema.methods = {  
 
+  getManagerSurveys:function (cb){
+    this.model('Survey').find({organization: this.organization, type: 'Manager Survey'}, function(err, surveys){
+      cb(surveys)
+    })
+  }, 
   usersResponsible:function (){
     return ['Site_Admin', 'Customer_Admin', 'Customer_Manager', 'Customer_TeamMember'].indexOf(this.role) > -1
   },   
@@ -151,11 +156,11 @@ UserSchema.statics = {
       cb(emails.join(', '))
     })
   },   
-  sendSurveyNotification: function(survey){
+  sendSurveyNotification: function(survey, role){
     _this = this
-    types = {'Manager Survey': 'Customer_Manager', 'Employee Survey':'Customer_TeamMember'}
-    this.find({organization: survey.organization, role: types[survey.type]}, function(err, users){
-        console.log(users)
+    //types = {'Manager Survey': 'Customer_Manager', 'Employee Survey':'Customer_TeamMember'}
+    this.find({organization: survey.organization, role: role}, function(err, users){
+        
         for(user in users){
           _user = users[user]
           sendgrid.send({
