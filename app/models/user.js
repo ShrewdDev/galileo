@@ -156,18 +156,19 @@ UserSchema.statics = {
       cb(emails.join(', '))
     })
   },   
-  sendSurveyNotification: function(survey, role){
+  sendSurveyNotification: function(survey, department, role){
     _this = this
     //types = {'Manager Survey': 'Customer_Manager', 'Employee Survey':'Customer_TeamMember'}
-    this.find({organization: survey.organization, role: role}, function(err, users){
-        
+    var query = {organization: survey.organization, role: role}
+    if(department) query = {organization: survey.organization, department: department, role: role}
+    this.find(query, function(err, users){        
         for(user in users){
           _user = users[user]
           sendgrid.send({
             to:       _user.email,
             from:     'admin@shrwed.com',
             subject:  'Survey Invitation',
-            text:     'You have been invited to participate in the survey  : '+ survey. title+'. \n\n' +
+            text:     'You have been invited to participate to the survey  : '+ survey. title+'. \n\n' +
                       'Please login to your account to take the survey. \n\n'
           }, function(err, json) {
             if (err) { console.error(err); }

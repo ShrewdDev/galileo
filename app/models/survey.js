@@ -193,7 +193,8 @@ var QuestionSchema = new Schema({
 
 var UserStepSchema = new Schema({
     _id:                { type : Schema.ObjectId, ref : 'User'}, 
-    step:               { type : Number }
+    step:               { type : Number },
+    finished:           { type : Boolean, default: false }
 })
 
 var SurveySchema = new Schema({
@@ -219,24 +220,24 @@ SurveySchema.statics = {
   getTemplate:function (type){
     templates = {'manager': manager_template, 'employee' : employee_template}
     return templates[type]
-  },  
-  updateStep:function (survey_id, user_id, step, cb){    
-    this.findOne({_id: survey_id}, function(err, survey){      
-      if(survey.userSteps.id(user_id)){
-        var userStep = survey.userSteps.id(user_id)
-        userStep.step = step
-      }
-      else{
-       survey.userSteps.push({_id: user_id, step: step}) 
-      }      
-      survey.save(function(err){
-        cb()
-      })
-    })
   }
 }
 
 SurveySchema.methods = { 
+  updateStep:function (user_id, step, cb){        
+      var valid  = this.validQuestions()
+      if(this.userSteps.id(user_id)){
+        var userStep = this.userSteps.id(user_id)
+        userStep.step = step
+        if(step == valid.length)  userStep.finished = true
+      }
+      else{
+       this.userSteps.push({_id: user_id, step: step}) 
+      }      
+      this.save(function(err){
+        cb()
+      })    
+  },  
   userStep: function(user_id){
     var step = 0, v  = this.validQuestions()
     if(this.userSteps.id(user_id)){ 
@@ -244,18 +245,18 @@ SurveySchema.methods = {
       step = step.step      
     }
     return (Math.round((parseFloat(step) / parseFloat(v.length)) * 100)) + ' %'    
-},
+  },
   generateQuestions:function (cb){
-  _this = this
-  Department.find({organization: _this.organization}, function(err, departments){
-    _.each(_this.questions, function(question){
-      var responses    = [] 
-      var questionType = question.type
-      if(question.type == 'department'){
-        questionType   = 'multiple_choices'
-        _.each(departments, function(department){            
-          responses.push({ response: department.departmentName})    
-        })
+    _this = this
+    Department.find({organization: _this.organization}, function(err, departments){
+      _.each(_this.questions, function(question){
+        var responses    = [] 
+        var questionType = question.type
+        if(question.type == 'department'){
+          questionType   = 'multiple_choices'
+          _.each(departments, function(department){            
+            responses.push({ response: department.departmentName})    
+          })
       }
       else if(question.type == 'items_rank'){
         questionType   = 'multiple_choices'
@@ -359,8 +360,6 @@ SurveySchema.methods = {
     })
   })
   },
-
-
   getQuestionRessources:function (questionId){
     question   = this.questions.id(questionId)
     ressources = question.responses[0].response.split(',')
@@ -421,6 +420,7 @@ SurveySchema.methods = {
                     console.log(prior_results)
                     result   = prior_results.response
                     q        = (relatedSurvey && related)? relatedSurvey.questions.id(prior_results.question) : _this.questions.id(prior_results.question)
+                    console.log(_this.questions)
                     title    = title.replace(tag, q.responses.id(result[index-1]).response)
                     callback() 
                   }
@@ -437,10 +437,6 @@ SurveySchema.methods = {
 }
 
 ResultSchema.index({user: 1, survey: 1, question: 1}, {unique: true})
-
-//SurveyStepSchema.index({user: 1, survey: 1, step: 1}, {unique: true})
-
-//mongoose.model('SurveyStep',    SurveyStepSchema)
 
 mongoose.model('UserStep',    UserStepSchema)
 

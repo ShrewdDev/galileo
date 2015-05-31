@@ -4,7 +4,6 @@ var mongoose     = require('mongoose'),
     Result       = mongoose.model('Result'),
     Department   = mongoose.model('Department'),
     Organization = mongoose.model('Organization'),
-    //SurveyStep	 = mongoose.model('SurveyStep'),
     extend       = require('util')._extend
 
 exports.customer_admin_surveys = function (req, res){
@@ -64,7 +63,7 @@ exports.create = function (req, res) {
     }
     else {
     	survey.generateQuestions(function(){
-    		if(survey.confirmed) User.sendSurveyNotification(survey, 'Customer_Manager')
+    		if(survey.confirmed) User.sendSurveyNotification(survey, null, 'Customer_Manager')
       		return res.redirect('/admin/surveys')		
     	})      
     }
@@ -100,7 +99,7 @@ exports.update = function (req, res){
 		}
 		else { 
 	    	survey.generateQuestions(function(){
-	    		if(survey.confirmed) User.sendSurveyNotification(survey, 'Customer_Manager') 		
+	    		if(survey.confirmed) User.sendSurveyNotification(survey, null, 'Customer_Manager') 		
 			  	return res.redirect('/admin/surveys')      
 	    	}) 		  
 		}
@@ -109,22 +108,20 @@ exports.update = function (req, res){
 }
 
 exports.user_surveys = function (req, res){
-	types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}
-	
+	types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}	
 	Survey.find({ organization:  req.user.organization, type: types[req.user.role], confirmed: true}).exec(function (err, surveys) {	
 		res.render('survey/user_survey', {
 			surveys: surveys,
 			message: req.flash('message')
 		})
-
 	})
 }
 
 exports.take_survey = function (req, res){
 	var step = req.params.step
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
-		Survey.updateStep(req.params.id, req.user.id, step, function(){
-			validQuestions 	= survey.validQuestions()
+		var validQuestions 	= survey.validQuestions()
+		survey.updateStep(req.user.id, step, function(){			
 			if(step < validQuestions.length){
 				question 		= validQuestions[step]
 				survey.setQuestionTitle(req.user, question,	function(title){
@@ -140,6 +137,11 @@ exports.take_survey = function (req, res){
 					})
 				})
 			}else{
+				if(survey.type == 'Manager Survey'){
+					Survey.findOne({relatedSurvey: survey.id}, function(err, relatedSurvey){
+						if(relatedSurvey) User.sendSurveyNotification(relatedSurvey, req.user.department, 'Customer_TeamMember')
+					})
+				}
 				return res.redirect('/surveys')
 			}
 		})

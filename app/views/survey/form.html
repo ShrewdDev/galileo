@@ -1,15 +1,15 @@
 {% extends '../layouts/layout.html' %}
 {% block content %}
 <section class="module">
+  <form id="survey" action="{{action}}" method="post" role="form" novalidate="">
     <div class="container">
-      <div class="row">
+      <div class="row">   
         <div class="col-sm-6 col-sm-offset-3">
-          <h2 class="module-title font-alt">Survey</h2>
+            <h1 class="font-alt">Survey</h1>            
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-          <form id="survey" action="{{action}}" method="post" role="form" novalidate="">
+        <div class="col-sm-6 col-sm-offset-3">          
             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="form-group">
               <label class="sr-only" for="cname">Title</label>
@@ -78,7 +78,7 @@
                     {% endfor %} 
                     {% if question.type == "unique_choice" or question.type == "multiple_choices" or question.type == "rank" or question.type == "department_responses"%}
                       <div class="form-group">
-                        <a class="add_question_response" >Add response</a>       
+                        <a class="add_question_response" href="#">Add response</a>       
                       </div>
                     {% endif %}             
                                    
@@ -89,9 +89,11 @@
               <div class="questions">  </div>
               <a id="add_survey_question" href="#">Add question</a>
             {% endif %}
-            <div class="form-group">
+              <div class="checkbox">
+                <label>
                <input type="checkbox" value="confirmed" id="confirmed" name="confirmed" {% if survey.confirmed %} checked="true" {% endif %}> Confirm and send notification (can't be updated later)
-            </div>
+                </label>
+              </div>
             {% if !(survey.confirmed)%}
               <div class="text-center">
                 <button type="submit" class="btn btn-round btn-d">Submit</button>
@@ -104,9 +106,9 @@
                 <button class="btn btn-block btn-round btn-d" disabled>Survey confirmed, can't be updated</button>
               </div>              
             {% endif %}
-          </form>          
         </div>
       </div>
     </div>
-  </section>  
+  </form> 
+</section>  
 {% endblock %}
