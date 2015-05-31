@@ -60,7 +60,7 @@ exports.create = function (req, res){
 					//User.createUpdateUsers([department.manager_email], {organization: department.organization, department: department.id, role: 'Customer_Manager'})
 					//User.createUpdateUsers(department.teamMembers.split(','), {organization: department.organization, department: department.id,	role: 'Customer_TeamMember'})
 					User.saveDepartmentUsers(department, null)
-		    		req.flash('message', {type: 'success', message: 'Department created !'});   
+		    		req.flash('message', {type: 'success', message: 'Department created !'})  
 		        	res.send({status: "saved", url: "/departments"})			
 				  }
 				})

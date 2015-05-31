@@ -101,7 +101,7 @@ exports.update = function (req, res){
 	    	survey.generateQuestions(function(){
 	    		if(survey.confirmed) User.sendSurveyNotification(survey, null, 'Customer_Manager') 		
 			  	return res.redirect('/admin/surveys')      
-	    	}) 		  
+	    	})		  
 		}
 	  })
 	})

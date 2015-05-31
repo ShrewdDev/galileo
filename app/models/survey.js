@@ -224,6 +224,13 @@ SurveySchema.statics = {
 }
 
 SurveySchema.methods = { 
+  finished: function(user_id){    
+    if(this.userSteps.id(user_id)){
+      userStep = this.userSteps.id(user_id)
+      return userStep.finished
+    }
+    else return false
+  },
   updateStep:function (user_id, step, cb){        
       var valid  = this.validQuestions()
       if(this.userSteps.id(user_id)){

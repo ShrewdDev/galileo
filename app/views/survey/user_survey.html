@@ -17,7 +17,12 @@
 							<tr>
 								<td>{{ survey.title }}</td>
 								<td>{{ survey.userStep(req.user.id) || ''}}</td>
-								<td><a href="/surveys/{{survey.id}}/takesurvey/0">Take survey</a></td>
+								<td>{% if survey.finished(req.user.id) %}
+										Survey finished
+									{% else %}
+										<a href="/surveys/{{survey.id}}/takesurvey/0">Take survey</a>
+									{% endif %}
+								</td>
 							</tr>
 						{% endfor %}
 					</tbody>

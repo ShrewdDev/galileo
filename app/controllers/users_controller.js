@@ -2,6 +2,8 @@ var   mongoose      = require('mongoose'),
       User          = mongoose.model('User'),
       Organization  = mongoose.model('Organization'),
       Department    = mongoose.model('Department'),
+      Survey        = mongoose.model('Survey'),
+      _             = require("underscore"),
       extend        = require('util')._extend
 
 exports.index = function (req, res) {
@@ -192,32 +194,37 @@ exports.post_signup = function (req, res) {
 }
 
 exports.logout = function (req, res) {
-  req.logout();
-  res.redirect('/');
-};
+  req.logout()
+  res.redirect('/')
+}
 
 exports.session = function (req, res) {
   User.findOne({ email: req.body.email}, function (err, user) {
-    if(user && user.authenticate(req.body.password)){       
+    if(user && user.authenticate(req.body.password)){
         req.logIn(user, function(err) {
-          return res.redirect('/');
-        }); 
+          types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}
+          Survey.find({ organization:  req.user.organization, type: types[user.role], confirmed: true}).exec(function (err, surveys) {
+            _.each(surveys, function(survey){
+              if (!(survey.finished(user.id))) req.flash('message', {type: 'danger', message: 'You have at least one survey to finish !'})
+            })
+            return res.redirect('/')
+          })
+        })
     }
     else{
       res.render('users/login', {
          errors: "Invalid email or password.",
           user: req.body
-      });
-    }
-    
-  });
+      })
+    }    
+  })
 };
 
 exports.forgot = function (req, res) {
   res.render('users/forgot', {
     title: 'Forgot password'
-  });
-};
+  })
+}
 
 exports.post_forgot = function (req, res) {
   User.validateForgottenEmail(req.body.email, req.headers.host, function(error, message){
@@ -226,9 +233,9 @@ exports.post_forgot = function (req, res) {
       title: 'Forgot password',
       email: req.body.email,
       message: message
-    });
-  });  
-};
+    })
+  })
+}
 
 exports.reset = function (req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
