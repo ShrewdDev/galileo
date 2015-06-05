@@ -26,12 +26,14 @@
           {% endif %} 
           {% if question.type == 'multiple_choices' %}
             {% for response in question.responses %}
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="response" value="{{response.id}}" {% if result && (result.indexOf(response.id) > -1) %} checked {% endif %}>
-                  {{ response.response }}
-                </label>
-              </div>
+              {% if req.user.department != response.id %}
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="response" value="{{response.id}}" {% if result && (result.indexOf(response.id) > -1) %} checked {% endif %}>
+                    {{ response.response }}
+                  </label>
+                </div>
+              {% endif %}    
             {% endfor %}
           {% endif %}
 

@@ -113,6 +113,7 @@ exports.user_surveys = function (req, res){
 	query = { organization:  req.user.organization, type: types[req.user.role], confirmed: true}
 	if(req.user.role == 'Customer_TeamMember') query.ready = true
 	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {	
+		console.log(surveys.length)
 		if(req.user.role == 'Customer_TeamMember'){
 			User.findOne({role: 'Customer_Manager', department: req.user.department}, function(err, manager){
 				member_surveys = []
