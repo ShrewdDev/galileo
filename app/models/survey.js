@@ -129,7 +129,7 @@ var employee_template = {
             ]
         },
         {
-            "question" : "What are areas of improvement of {tag_ressource_repeat_3} for partner department : {manager_tag_department_repeat_3} ?",
+            "question" : "What resource would most improve  {manager_tag_department_repeat_3}'s delivery of {tag_ressource_repeat_3} ?",
             "type" : "unique_choice",
             "responses" : [ 
                 {
@@ -166,7 +166,8 @@ var  mongoose        = require('mongoose')
     ,validate        = require('mongoose-validator')
     ,uniqueValidator = require('mongoose-unique-validator')
     ,surveyTypes     = ['Manager Survey', 'Employee Survey']
-    ,surveyItems     = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+    ,managerSurveyItems      = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+    ,employeeSurveyItems     = ['Documents', 'Document numbers or specification numbers', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
 
 var ResultSchema = new Schema({
   user:             { type: Schema.ObjectId, ref: 'User'},
@@ -256,6 +257,7 @@ SurveySchema.methods = {
   },
   generateQuestions:function (cb){
     _this = this
+    var surveyItems = (_this.type == 'Manager Survey' ) ? managerSurveyItems : employeeSurveyItems
     Department.find({organization: _this.organization}, function(err, departments){
       _.each(_this.questions, function(question, index){
         var responses    = [] 
