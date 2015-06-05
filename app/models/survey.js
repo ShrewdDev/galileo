@@ -84,7 +84,7 @@ var manager_template = {
         }, 
         {
             "question" : "What do you give to {tag_department_repeat_3} ?",
-            "type" : "items_multiple_choices"
+            "type" : "items_multiple_choices_2"
         }         
     ]
 }
@@ -93,7 +93,7 @@ var employee_template = {
     "questions" : [
         {
             "question" : "What are the items you receive from {manager_tag_department_repeat_3_as_ressource} ?",
-            "type" : "items_multiple_choices"
+            "type"     : "items_multiple_choices_2"
         }, 
         {
             "question" : "Are you receiving {tag_ressource_repeat_3} from {manager_tag_department_repeat_3} on time for your purposes?",
@@ -151,7 +151,7 @@ var employee_template = {
         },
         {
             "question" : "What do you provide to {manager_tag_department_repeat_3} ?",
-            "type" : "items_multiple_choices"
+            "type"     : "items_multiple_choices"
         }                          
     ]
 }
@@ -166,8 +166,8 @@ var  mongoose        = require('mongoose')
     ,validate        = require('mongoose-validator')
     ,uniqueValidator = require('mongoose-unique-validator')
     ,surveyTypes     = ['Manager Survey', 'Employee Survey']
-    ,managerSurveyItems      = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
-    ,employeeSurveyItems     = ['Documents', 'Document numbers or specification numbers', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+    ,surveyItems     = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+    ,surveyItems_2    = ['Documents', 'Document numbers or specification numbers', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
 
 var ResultSchema = new Schema({
   user:             { type: Schema.ObjectId, ref: 'User'},
@@ -257,7 +257,7 @@ SurveySchema.methods = {
   },
   generateQuestions:function (cb){
     _this = this
-    var surveyItems = (_this.type == 'Manager Survey' ) ? managerSurveyItems : employeeSurveyItems
+    //var surveyItems = (_this.type == 'Manager Survey' ) ? managerSurveyItems : employeeSurveyItems
     Department.find({organization: _this.organization}, function(err, departments){
       _.each(_this.questions, function(question, index){
         var responses    = [] 
@@ -279,7 +279,14 @@ SurveySchema.methods = {
         _.each(surveyItems, function(item){
           responses.push({ response: item})
         })
-      } 
+      }
+      else if(question.type == 'items_multiple_choices_2'){
+        questionType   = 'multiple_choices'
+        _.each(surveyItems_2, function(item){
+          responses.push({ response: item})
+        })
+      }
+
       else{
         responses    = question.responses
       }
