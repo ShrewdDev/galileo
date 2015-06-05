@@ -89,11 +89,16 @@ UserSchema.pre('save', function(next) {
     this.setPassword()
     this.sendWelcomeEmail(this.email, password)    
   } 
-  next()
+  if(this.role == 'Customer_Manager'){
+    this.model('User').update({department: this.department ,role: 'Customer_Manager'}, {role: 'Customer_TeamMember'},
+      { multi: true }, function(err, numAffected){
+        next()
+      })
+  }
+  else next()
 })
 
-UserSchema.methods = {  
-
+UserSchema.methods = {
   getManagerSurveys:function (cb){
     this.model('Survey').find({organization: this.organization, type: 'Manager Survey'}, function(err, surveys){
       cb(surveys)
@@ -190,7 +195,7 @@ UserSchema.statics = {
         }              
       },function(err){
         callback (null)
-      });               
+      })            
   },
   createUpdateOrganizationAdmins: function (organization, remove){
     _this  = this

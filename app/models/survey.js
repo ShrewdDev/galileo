@@ -204,6 +204,7 @@ var SurveySchema = new Schema({
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : 'Organization'},
     confirmed:         { type : Boolean, default : false},
+    ready:             { type : Boolean, default : false},
     userSteps:         [ UserStepSchema ],
     totalParticipants: { type : Number,  default : 0},
     createdAt:         { type : Date,    default : Date.now},
@@ -409,16 +410,17 @@ SurveySchema.methods = {
           var _tag        = split[0]
           var index       = parseInt(split[1])          
           
-          if(S(_tag).include("manager")) {
+          if(S(_tag).include("manager")){      
             _tag    = split[1]
             index   = parseInt(split[2])
             related = true          
           }
 
           query   = {user: user.id, survey: _this.id, tag: _tag}
-
+          console.log(user.department)
           _this.model('User').findOne({department: user.department, role: 'Customer_Manager'}, function(err, manager){
-            if(related) {
+           
+            if(related){
               query   = {user: manager.id, survey: _this.relatedSurvey, tag: _tag}
             }
             _this.getRelatedSurvey(function(relatedSurvey){

@@ -1,13 +1,14 @@
-var mongoose     = require('mongoose'),
-    User         = mongoose.model('User'),
-    Survey       = mongoose.model('Survey'),
-    Result       = mongoose.model('Result'),
-    Department   = mongoose.model('Department'),
-    Organization = mongoose.model('Organization'),
-    extend       = require('util')._extend
+var mongoose      = require('mongoose'),
+    User          = mongoose.model('User'),
+    Survey        = mongoose.model('Survey'),
+    Result        = mongoose.model('Result'),
+    Department    = mongoose.model('Department'),
+    Organization  = mongoose.model('Organization'),
+    async         = require("async"),
+    extend        = require('util')._extend
 
 exports.customer_admin_surveys = function (req, res){
-	Survey.find({organization: req.user.organization}, function (err, surveys) {
+	Survey.find({organization: req.user.organization}).sort({createdAt: 'desc'}).exec(function (err, surveys) {
 		res.render('survey/index', {
 			surveys: surveys,
 			message: req.flash('message')
@@ -109,11 +110,31 @@ exports.update = function (req, res){
 
 exports.user_surveys = function (req, res){
 	types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}	
-	Survey.find({ organization:  req.user.organization, type: types[req.user.role], confirmed: true}).exec(function (err, surveys) {	
-		res.render('survey/user_survey', {
-			surveys: surveys,
-			message: req.flash('message')
-		})
+	query = { organization:  req.user.organization, type: types[req.user.role], confirmed: true}
+	if(req.user.role == 'Customer_TeamMember') query.ready = true
+	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {	
+		if(req.user.role == 'Customer_TeamMember'){
+			User.findOne({role: 'Customer_Manager', department: req.user.department}, function(err, manager){
+				member_surveys = []
+				async.each(surveys, function (survey, cb) {
+					Survey.findOne({_id: survey.relatedSurvey}, function(err, manager_survey){
+						if(manager_survey && manager_survey.finished(manager.id)) member_surveys.push(survey)
+						cb()    
+					})					          
+				},function(err){
+					res.render('survey/user_survey', {
+						surveys: member_surveys,
+						message: req.flash('message')
+					})
+				})
+			})
+		}
+		else{
+			res.render('survey/user_survey', {
+				surveys: surveys,
+				message: req.flash('message')
+			})			
+		}
 	})
 }
 
@@ -138,8 +159,8 @@ exports.take_survey = function (req, res){
 				})
 			}else{
 				if(survey.type == 'Manager Survey'){
-					Survey.findOne({relatedSurvey: survey.id}, function(err, relatedSurvey){
-						if(relatedSurvey) User.sendSurveyNotification(relatedSurvey, req.user.department, 'Customer_TeamMember')
+					Survey.update({relatedSurvey: survey.id}, {ready: true}, { multi: true }, function(err, relatedSurvey){
+						if(relatedSurvey) User.sendSurveyNotification(relatedSurvey, req.user.department, 'Customer_TeamMember')	
 					})
 				}
 				return res.redirect('/surveys')

@@ -20,6 +20,15 @@
           {% endfor %}
         </select>
       </div>
+      {% else %}
+        <div class="form-group">
+          <label>Role</label>
+          <select class="form-control" name="role">
+            {% for role in roles %}
+              <option value="{{ role }}" {% if user.role == role %} selected {% endif %}>{{ role }}</option>
+            {% endfor %}
+          </select>
+        </div>      
       {% endif %}
     {% endif %}
     {% if (req.user.hasRole('Customer_Admin') ) %}      
