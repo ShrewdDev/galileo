@@ -10,7 +10,7 @@ exports.index = function (req, res) {
   query = {}
   if(req.user.role == 'Customer_Admin')   query = {organization: req.user.organization}
   if(req.user.role == 'Customer_Manager') query = {organization: req.user.organization, department: req.user.department}
-  User.find(query).populate('organization department').exec(function (err, users) {
+  User.find(query).populate('organization department').sort({department: 'asc'}).exec(function (err, users) {
     return res.render('users/admin_users', {
       users: users,
       message: req.flash('message')

@@ -111,7 +111,7 @@ exports.update = function (req, res){
 exports.user_surveys = function (req, res){
 	types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}	
 	query = { organization:  req.user.organization, type: types[req.user.role], confirmed: true}
-	if(req.user.role == 'Customer_TeamMember') query.ready = true
+	//if(req.user.role == 'Customer_TeamMember') query.ready = true
 	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {	
 		console.log(surveys.length)
 		if(req.user.role == 'Customer_TeamMember'){
@@ -159,11 +159,12 @@ exports.take_survey = function (req, res){
 					})
 				})
 			}else{
-				if(survey.type == 'Manager Survey'){
-					Survey.update({relatedSurvey: survey.id}, {ready: true}, { multi: true }, function(err, relatedSurvey){
-						if(relatedSurvey) User.sendSurveyNotification(relatedSurvey, req.user.department, 'Customer_TeamMember')	
-					})
-				}
+				//if(survey.type == 'Manager Survey'){
+					//Survey.update({relatedSurvey: survey.id}, {ready: true}, { multi: true }, function(err, relatedSurvey){
+					//Survey.find({relatedSurvey: survey.id}, {ready: true}, { multi: true }, function(err, relatedSurvey){	
+					//	if(relatedSurvey) User.sendSurveyNotification(relatedSurvey, req.user.department, 'Customer_TeamMember')	
+					//})
+				//}
 				return res.redirect('/surveys')
 			}
 		})

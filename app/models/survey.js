@@ -98,7 +98,7 @@ var employee_template = {
         {
             "question" : "Are you receiving {tag_ressource_repeat_3} from {manager_tag_department_repeat_3} on time for your purposes?",
             "type" : "unique_choice",
-            "responses" : [ 
+            "responses" : [
                 {
                     "response" : "Rarely"
                 }, 
@@ -129,9 +129,9 @@ var employee_template = {
             ]
         },
         {
-            "question" : "What resource would most improve  {manager_tag_department_repeat_3}'s delivery of {tag_ressource_repeat_3} ?",
+            "question" : "What resource would most improve {manager_tag_department_repeat_3}'s delivery of {tag_ressource_repeat_3} ?",
             "type" : "unique_choice",
-            "responses" : [ 
+            "responses" : [
                 {
                     "response" : "Technical training"
                 }, 
@@ -205,7 +205,6 @@ var SurveySchema = new Schema({
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : 'Organization'},
     confirmed:         { type : Boolean, default : false},
-    ready:             { type : Boolean, default : false},
     userSteps:         [ UserStepSchema ],
     totalParticipants: { type : Number,  default : 0},
     createdAt:         { type : Date,    default : Date.now},
@@ -257,7 +256,6 @@ SurveySchema.methods = {
   },
   generateQuestions:function (cb){
     _this = this
-    //var surveyItems = (_this.type == 'Manager Survey' ) ? managerSurveyItems : employeeSurveyItems
     Department.find({organization: _this.organization}, function(err, departments){
       _.each(_this.questions, function(question, index){
         var responses    = [] 
@@ -308,11 +306,10 @@ SurveySchema.methods = {
               number2        = parseInt(split[2]) + 1
               console.log(number1)
               for (var i = 1; i < number1; i++) {
-                for (var j = 1; j < number2; j++) {                  
+                for (var j = 1; j < number2; j++) {           
                   questionString = question.question
-                  questionString = questionString.replace(_tag1, "{"+tag1+"_"+i+"}").replace(_tag2, "{manager_"+manager_tag+"_"+j+"}")
+                  questionString = questionString.replace(_tag1, "{"+tag1+""+i+"}").replace(_tag2, "{manager_"+manager_tag+"_"+j+"}")
                   console.log(questionString)
-                  //_this.questions.splice(_this.questions.indexOf(question), 0, { question: questionString, related: true, type: questionType, genericParent: true, responses: responses })
                   _this.questions.push({ question: questionString, related: true, type: questionType, genericParent: true, responses: responses })
                 }
               }
@@ -328,7 +325,7 @@ SurveySchema.methods = {
               questionString = question.question
               questionString = questionString.replace('{'+tag+'}', "{manager_"+manager_tag+"_"+i+"}")
               //_this.questions.splice(index, 0, { question: questionString, tag: _tag, related: true, type: questionType, genericParent: true, responses: responses })
-              _this.questions.push({ question: questionString, tag: _tag, related: true, type: questionType, genericParent: true, responses: responses })                  
+              _this.questions.push({ question: questionString, tag: _tag+''+i, related: true, type: questionType, genericParent: true, responses: responses })                  
             }
         }
       }
@@ -419,28 +416,29 @@ SurveySchema.methods = {
           var related = false
           var split       = _tag.split('_')
           var _tag        = split[0]
-          var index       = parseInt(split[1])          
+          if(split.length == 1) { var index = parseInt(_tag.slice(-1)) } // Employee ressource1
+          else                  { var index = parseInt(split[1])       }
           
-          if(S(_tag).include("manager")){      
+          if(S(_tag).include("manager")){
             _tag    = split[1]
             index   = parseInt(split[2])
             related = true          
           }
 
           query   = {user: user.id, survey: _this.id, tag: _tag}
-          console.log(user.department)
+          //console.log(user.department)
           _this.model('User').findOne({department: user.department, role: 'Customer_Manager'}, function(err, manager){
-           
             if(related){
               query   = {user: manager.id, survey: _this.relatedSurvey, tag: _tag}
             }
             _this.getRelatedSurvey(function(relatedSurvey){
               _this.model('Result').findOne(query, function(err, prior_results){
+              //_this.model('Result').find(query, function(err, prior_results){  
                   if(prior_results){
                     console.log(prior_results)
+                    //prior_results = prior_results[index]
                     result   = prior_results.response
                     q        = (relatedSurvey && related)? relatedSurvey.questions.id(prior_results.question) : _this.questions.id(prior_results.question)
-                    console.log(_this.questions)
                     title    = title.replace(tag, q.responses.id(result[index-1]).response)
                     callback() 
                   }
