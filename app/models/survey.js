@@ -305,8 +305,9 @@ SurveySchema.methods = {
               manager_tag    = split[0]
               number2        = parseInt(split[2]) + 1
               console.log(number1)
+              for (var j = 1; j < number2; j++) { 
               for (var i = 1; i < number1; i++) {
-                for (var j = 1; j < number2; j++) {           
+                //for (var j = 1; j < number2; j++) {           
                   questionString = question.question
                   questionString = questionString.replace(_tag1, "{"+tag1+""+i+"}").replace(_tag2, "{manager_"+manager_tag+"_"+j+"}")
                   console.log(questionString)
