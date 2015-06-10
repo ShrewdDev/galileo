@@ -1,5 +1,16 @@
 (function($){
 
+	$( "#survey" ).submit(function( event ) {	  
+	  var valid = false
+	  if(($("#validate").data("type") == "checkbox") && $("[type='checkbox']:checked").length > 0) valid = true
+	  if(($("#validate").data("type") == "radio") && $("[type='radio']:checked").length > 0)       valid = true
+	  if(($("#validate").data("type") == "text") && $("input:text").val())       valid = true
+	  if(!valid) {
+	  	$( "#validation_message" ).text( "invalid response !" ).show().fadeOut( 3000 )
+	  	event.preventDefault()
+	  }
+	})
+
   	$(".delete").click(function(event) {
   		event.preventDefault()
   		if (confirm('Are you sure?')) {

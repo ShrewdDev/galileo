@@ -15,6 +15,7 @@
         </div>
       </div>
           {% if question.type == 'unique_choice' %}                  
+            <input type="hidden" id="validate" data-type="radio">
             {% for response in question.responses %}
                 <div class="radio">
                 <label>
@@ -25,6 +26,7 @@
             {% endfor %}
           {% endif %} 
           {% if question.type == 'multiple_choices' %}
+            <input type="hidden" id="validate" data-type="checkbox">
             {% for response in question.responses %}
               {% if req.user.department != response.id %}
                 <div class="checkbox">
@@ -72,7 +74,7 @@
                     {{ressource}}
                   </li>
                 {% endfor %}   
-              </ul>           
+              </ul>
               <h4> Bins :</h4>
               {% for bin in survey.getQuestionBins(question.id) %}
                 {{ bin }} :                       
@@ -106,6 +108,7 @@
             </ul>
           {% endif %}  
           {% if question.type == 'date' %}
+            <input type="hidden" id="validate" data-type="text">
             <div class="row">               
               <div class="form-group col-md-3">
                 <input type="text" name="response" class="form-control datepicker" placeholder="Select Date">
@@ -118,8 +121,9 @@
               <a href="/surveys/{{survey.id}}/takesurvey/{{step -1}}" class="btn btn-default"> < Back</a>
             {% endif %}  
               <button type="submit" class="btn btn-default">Next > </button>
+              <span id="validation_message" class="label label-danger"></span>
           </div>
-                   
+                  
         </div>
       </form> 
     </div>
