@@ -10,7 +10,7 @@ var manager_template = {
             "type" : "department"
         }, 
         {
-            "question" : "What are the items you receive from {tag_department_repeat_3} ?",
+            "question" : "What are the items you receive from {tag_department_repeat_3_as_ressource} ?",
             "type" : "items_multiple_choices"
         }, 
         {
@@ -309,7 +309,7 @@ SurveySchema.methods = {
               for (var i = 1; i < number1; i++) {
                 //for (var j = 1; j < number2; j++) {           
                   questionString = question.question
-                  questionString = questionString.replace(_tag1, "{"+tag1+""+i+"}").replace(_tag2, "{manager_"+manager_tag+"_"+j+"}")
+                  questionString = questionString.replace(_tag1, "{"+tag1+j+"_"+i+"}").replace(_tag2, "{manager_"+manager_tag+"_"+j+"}")
                   console.log(questionString)
                   _this.questions.push({ question: questionString, related: true, type: questionType, genericParent: true, responses: responses })
                 }
@@ -325,7 +325,6 @@ SurveySchema.methods = {
             for (var i = 1; i <= repeat; i++) {
               questionString = question.question
               questionString = questionString.replace('{'+tag+'}', "{manager_"+manager_tag+"_"+i+"}")
-              //_this.questions.splice(index, 0, { question: questionString, tag: _tag, related: true, type: questionType, genericParent: true, responses: responses })
               _this.questions.push({ question: questionString, tag: _tag+''+i, related: true, type: questionType, genericParent: true, responses: responses })                  
             }
         }
@@ -336,21 +335,22 @@ SurveySchema.methods = {
           tag              = S(question.question).between('[{', '}]').s
           question.tag     = tag
           questionString   = question.question.replace('[{'+tag+'}]', '') 
-          //_this.questions.splice(index, 0, { question: questionString, tag: tag, type: questionType, genericParent: true, responses: responses })
           _this.questions.push({ question: questionString, tag: tag, type: questionType, genericParent: true, responses: responses })
         }
 
         if(S(question.question).include("{tag_")) {
           question.generic = true
           var tags = question.question.match(/\{(.*?)\}/g)
-          if(tags.length == 1){
-            var tag    = tags[0]
-            var result = getTagAndNumber(tag)
-            for (var i = 1; i < result.number; i++) {
+          if(tags.length == 1){ // {tag_department_repeat_3_as_ressource}
+            var tag  = tags[0]
+            var _tag   = S(tag).between('{', '}').s
+            _tag       = _tag.split('_')
+            number = parseInt(_tag[3])+1
+            for (var i = 1; i < number; i++) {
+              var __tag     = (_tag.length > 4)? _tag[5]+i : _tag[1]
               questionString = question.question
-              questionString = questionString.replace(tag, "{"+result.tag+"_"+i+"}")
-              //_this.questions.splice(index, 0, { question: questionString, tag: result.tag, type: questionType, genericParent: true, responses: responses })
-              _this.questions.push({ question: questionString, tag: result.tag, type: questionType, genericParent: true, responses: responses })      
+              questionString = questionString.replace(tag, "{"+_tag[1]+"_"+i+"}")
+                _this.questions.push({ question: questionString, tag: __tag, type: questionType, genericParent: true, responses: responses })      
             }
           }
 
@@ -359,12 +359,11 @@ SurveySchema.methods = {
             var result1 = getTagAndNumber(tag1)
             var tag2    = tags[1]
             var result2 = getTagAndNumber(tag2)        
-            for (var i = 1; i < result1.number; i++) {
-              for (var j = 1; j < result2.number; j++) {            
+            for (var j = 1; j < result2.number; j++) { 
+              for (var i = 1; i < result1.number; i++) {
                 questionString = question.question
-                questionString = questionString.replace(tag1, "{"+result1.tag+"_"+i+"}").replace(tag2, "{"+result2.tag+"_"+j+"}")
-                //_this.questions.splice(index, 0, { question: questionString, type: questionType, genericParent: true, responses: responses })
-                _this.questions.push({ question: questionString, type: questionType, genericParent: true, responses: responses })
+                questionString = questionString.replace(tag1, "{"+result1.tag+j+"_"+i+"}").replace(tag2, "{"+result2.tag+"_"+j+"}")
+                  _this.questions.push({ question: questionString, type: questionType, genericParent: true, responses: responses })
               }        
             }
           }  

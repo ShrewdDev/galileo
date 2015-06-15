@@ -4,11 +4,14 @@ var users_controller         = require('users_controller'),
     organization_controller  = require('organization_controller'),
     department_controller    = require('departments_controller'),
     team_member_controller   = require('team_member_controller'),
-    survey_controller        = require('survey_controller')
+    survey_controller        = require('survey_controller'),
+    graph_controller         = require('graph_controller')    
 
 var auth                     = require('./middlewares/authorization');
 
 module.exports = function (app, passport) {
+
+  app.get('/graph', graph_controller.index)
 
   app.get('/signup', users_controller.signup)
   app.post('/signup', users_controller.post_signup)

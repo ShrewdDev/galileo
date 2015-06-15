@@ -2,7 +2,7 @@
 {% block content %}
 <section class="module">
     <div class="container">
-   <form id="survey" action="/surveys/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
+   <form id="take_survey" action="/surveys/{{survey.id}}/takesurvey/{{step}}" method="post" role="form" novalidate="">
       <input type="hidden" name="_csrf" value="{{ csrf_token }}">
       <input type="hidden" value="{{survey.id}}" name="survey">
       <input type="hidden" value="{{step}}" name="step">
