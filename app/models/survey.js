@@ -221,6 +221,8 @@ SurveySchema.statics = {
   getTemplate:function (type){
     templates = {'manager': manager_template, 'employee' : employee_template}
     return templates[type]
+  },getItems:function (){
+    return surveyItems_2
   }
 }
 
@@ -301,16 +303,13 @@ SurveySchema.methods = {
               tag2    = S(question.question).between('{manager_tag_', '}').s
               _tag2   = '{manager_tag_'+tag2+'}'
               split   = tag2.split('_')
-
               manager_tag    = split[0]
               number2        = parseInt(split[2]) + 1
               console.log(number1)
-              for (var j = 1; j < number2; j++) { 
-              for (var i = 1; i < number1; i++) {
-                //for (var j = 1; j < number2; j++) {           
+              for (var j = 1; j < number2; j++) {
+                for (var i = 1; i < number1; i++) {
                   questionString = question.question
                   questionString = questionString.replace(_tag1, "{"+tag1+j+"_"+i+"}").replace(_tag2, "{manager_"+manager_tag+"_"+j+"}")
-                  console.log(questionString)
                   _this.questions.push({ question: questionString, related: true, type: questionType, genericParent: true, responses: responses })
                 }
               }

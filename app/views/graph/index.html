@@ -11,30 +11,36 @@
 
 {% block content %}
 <section class="module">
-<div class="container" id="mynetwork"> </div>
+  <form action="/" method="post" role="form" novalidate="">
+          <div class="row">
+        <div class="col-sm-3 col-sm-offset-3">  
+            <div class="form-group">
+              <select class="form-control" name="type">  
+                {% for survey in surveys %}     
+                  <option value={{survey.id}} >{{ survey.title }}</option>
+                {% endfor %}         
+              </select>
+            </div>
+            </div>
+            <div class="col-sm-3">  
+            <div class="form-group">
+              <select class="form-control" name="type">       
+                {% for item in items %}     
+                  <option value={{item}} >{{ item }}</option>
+                {% endfor %}                
+                </select>
+            </div>            
+            </div>
+            </div>
+  </form>
+  <div class="container" id="mynetwork"> </div>
 </section>
 <script type="text/javascript">
-  var nodes = new vis.DataSet([
-    {id: 1, label: "HR", color:'#97C2FC', size: 40},
-    {id: 2, label: "DIR", color:'#FFFF00', size: 20},
-    {id: 3, label: "Sales", color:'#FB7E81', size: 23},
-    {id: 4, label: 4, color:'#7BE141'},
-    {id: 5, label: 5, color:'#6E6EFD'},
-    {id: 6, label: 6, color:'#C2FABC'},
-    {id: 7, label: 7, color:'#FFA807'},
-    {id: 8, label: 8, color:'#6E6EFD'}
-  ]);
-  var edges = new vis.DataSet([
-    {from: 1, to: 8, color:{color:'red'}, label: "label"},
-    {from: 1, to: 3, color:'rgb(20,24,200)'},
-    {from: 1, to: 2, color:{color:'rgba(30,30,30,0.2)', highlight:'blue'}},
-    {from: 2, to: 5, color:{inherit:'from'}},
-    {from: 5, to: 6, color:{inherit:'both'}},
-    {from: 6, to: 7, color:{color:'#ff0000', opacity:0.3}},
-    {from: 6, to: 8, color:{opacity:0.3}},
-  ]);
-
   var container = document.getElementById('mynetwork');
+  var nodes = new vis.DataSet({{JSON.stringify(nodes)}});
+  var edges = new vis.DataSet({{JSON.stringify(edges)}});
+
+  
   var data = {
     nodes: nodes,
     edges: edges
