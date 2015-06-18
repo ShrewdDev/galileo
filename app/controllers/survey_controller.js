@@ -143,10 +143,10 @@ exports.take_survey = function (req, res){
 	var step = req.params.step
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
 		var validQuestions 	= survey.validQuestions()
-		survey.updateStep(req.user.id, step, function(){			
+		survey.updateStep(req.user, step, function(){			
 			if(step < validQuestions.length){
 				question 		= validQuestions[step]
-				survey.setQuestionTitle(req.user, question,	function(title){
+				survey.setQuestionTitle(req.user, question,	function(title, object, action, objectvalue){
 					question.question = title
 					Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
 						result = result ? result.response : null
@@ -154,17 +154,14 @@ exports.take_survey = function (req, res){
 							survey:      survey,
 							question:    question,
 							result:    	 result,
-							step:        step
+							step:        step,
+							object:      object,
+							objectvalue: objectvalue,
+							action:      action
 						})
 					})
 				})
 			}else{
-				//if(survey.type == 'Manager Survey'){
-					//Survey.update({relatedSurvey: survey.id}, {ready: true}, { multi: true }, function(err, relatedSurvey){
-					//Survey.find({relatedSurvey: survey.id}, {ready: true}, { multi: true }, function(err, relatedSurvey){	
-					//	if(relatedSurvey) User.sendSurveyNotification(relatedSurvey, req.user.department, 'Customer_TeamMember')	
-					//})
-				//}
 				return res.redirect('/surveys')
 			}
 		})
@@ -174,8 +171,9 @@ exports.take_survey = function (req, res){
 exports.post_survey_result = function (req, res){
 	var step = parseInt(req.params.step) + 1
 	var survey_id = req.params.id
+	req.body.survey = survey_id
 	Result.findOneAndUpdate({ user: req.user.id, survey: survey_id, question: req.body.question }, 
-							{ response: req.body.response, tag: req.body.tag },
+							req.body,
 							{ upsert: true }, function(err, doc) {		
 					if(err){
 						console.log(err)

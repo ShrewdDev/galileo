@@ -174,6 +174,9 @@ var ResultSchema = new Schema({
   survey:           { type: Schema.ObjectId, ref: 'Survey'},
   question:         { type: Schema.ObjectId, ref: 'Question'},
   tag:              { type: String },
+  object:           { type: String }, // departmet
+  action:           { type: String }, // give or receive
+  objectvalue:      { type: String }, //
   response:         [ ResponseSchema ],
   value:            { type: String}
 })
@@ -194,6 +197,7 @@ var QuestionSchema = new Schema({
 
 var UserStepSchema = new Schema({
     _id:                { type : Schema.ObjectId, ref : 'User'}, 
+    department:         { type : Schema.ObjectId, ref : 'Department'}, 
     step:               { type : Number },
     finished:           { type : Boolean, default: false }
 })
@@ -234,15 +238,15 @@ SurveySchema.methods = {
     }
     else return false
   },
-  updateStep:function (user_id, step, cb){        
+  updateStep:function (user, step, cb){        
       var valid  = this.validQuestions()
-      if(this.userSteps.id(user_id)){
-        var userStep = this.userSteps.id(user_id)
+      if(this.userSteps.id(user.id)){
+        var userStep = this.userSteps.id(user.id)
         userStep.step = step
         if(step == valid.length)  userStep.finished = true
       }
       else{
-       this.userSteps.push({_id: user_id, step: step}) 
+       this.userSteps.push({_id: user.id, department: user.department, step: step}) 
       }      
       this.save(function(err){
         cb()
@@ -407,11 +411,17 @@ SurveySchema.methods = {
 
   setQuestionTitle:function (user, question, cb){
       _this = this
-      var title = question.question
+      var title = question.question      
       var tags  = question.question.match(/\{(.*?)\}/g)
+      var action = object = objectvalue = ''
+      if(S(title).include('receive')) action = 'receive'
+      if(S(title).include('give'))    action = 'give'  
+      
       if(tags && tags.length > 0){
         async.eachSeries(tags, function(tag, callback){
+          console.log(title)
           var _tag    = S(tag).between('{', '}').s
+
           var related = false
           var split       = _tag.split('_')
           var _tag        = split[0]
@@ -425,20 +435,20 @@ SurveySchema.methods = {
           }
 
           query   = {user: user.id, survey: _this.id, tag: _tag}
-          //console.log(user.department)
           _this.model('User').findOne({department: user.department, role: 'Customer_Manager'}, function(err, manager){
             if(related){
               query   = {user: manager.id, survey: _this.relatedSurvey, tag: _tag}
             }
             _this.getRelatedSurvey(function(relatedSurvey){
               _this.model('Result').findOne(query, function(err, prior_results){
-              //_this.model('Result').find(query, function(err, prior_results){  
-                  if(prior_results){
-                    console.log(prior_results)
-                    //prior_results = prior_results[index]
+                  if(prior_results){                                       
                     result   = prior_results.response
                     q        = (relatedSurvey && related)? relatedSurvey.questions.id(prior_results.question) : _this.questions.id(prior_results.question)
                     title    = title.replace(tag, q.responses.id(result[index-1]).response)
+                    if(S(_tag).include("department")) {
+                      object      = 'department'
+                      objectvalue = q.responses.id(result[index-1]).id
+                    }
                     callback() 
                   }
                   else callback()
@@ -446,10 +456,10 @@ SurveySchema.methods = {
             })
           })
         }, function(err){
-          cb(title)
+          cb(title, object, action, objectvalue)
         })         
       }   
-      else cb(title)
+      else cb(title, object, action, objectvalue)
     }
 }
 

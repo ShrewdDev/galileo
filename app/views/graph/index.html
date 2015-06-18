@@ -11,26 +11,31 @@
 
 {% block content %}
 <section class="module">
-  <form action="/" method="post" role="form" novalidate="">
+  <form action="/graph" method="get" role="form" novalidate="">
           <div class="row">
-        <div class="col-sm-3 col-sm-offset-3">  
+        <div class="col-sm-2 col-sm-offset-3">  
             <div class="form-group">
-              <select class="form-control" name="type">  
+              <select class="form-control" name="survey">  
                 {% for survey in surveys %}     
-                  <option value={{survey.id}} >{{ survey.title }}</option>
+                  <option value="{{loop.index0}}" {% if loop.index0 == surveyIndex %} selected {% endif %}>{{ survey.title }}</option>
                 {% endfor %}         
               </select>
             </div>
             </div>
-            <div class="col-sm-3">  
+            <div class="col-sm-2">  
             <div class="form-group">
-              <select class="form-control" name="type">       
+              <select class="form-control" name="item">       
                 {% for item in items %}     
-                  <option value={{item}} >{{ item }}</option>
+                  <option value="{{loop.index0}}" {% if loop.index0 == itemIndex %} selected {% endif %}>{{ item }}</option>
                 {% endfor %}                
                 </select>
             </div>            
             </div>
+            <div class="col-sm-2">  
+            <div class="form-group">
+              <button class="btn btn-default" type="submit">Go</button>
+            </div>            
+            </div>            
             </div>
   </form>
   <div class="container" id="mynetwork"> </div>
@@ -39,22 +44,21 @@
   var container = document.getElementById('mynetwork');
   var nodes = new vis.DataSet({{JSON.stringify(nodes)}});
   var edges = new vis.DataSet({{JSON.stringify(edges)}});
-
   
   var data = {
     nodes: nodes,
     edges: edges
   };
   var options = {
-  "interaction": {
-    "dragNodes": true,
-    "dragView": false,
-    "selectable": false,
-    "zoomView": false
-  }, nodes: {
+    "interaction": {
+      "dragNodes": true,
+      "dragView": false,
+      "selectable": false,
+      "zoomView": false
+    }, nodes: {
           shape: 'dot'
         }
-}
+  }
   var network = new vis.Network(container, data, options);
 </script>
 {% endblock%}

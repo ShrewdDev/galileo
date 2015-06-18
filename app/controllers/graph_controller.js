@@ -4,21 +4,67 @@ var mongoose      = require('mongoose'),
     Result        = mongoose.model('Result'),
     Department    = mongoose.model('Department'),
     Organization  = mongoose.model('Organization'),
+    _             = require("underscore"),  
     async         = require("async")
 
 exports.index = function (req, res){
-Department.find({organization: req.user.organization}).exec(function (err, departments) {	
-	Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
-		survey = surveys[0]
-		nodes  = []
-		edges  = []
-		colors = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
-		for(index in departments){
-			department = departments[index]
-			nodes.push({id: index, label: department.departmentName, color: colors[index%colors.length], size: 40})
-			to = parseInt(index) + 1
-			edges.push({from: index, to: to, color:{color:'blue'}, length: 200, label: "label"})
-		}
+	var surveyIndex  = req.query.survey || 0,
+		itemIndex    = req.query.item   || 0,
+		items        = Survey.getItems()
+
+	Department.find({organization: req.user.organization}).exec(function (err, departments) {	
+		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
+			survey = surveys[surveyIndex]
+			console.log(survey.id)
+			console.log(survey.userSteps)
+			nodes  = []
+			edges  = []
+			colors = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
+			for(index in departments){
+				usersThatfinishedSurvey = []
+				department = departments[index]
+				console.log(department.id)
+				size = 5
+				_.each(survey.userSteps, function(step){
+					if(step.department == department.id && step.finished) {
+						size += 5
+						usersThatfinishedSurvey.push(step.id)						
+					}
+				})
+				console.log(usersThatfinishedSurvey)
+				nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
+				to = parseInt(index) + 1
+				
+
+				edges.push({from: index, to: to, color:{color:'blue'}, length: 200, label: "label"})
+			
+
+
+
+
+			}
+
+			_.each(survey.questions , function(question){
+				_.each(question.responses , function(response){
+					if(response.response == items[itemIndex]) {
+						console.log("found")
+						console.log(response)
+					}
+				})				
+			})
+			res.render('graph/index', {
+				surveys: surveys,
+				surveyIndex:  surveyIndex,
+				itemIndex: itemIndex,
+				items: items,
+				nodes: nodes,
+				edges: edges
+			})
+		})
+	})
+}
+
+
 
 /*
 nodes = [
@@ -41,12 +87,3 @@ edges = [
     {from: 6, to: 8, color:{opacity:0.3}},
   ]
 */
-		res.render('graph/index', {
-			surveys: surveys,
-			items: Survey.getItems(),
-			nodes: nodes,
-			edges: edges
-		})
-	})
-	})
-}
