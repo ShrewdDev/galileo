@@ -50,16 +50,18 @@ exports.index = function (req, res){
 						}
 					})
 				})
+
+				res.render('graph/index', {
+					surveys: surveys,
+					surveyIndex:  surveyIndex,
+					itemIndex: itemIndex,
+					items: items,
+					nodes: nodes,
+					edges: edges
+				})
 			})
 
-			res.render('graph/index', {
-				surveys: surveys,
-				surveyIndex:  surveyIndex,
-				itemIndex: itemIndex,
-				items: items,
-				nodes: nodes,
-				edges: edges
-			})
+
 		})
 	})
 }
