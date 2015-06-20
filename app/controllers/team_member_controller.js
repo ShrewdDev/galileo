@@ -12,15 +12,16 @@ exports.index = function (req, res){
 		});
 	})	
 }
+
 exports.new = function (req, res){
 	user = new User()
 	Department.findOne({_id: req.user.department}, function(err, department){
 		user.departmentName = department.departmentName
 		user.location = department.location
 		res.render('team_member/form', {
-			user: user,
+			user:  user,
 			label: 'New Member',
-			action: "/team_member/create"
+			action: '/team_member/create'
 		})
 	})
 }

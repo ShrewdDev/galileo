@@ -10,48 +10,48 @@ var mongoose      = require('mongoose'),
 exports.index = function (req, res){
 	var surveyIndex  = req.query.survey || 0,
 		itemIndex    = req.query.item   || 0,
-		items        = Survey.getItems()
+		items        = Survey.getItems(),
+		nodes        = [],
+		edges        = [],
+		colors       = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
 
 	Department.find({organization: req.user.organization}).exec(function (err, departments) {	
 		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
-			survey = surveys[surveyIndex]
-			console.log(survey.id)
-			console.log(survey.userSteps)
-			nodes  = []
-			edges  = []
-			colors = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
-			for(index in departments){
-				usersThatfinishedSurvey = []
-				department = departments[index]
-				console.log(department.id)
+			survey = surveys[surveyIndex],
+			usersThatfinishedSurvey = []				
+			_.each(departments, function(department, index){						
+				console.log("itemIndex " + itemIndex)
 				size = 5
 				_.each(survey.userSteps, function(step){
 					if(step.department == department.id && step.finished) {
 						size += 5
-						usersThatfinishedSurvey.push(step.id)						
+						usersThatfinishedSurvey.push(step.id)
 					}
 				})
 				console.log(usersThatfinishedSurvey)
 				nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
-				to = parseInt(index) + 1
-				
-
-				edges.push({from: index, to: to, color:{color:'blue'}, length: 200, label: "label"})
-			
-
-
-
-
-			}
-
-			_.each(survey.questions , function(question){
-				_.each(question.responses , function(response){
-					if(response.response == items[itemIndex]) {
-						console.log("found")
-						console.log(response)
-					}
-				})				
+				to = parseInt(index) + 1				
 			})
+
+			Result.find({ survey: survey.id, object: 'department', action: {$in:['give', 'receive']}}, function(err, results){
+				_.each(results, function(result){
+					_.each(result.response, function(response){
+						if(_.contains(response, itemIndex)){
+							var from, to 
+							if(result.action == 'give'){
+								from = result.department
+								to   = result.objectvalue
+							}
+							else{
+								to   = result.department
+								from = result.objectvalue
+							}
+							edges.push({from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
+						}
+					})
+				})
+			})
+
 			res.render('graph/index', {
 				surveys: surveys,
 				surveyIndex:  surveyIndex,

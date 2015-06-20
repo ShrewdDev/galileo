@@ -166,11 +166,13 @@ var  mongoose        = require('mongoose')
     ,validate        = require('mongoose-validator')
     ,uniqueValidator = require('mongoose-unique-validator')
     ,surveyTypes     = ['Manager Survey', 'Employee Survey']
-    ,surveyItems     = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
-    ,surveyItems_2    = ['Documents', 'Document numbers or specification numbers', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+    ,surveyItems     = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}]
+    //,surveyItems     = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+    //,surveyItems_2    = ['Documents', 'Document numbers or specification numbers', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
 
 var ResultSchema = new Schema({
   user:             { type: Schema.ObjectId, ref: 'User'},
+  department:       { type: Schema.ObjectId, ref: 'Department'},
   survey:           { type: Schema.ObjectId, ref: 'Survey'},
   question:         { type: Schema.ObjectId, ref: 'Question'},
   tag:              { type: String },
@@ -182,6 +184,7 @@ var ResultSchema = new Schema({
 })
 
 var ResponseSchema = new Schema({
+  _id:              { type: String, default: mongoose.Types.ObjectId },
   response:         { type: String }  
 })
 
@@ -226,7 +229,7 @@ SurveySchema.statics = {
     templates = {'manager': manager_template, 'employee' : employee_template}
     return templates[type]
   },getItems:function (){
-    return surveyItems_2
+    return surveyItems
   }
 }
 
@@ -256,7 +259,7 @@ SurveySchema.methods = {
     var step = 0, v  = this.validQuestions()
     if(this.userSteps.id(user_id)){ 
       step = this.userSteps.id(user_id)
-      step = step.step      
+      step = step.step
     }
     return (Math.round((parseFloat(step) / parseFloat(v.length)) * 100)) + ' %'    
   },
@@ -275,19 +278,22 @@ SurveySchema.methods = {
       else if(question.type == 'items_rank'){
         questionType   = 'multiple_choices'
         _.each(surveyItems, function(item){
-          responses.push({ response: item})
+          responses.push({ _id: item.id, response: item.value})
         })
       } 
       else if(question.type == 'items_multiple_choices'){
         questionType   = 'multiple_choices'
         _.each(surveyItems, function(item){
-          responses.push({ response: item})
+          responses.push({ _id: item.id, response: item.value})
         })
       }
       else if(question.type == 'items_multiple_choices_2'){
         questionType   = 'multiple_choices'
-        _.each(surveyItems_2, function(item){
-          responses.push({ response: item})
+        _.each(surveyItems, function(item){
+          ignoreEmployeeItems = [2, 3]
+          if(! _.contains(ignoreEmployeeItems, item.id)){
+            responses.push({ _id: item.id, response: item.value})  
+          }
         })
       }
 
@@ -374,7 +380,8 @@ SurveySchema.methods = {
       }
     })
     if(_this.type == 'Manager Survey' ) _this.questions.push({ question: 'When should Shrewd send this Quarterly Employee survey to all of your direct reports?', type: 'date', genericParent: true })
-    _this.save(function(){
+    _this.save(function(err){
+      if(err) console.log(err)
       cb()
     })
   })
