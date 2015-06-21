@@ -8,30 +8,21 @@ var mongoose      = require('mongoose'),
     async         = require("async")
 
 exports.index = function (req, res){
-	var surveyIndex  = req.query.survey || 0,
-		itemIndex    = req.query.item   || 0,
+	var surveyIndex  = req.query.survey   || 0,
+		itemIndex    = req.query.item     || 0,
+		workflow     = req.query.workflow || "global",
 		items        = Survey.getItems(),
 		nodes        = [],
 		edges        = [],
+		connected_departments = [],
 		colors       = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
+
 
 	Department.find({organization: req.user.organization}).exec(function (err, departments) {	
 		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
 			survey = surveys[surveyIndex],
 			usersThatfinishedSurvey = []				
-			_.each(departments, function(department, index){						
-				console.log("itemIndex " + itemIndex)
-				size = 5
-				_.each(survey.userSteps, function(step){
-					if(step.department == department.id && step.finished) {
-						size += 5
-						usersThatfinishedSurvey.push(step.id)
-					}
-				})
-				console.log(usersThatfinishedSurvey)
-				nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
-				to = parseInt(index) + 1				
-			})
+
 
 			Result.find({ survey: survey.id, object: 'department', action: {$in:['give', 'receive']}}, function(err, results){
 				_.each(results, function(result){
@@ -46,22 +37,39 @@ exports.index = function (req, res){
 								to   = result.department
 								from = result.objectvalue
 							}
+							connected_departments.push(to.toString())
+							connected_departments.push(from.toString())
 							edges.push({from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
 						}
 					})
 				})
 
-				res.render('graph/index', {
+				_.each(departments, function(department, index){						
+					console.log("itemIndex " + itemIndex)
+					size = 5
+					_.each(survey.userSteps, function(step){
+						if(step.department == department.id && step.finished) {
+							size += 5
+							usersThatfinishedSurvey.push(step.id)
+						}
+					})
+					if(workflow == 'global'){
+						nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
+					}					
+					if(workflow == 'department' && _.contains(connected_departments, department.id)){
+						nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
+					}
+				})
+			    res.render('graph/index', {
 					surveys: surveys,
 					surveyIndex:  surveyIndex,
 					itemIndex: itemIndex,
 					items: items,
 					nodes: nodes,
-					edges: edges
+					edges: edges,
+					workflow: workflow
 				})
 			})
-
-
 		})
 	})
 }
