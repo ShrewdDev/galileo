@@ -156,19 +156,18 @@ var employee_template = {
     ]
 }
 
-var  mongoose        = require('mongoose')
-    ,Schema          = mongoose.Schema
-    ,Department      = mongoose.model('Department')
-    ,_               = require("underscore")    
-    ,S               = require('string')
-    ,validator       = require('validator')
-    ,async           = require("async")
-    ,validate        = require('mongoose-validator')
-    ,uniqueValidator = require('mongoose-unique-validator')
-    ,surveyTypes     = ['Manager Survey', 'Employee Survey']
-    ,surveyItems     = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}]
-    //,surveyItems     = ['Documents', 'Document numbers or specification numbers', 'Signature approval', 'Funds', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
-    //,surveyItems_2    = ['Documents', 'Document numbers or specification numbers', 'Material resources', 'Production process knowledge', 'Business process knowledge', 'Product knowledge', 'Technical knowledge', 'Manufacturing knowledge', 'Contacts', 'Document design/review', 'Training', 'FYI emails or memos', 'Technical services', 'Skilled Labor/People resources']
+var mongoose         = require('mongoose'),
+    Schema           = mongoose.Schema,
+    Department       = mongoose.model('Department'),
+    _                = require("underscore"),    
+    S                = require('string'),
+    validator        = require('validator'),
+    async            = require("async"),
+    validate         = require('mongoose-validator'),
+    uniqueValidator  = require('mongoose-unique-validator'),
+    surveyTypes      = ['Manager Survey', 'Employee Survey'],
+    surveyItems      = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}],
+    defaultCloseDays = 45
 
 var ResultSchema = new Schema({
   user:             { type: Schema.ObjectId, ref: 'User'},
@@ -214,7 +213,20 @@ var SurveySchema = new Schema({
     confirmed:         { type : Boolean, default : false},
     userSteps:         [ UserStepSchema ],
     totalParticipants: { type : Number,  default : 0},
+    dateSent:          { type : Date },
+    dateClosed:        { type : Date },
     createdAt:         { type : Date,    default : Date.now},
+})
+
+SurveySchema.pre('save', function(next) {
+  if (this.confirmed){
+    var now           = new Date()
+    this.dateSent     = now
+    var closeDate     = new Date(now)
+    closeDate.setDate(closeDate.getDate() + defaultCloseDays)
+    this.dateClosed   = closeDate
+  } 
+  next()
 })
 
 function getTagAndNumber(tag){

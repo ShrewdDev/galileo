@@ -8,7 +8,9 @@
 					<thead>
 						<tr>
 							<th>Survey Title</th>
-							<th>Survey Type</th>												
+							<th>Survey Type</th>
+							<th>Date Sent</th>
+							<th>Date closed</th>												
 						</tr>
 					</thead>
 					<tbody>
@@ -16,6 +18,8 @@
 							<tr>			
 								<td><a href="/survey/{{survey.id}}/edit">{{survey.title}}</a></td>
 								<td>{{survey.type}}</td>
+								<td>{{survey.dateSent|date('m/d/Y') }}</td>
+								<td>{{survey.dateClosed|date('m/d/Y') }}</td>
 							</tr>
 						{% endfor %}
 					</tbody>

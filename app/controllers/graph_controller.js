@@ -21,9 +21,8 @@ exports.index = function (req, res){
 	Department.find({organization: req.user.organization}).exec(function (err, departments) {	
 		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
 			survey = surveys[surveyIndex],
-			usersThatfinishedSurvey = []				
-
-
+			usersThatfinishedSurvey = []
+			
 			Result.find({ survey: survey.id, object: 'department', action: {$in:['give', 'receive']}}, function(err, results){
 				_.each(results, function(result){
 					_.each(result.response, function(response){
@@ -53,10 +52,7 @@ exports.index = function (req, res){
 							usersThatfinishedSurvey.push(step.id)
 						}
 					})
-					if(workflow == 'global'){
-						nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
-					}					
-					if(workflow == 'department' && _.contains(connected_departments, department.id)){
+					if(workflow != 'department' || ( workflow == 'department' && _.contains(connected_departments, department.id))){
 						nodes.push({id: department.id, label: department.departmentName, color: colors[index%colors.length], size: size})
 					}
 				})
