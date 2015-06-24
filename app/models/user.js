@@ -52,6 +52,10 @@ var UserSchema = new Schema({
   createdAt:                      { type: Date, default : Date.now }
 })
 
+UserSchema.virtual('emailPrefix').get(function () {
+  return this.email.split('@')[0]
+})
+
 UserSchema.post('save remove', function (user) {
   if(user.department){
     this.model('User').find({department: user.department, role: 'Customer_TeamMember'}, function(err, users){

@@ -1,15 +1,29 @@
-var mongoose = require('mongoose'),
-    User = mongoose.model('User'),
-    Department = mongoose.model('Department'),
+var mongoose     = require('mongoose'),
+    User         = mongoose.model('User'),
+    Department   = mongoose.model('Department'),
     Organization = mongoose.model('Organization'),
-    extend = require('util')._extend
+    extend       = require('util')._extend,
+    _            = require("underscore")
 
 exports.index = function (req, res){
 	User.find({department: req.user.department, role: 'Customer_TeamMember'}).populate('department').exec(function (err, team_members) {
 		res.render('team_member/index', {
 		    team_members: team_members,
 		    message: req.flash('message')
-		});
+		})
+	})	
+}
+
+exports.graph = function (req, res){
+	var nodes = []
+	
+	User.find({department: req.user.department, role: 'Customer_TeamMember'}).populate('department').exec(function (err, team_members) {
+		_.each(team_members, function(team_member, index){
+			nodes.push({id: index, label: team_member.emailPrefix, shape: 'circle'})
+		})
+		res.render('team_member/graph', {
+		    nodes: nodes
+		})
 	})	
 }
 
