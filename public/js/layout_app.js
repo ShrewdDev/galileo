@@ -1,5 +1,5 @@
 (function($){
-
+	$('[data-toggle="tooltip"]').tooltip();
 	$( "#take_survey" ).submit(function( event ) {	  
 	  var valid = false
 	  if(($("#validate").data("type") == "checkbox") && $("[type='checkbox']:checked").length > 0) valid = true

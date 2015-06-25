@@ -2,8 +2,15 @@
 {% block content %}
 	<section class="module">
 	    <div class="container">
+			<div class="row" style="margin-bottom: 8px;">
+				 <button class="btn btn-round btn-d open-modal" data-url="/team_member/new"> Add new member </button>
+					<div class="pull-right">
+						<a href="#" data-toggle="tooltip" data-placement="top" title="Grid"> <span aria-hidden="true" class="icon-grid"></span> </a>  
+						<a href="/team_members/graph" data-toggle="tooltip" data-placement="top" title="Graph"> 
+						<span aria-hidden="true" class="icon-linegraph"></span> </a>
+					</div>
+			</div>
 			<div class="row">
-				<h4 class="font-alt mb-0">Team members</h4>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -30,8 +37,7 @@
 						{% endfor %}
 					</tbody>
 				</table>
-			<button class="btn btn-round btn-d open-modal" data-url="/team_member/new"> Add new member </button>
-			</div>
+			</div>			
 		</div>
 	</section>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=false&libraries=places"></script>

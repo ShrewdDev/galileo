@@ -11,10 +11,13 @@
 {% block content %}
 	<section class="module">
 	    <div class="container">
-			<div class="row">
-				<h4 class="font-alt mb-0">Team members</h4>
-
-
+			<div class="row" style="margin-bottom: 8px;">
+				 <button class="btn btn-round btn-d open-modal" data-url="/team_member/new"> Add new member </button>
+					<div class="pull-right">
+						<a href="/team_members" data-toggle="tooltip" data-placement="top" title="Grid"> <span aria-hidden="true" class="icon-grid"></span> </a>  
+						<a href="#" data-toggle="tooltip" data-placement="top" title="Graph"> 
+						<span aria-hidden="true" class="icon-linegraph"></span> </a>
+					</div>
 			</div>
 		</div>
 		<div class="container" id="mynetwork"> </div>

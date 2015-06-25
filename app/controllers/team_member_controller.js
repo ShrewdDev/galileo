@@ -15,8 +15,7 @@ exports.index = function (req, res){
 }
 
 exports.graph = function (req, res){
-	var nodes = []
-	
+	var nodes = []	
 	User.find({department: req.user.department, role: 'Customer_TeamMember'}).populate('department').exec(function (err, team_members) {
 		_.each(team_members, function(team_member, index){
 			nodes.push({id: index, label: team_member.emailPrefix, shape: 'circle'})
