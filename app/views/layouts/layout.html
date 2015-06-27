@@ -41,12 +41,13 @@
 								{% if (req.user.hasRole('Site_Admin') ) %}
 									<li><a href="/users">Manage users</a></li>
 									<li><a href="/organizations">Organizations</a></li>
+									<li><a href="/admin/surveys">Surveys</a></li>
 								{% endif %}								
 								{% if (req.user.hasRole('Customer_Admin') ) %}
 									<li><a href="/users">Organization users</a></li>
 									<li><a href="/users/account">Manage Account</a></li>
 									<li><a href="/users/managesurveys">Manage Surveys</a></li>
-									<li><a href="/admin/surveys">My Surveys</a></li>
+									<li><a href="/admin/surveys">Surveys</a></li>
 									<li><a href="/departments">Departments</a></li>
 									<li><a href="/graph">Graph</a></li>
 								{% endif %}

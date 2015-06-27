@@ -1,28 +1,28 @@
 0 info it worked if it ends with ok
 1 verbose cli [ '/home/yahya/local/bin/node',
 1 verbose cli   '/home/yahya/local/bin/npm',
-1 verbose cli   'start' ]
+1 verbose cli   'shrinkwrap' ]
 2 info using npm@1.4.28
 3 info using node@v0.10.32
-4 verbose run-script [ 'prestart', 'start', 'poststart' ]
-5 info prestart surveyapp@4.0.0
-6 info start surveyapp@4.0.0
-7 verbose unsafe-perm in lifecycle true
-8 info surveyapp@4.0.0 Failed to exec start script
-9 error surveyapp@4.0.0 start: `NODE_PATH=./config:./app/controllers NODE_ENV=development ./node_modules/.bin/nodemon server.js`
-9 error Exit status 1
-10 error Failed at the surveyapp@4.0.0 start script.
-10 error This is most likely a problem with the surveyapp package,
-10 error not with npm itself.
-10 error Tell the author that this fails on your system:
-10 error     NODE_PATH=./config:./app/controllers NODE_ENV=development ./node_modules/.bin/nodemon server.js
-10 error You can get their info via:
-10 error     npm owner ls surveyapp
-10 error There is likely additional logging output above.
-11 error System Linux 3.13.0-47-generic
-12 error command "/home/yahya/local/bin/node" "/home/yahya/local/bin/npm" "start"
-13 error cwd /home/yahya/Desktop/Aptana_Rails/workspace/ElanceSurveyElizabeth
-14 error node -v v0.10.32
-15 error npm -v 1.4.28
-16 error code ELIFECYCLE
-17 verbose exit [ 1, true ]
+4 error Error: Problems were encountered
+4 error Please correct and try again.
+4 error extraneous: morgan@1.3.1 /home/yahya/Desktop/Aptana_Rails/workspace/ElanceSurveyElizabeth/node_modules/morgan
+4 error     at shrinkwrap_ (/home/yahya/local/lib/node_modules/npm/lib/shrinkwrap.js:30:15)
+4 error     at /home/yahya/local/lib/node_modules/npm/lib/shrinkwrap.js:24:5
+4 error     at /home/yahya/local/lib/node_modules/npm/lib/ls.js:45:30
+4 error     at /home/yahya/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:130:5
+4 error     at /home/yahya/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:244:14
+4 error     at cb (/home/yahya/local/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+4 error     at /home/yahya/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:244:14
+4 error     at cb (/home/yahya/local/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+4 error     at /home/yahya/local/lib/node_modules/npm/node_modules/read-installed/read-installed.js:244:14
+4 error     at cb (/home/yahya/local/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+5 error If you need help, you may report this *entire* log,
+5 error including the npm and node versions, at:
+5 error     <http://github.com/npm/npm/issues>
+6 error System Linux 3.13.0-57-generic
+7 error command "/home/yahya/local/bin/node" "/home/yahya/local/bin/npm" "shrinkwrap"
+8 error cwd /home/yahya/Desktop/Aptana_Rails/workspace/ElanceSurveyElizabeth
+9 error node -v v0.10.32
+10 error npm -v 1.4.28
+11 verbose exit [ 1, true ]

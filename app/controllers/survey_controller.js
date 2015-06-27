@@ -8,12 +8,14 @@ var mongoose      = require('mongoose'),
     extend        = require('util')._extend
 
 exports.customer_admin_surveys = function (req, res){
-	Survey.find({organization: req.user.organization}).sort({createdAt: 'desc'}).exec(function (err, surveys) {
+	query = req.user.hasRole('Customer_Admin') ? {organization: req.user.organization} : {}
+	
+	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {
 		res.render('survey/index', {
 			surveys: surveys,
 			message: req.flash('message')
-		});
-	});
+		})
+	})
 }
 
 exports.new = function (req, res){
