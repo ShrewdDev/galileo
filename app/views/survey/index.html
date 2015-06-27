@@ -23,8 +23,10 @@
 							</tr>
 						{% endfor %}
 					</tbody>
-				</table>	
-				<a href="/survey/new" class="btn btn-round btn-d">New Survey</a>	
+				</table>
+				{% if (req.user.hasRole('Site_Admin') ) %}	
+					<a href="/survey/new" class="btn btn-round btn-d">New Survey</a>	
+				{% endif %}		
 				<a href="/survey/manager/new" class="btn btn-round btn-d">New manager survey from template</a>	
 				<a href="/survey/employee/new" class="btn btn-round btn-d">New employee survey from template</a>		
 			</div>
