@@ -11,11 +11,24 @@
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">          
             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <input type="hidden" name="from_template" value="{{ from_template }}">            
             <div class="form-group">
               <label class="sr-only" for="cname">Title</label>
               <input type="text" class="form-control" name="title" placeholder="Survey Title" value="{{ survey.title }}"/> 
               <p class="help-block text-danger">{{ errors.title.message }}</p>   
             </div>
+            {% if from_template == 0 %}
+              <div class="form-group">
+                <select class="form-control" name="organization">       
+                  <option value="" >Organization</option>    
+                  {% for organization in organizations %}
+                       <option value="{{organization.id}}" 
+                       {% if survey.organization == organization.id %} selected {% endif %}>{{organization.organization_name}}</option>
+                    {% endfor %}
+                  </select>
+                <p class="help-block text-danger">{{ errors.type.organization }}</p> 
+              </div>
+            {% endif %}
             <div class="form-group">
               <select class="form-control" name="type">       
                 <option value="" >Survey Type</option>    

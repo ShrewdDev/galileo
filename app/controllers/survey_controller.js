@@ -8,8 +8,7 @@ var mongoose      = require('mongoose'),
     extend        = require('util')._extend
 
 exports.customer_admin_surveys = function (req, res){
-	query = req.user.hasRole('Customer_Admin') ? {organization: req.user.organization} : {}
-	
+	query = req.user.hasRole('Customer_Admin') ? {organization: req.user.organization} : {}	
 	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {
 		res.render('survey/index', {
 			surveys: surveys,
@@ -19,19 +18,27 @@ exports.customer_admin_surveys = function (req, res){
 }
 
 exports.new = function (req, res){
-	res.render('survey/form', {   
-		survey: new Survey(),
-		action: "/survey/create"
+	Organization.find({}, function(err, organizations){
+		res.render('survey/form', {   
+			survey: new Survey(),
+			action: "/survey/create",
+			from_template: 0,
+			organizations: organizations
+		})	
 	})
 }
 
 exports.new_from_template = function (req, res){
 	template = Survey.getTemplate(req.params.type)
-	req.user.getManagerSurveys(function(manager_surveys){
-		res.render('survey/form', {   
-			survey: new Survey(template),
-			manager_surveys: manager_surveys,
-			action: "/survey/create"
+	Organization.find({}, function(err, organizations){
+		req.user.getManagerSurveys(function(manager_surveys){
+			res.render('survey/form', {   
+				survey: new Survey(template),
+				manager_surveys: manager_surveys,
+				from_template: 1,
+				organizations: organizations,
+				action: "/survey/create"
+			})
 		})
 	})	
 }
@@ -50,18 +57,22 @@ exports.question_response_partial = function (req, res){
 }
 
 exports.create = function (req, res) {	
-  var survey = new Survey(req.body);
-  survey.organization = req.user.organization
+  var survey = new Survey(req.body)
+  if(!survey.organization && req.user.hasRole('Customer_Admin')) survey.organization = req.user.organization
   survey.save(function (err){
     if (err) {
-		console.log(err)
-		req.user.getManagerSurveys(function(manager_surveys){
-	      return res.render('survey/form', {
-	        errors: err.errors,
-	        survey:  survey,
-	        manager_surveys: manager_surveys,
-	        action: "/survey/create"
-	      })
+		console.log(req.body.from_template)
+		Organization.find({}, function(err2, organizations){
+			req.user.getManagerSurveys(function(manager_surveys){
+		      return res.render('survey/form', {
+		        errors: err.errors,
+		        survey:  survey,
+		        manager_surveys: manager_surveys,
+		        organizations: organizations,
+		        from_template: req.body.from_template,
+		        action: "/survey/create"
+			})
+	    })  
       })
     }
     else {
