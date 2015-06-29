@@ -26,7 +26,7 @@
                        {% if survey.organization == organization.id %} selected {% endif %}>{{organization.organization_name}}</option>
                     {% endfor %}
                   </select>
-                <p class="help-block text-danger">{{ errors.type.organization }}</p> 
+                <p class="help-block text-danger">{{ errors.organization.message }}</p> 
               </div>
             {% endif %}
             <div class="form-group">

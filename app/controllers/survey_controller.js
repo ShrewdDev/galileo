@@ -57,11 +57,13 @@ exports.question_response_partial = function (req, res){
 }
 
 exports.create = function (req, res) {	
-  var survey = new Survey(req.body)
+  if(req.body.organization == "") delete (req.body.organization)	// for model validation	
+  var survey = new Survey(req.body)  
+
   if(!survey.organization && req.user.hasRole('Customer_Admin')) survey.organization = req.user.organization
   survey.save(function (err){
     if (err) {
-		console.log(req.body.from_template)
+		console.log(err)
 		Organization.find({}, function(err2, organizations){
 			req.user.getManagerSurveys(function(manager_surveys){
 		      return res.render('survey/form', {

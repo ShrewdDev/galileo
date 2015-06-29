@@ -209,7 +209,7 @@ var SurveySchema = new Schema({
     relatedSurvey:     { type : Schema.ObjectId, ref : 'Survey'}, // the manager survey for employee survey
     type:              { type : String, required: "Survey type can't be blank"  },
     questions:         [ QuestionSchema ],
-    organization:      { type : Schema.ObjectId, ref : 'Organization'},
+    organization:      { type : Schema.ObjectId, ref : 'Organization', required: "Organization can't be blank"},
     confirmed:         { type : Boolean, default : false},
     userSteps:         [ UserStepSchema ],
     totalParticipants: { type : Number,  default : 0},
