@@ -87,6 +87,7 @@ UserSchema.post('save remove', function (user) {
 })
 
 UserSchema.pre('save', function(next) {
+  this.email = this.email.toLowerCase()
   if (!this.password){
     var password  = "password" //randomstring.generate(7)
     this.password = password

@@ -10,14 +10,13 @@
       </div>
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">          
-            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-            <input type="hidden" name="from_template" value="{{ from_template }}">            
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">            
             <div class="form-group">
               <label class="sr-only" for="cname">Title</label>
               <input type="text" class="form-control" name="title" placeholder="Survey Title" value="{{ survey.title }}"/> 
               <p class="help-block text-danger">{{ errors.title.message }}</p>   
             </div>
-            {% if from_template == 0 %}
+            {% if req.user.hasRole('Site_Admin')%}
               <div class="form-group">
                 <select class="form-control" name="organization">       
                   <option value="" >Organization</option>    

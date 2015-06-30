@@ -22,7 +22,6 @@ exports.new = function (req, res){
 		res.render('survey/form', {   
 			survey: new Survey(),
 			action: "/survey/create",
-			from_template: 0,
 			organizations: organizations
 		})	
 	})
@@ -58,7 +57,7 @@ exports.question_response_partial = function (req, res){
 
 exports.create = function (req, res) {	
   if(req.body.organization == "") delete (req.body.organization)	// for model validation	
-  var survey = new Survey(req.body)  
+  var survey = new Survey(req.body)
 
   if(!survey.organization && req.user.hasRole('Customer_Admin')) survey.organization = req.user.organization
   survey.save(function (err){
@@ -87,12 +86,15 @@ exports.create = function (req, res) {
 }
 
 exports.edit = function (req, res){
-	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
-		req.user.getManagerSurveys(function(manager_surveys){
-			res.render('survey/form', {
-				survey: survey,
-				manager_surveys: manager_surveys,
-				action: "/survey/"+survey.id+"/update"
+	Organization.find({}, function(err, organizations){
+		Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
+			req.user.getManagerSurveys(function(manager_surveys){
+				res.render('survey/form', {
+					survey: survey,
+					manager_surveys: manager_surveys,
+					organizations: organizations,
+					action: "/survey/"+survey.id+"/update"
+				})
 			})
 		})
 	})

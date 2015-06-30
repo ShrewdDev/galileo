@@ -199,7 +199,7 @@ exports.logout = function (req, res) {
 }
 
 exports.session = function (req, res) {
-  User.findOne({ email: req.body.email}, function (err, user) {
+  User.findOne({ email: req.body.email.toLowerCase()}, function (err, user) {
     if(user && user.authenticate(req.body.password)){
         req.logIn(user, function(err) {
           types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}

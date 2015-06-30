@@ -18,8 +18,8 @@
 							<tr>			
 								<td><a href="/survey/{{survey.id}}/edit">{{survey.title}}</a></td>
 								<td>{{survey.type}}</td>
-								<td>{{survey.dateSent|date('m/d/Y') }}</td>
-								<td>{{survey.dateClosed|date('m/d/Y') }}</td>
+								<td>{% if survey.dateSent %}{{survey.dateSent|date('m/d/Y') }}{% endif %}</td>
+								<td>{% if survey.dateClosed %}{{survey.dateClosed|date('m/d/Y') }}{% endif %}</td>
 							</tr>
 						{% endfor %}
 					</tbody>
