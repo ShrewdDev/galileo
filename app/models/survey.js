@@ -1,3 +1,5 @@
+require(__dirname + '/user.js')
+
 var manager_template = {
     "type" : "Manager Survey",
     "questions" : [ 
@@ -159,6 +161,7 @@ var employee_template = {
 var mongoose           = require('mongoose'),
     Schema             = mongoose.Schema,
     Department         = mongoose.model('Department'),
+    User               = mongoose.model('User'),
     _                  = require("underscore"),    
     S                  = require('string'),
     validator          = require('validator'),
@@ -257,12 +260,17 @@ SurveySchema.methods = {
     }
     else return false
   },
-  updateStep:function (user, step, cb){        
+  updateStep:function (user, step, cb){
       var valid  = this.validQuestions()
       if(this.userSteps.id(user.id)){
         var userStep = this.userSteps.id(user.id)
         userStep.step = step
-        if(step == valid.length)  userStep.finished = true
+        if(step == valid.length)  {
+          userStep.finished = true
+          if(this.type == 'Manager Survey'){
+            User.sendSurveyNotification(this, user.department, 'Customer_TeamMember')
+          }
+        }
       }
       else{
        this.userSteps.push({_id: user.id, department: user.department, step: step}) 
@@ -492,8 +500,7 @@ SurveySchema.methods = {
 
 ResultSchema.index({user: 1, survey: 1, question: 1}, {unique: true})
 
-mongoose.model('UserStep',    UserStepSchema)
-
+mongoose.model('UserStep',      UserStepSchema)
 mongoose.model('Result',        ResultSchema)
 mongoose.model('Survey',        SurveySchema)
 mongoose.model('Question',      QuestionSchema)

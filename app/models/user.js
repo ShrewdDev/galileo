@@ -174,6 +174,7 @@ UserSchema.statics = {
     this.find(query, function(err, users){        
         for(user in users){
           _user = users[user]
+          console.log('sending to ' + _user.email)
           sendgrid.send({
             to:       _user.email,
             from:     'admin@shrwed.com',
