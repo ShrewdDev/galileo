@@ -213,6 +213,8 @@ var SurveySchema = new Schema({
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : 'Organization', required: "Organization can't be blank"},
     confirmed:         { type : Boolean, default : false},
+    locked:            { type : Boolean, default : false},
+
     userSteps:         [ UserStepSchema ],
     totalParticipants: { type : Number, default : 0},
     dateSent:          { type : Date },

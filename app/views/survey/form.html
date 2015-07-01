@@ -17,6 +17,12 @@
               <p class="help-block text-danger">{{ errors.title.message }}</p>   
             </div>
             {% if req.user.hasRole('Site_Admin')%}
+              <div class="checkbox">
+                <label>
+               <input type="checkbox" value="locked" name="locked" 
+                {% if survey.locked %} checked="true" {% endif %}> Lock survey
+                </label>
+              </div>
               <div class="form-group">
                 <select class="form-control" name="subcriptionLevel">       
                   <option value="" >Subscription Level</option>    
