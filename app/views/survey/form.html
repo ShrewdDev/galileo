@@ -18,15 +18,14 @@
             </div>
             {% if req.user.hasRole('Site_Admin')%}
               <div class="form-group">
-                <select class="form-control" name="organization">       
-                  <option value="" >Organization</option>    
-                  {% for organization in organizations %}
-                       <option value="{{organization.id}}" 
-                       {% if survey.organization == organization.id %} selected {% endif %}>{{organization.organization_name}}</option>
-                    {% endfor %}
+                <select class="form-control" name="subcriptionLevel">       
+                  <option value="" >Subscription Level</option>    
+                  {% for level in survey.getSubscriptionLevels() %}
+                    <option value="{{level}}" {% if survey.subcriptionLevel == level %} selected {% endif %}>{{level}}</option>
+                  {% endfor %}
                   </select>
-                <p class="help-block text-danger">{{ errors.organization.message }}</p> 
-              </div>
+                <p class="help-block text-danger">{{ errors.level.message }}</p> 
+              </div>              
             {% endif %}
             <div class="form-group">
               <select class="form-control" name="type">       

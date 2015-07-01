@@ -9,6 +9,7 @@
 						<tr>
 							<th>Survey Title</th>
 							<th>Survey Type</th>
+							<th>Subcription Level</th>
 							<th>Date Sent</th>
 							<th>Date closed</th>												
 						</tr>
@@ -17,7 +18,8 @@
 						{% for survey in surveys %}
 							<tr>			
 								<td><a href="/survey/{{survey.id}}/edit">{{survey.title}}</a></td>
-								<td>{{survey.type}}</td>
+								<td>{{ survey.type }}</td>
+								<td>{{ survey.subcriptionLevel }}</td>
 								<td>{% if survey.dateSent %}{{survey.dateSent|date('m/d/Y') }}{% endif %}</td>
 								<td>{% if survey.dateClosed %}{{survey.dateClosed|date('m/d/Y') }}{% endif %}</td>
 							</tr>

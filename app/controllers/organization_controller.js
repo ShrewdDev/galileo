@@ -71,6 +71,7 @@ exports.update = function (req, res){
 	Organization.findOne({ _id:  req.params.id}, function (err, organization) {
 		old_admin_emails   = organization.getSpaceCleanedEmails()
 		organization       = extend(organization, req.body)
+		console.log(organization)
 		emails             = organization.getSpaceCleanedEmails()
 		console.log(emails)
 		User.validateUniqueAdminsEmails(emails, old_admin_emails, function(err){

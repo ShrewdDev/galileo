@@ -156,18 +156,19 @@ var employee_template = {
     ]
 }
 
-var mongoose         = require('mongoose'),
-    Schema           = mongoose.Schema,
-    Department       = mongoose.model('Department'),
-    _                = require("underscore"),    
-    S                = require('string'),
-    validator        = require('validator'),
-    async            = require("async"),
-    validate         = require('mongoose-validator'),
-    uniqueValidator  = require('mongoose-unique-validator'),
-    surveyTypes      = ['Manager Survey', 'Employee Survey'],
-    surveyItems      = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}],
-    defaultCloseDays = 45
+var mongoose           = require('mongoose'),
+    Schema             = mongoose.Schema,
+    Department         = mongoose.model('Department'),
+    _                  = require("underscore"),    
+    S                  = require('string'),
+    validator          = require('validator'),
+    async              = require("async"),
+    validate           = require('mongoose-validator'),
+    uniqueValidator    = require('mongoose-unique-validator'),
+    surveyTypes        = ['Manager Survey', 'Employee Survey'],
+    subscriptionLevels = ['Level 1', 'Level 2', 'Level 3'],
+    surveyItems        = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}],
+    defaultCloseDays   = 45
 
 var ResultSchema = new Schema({
   user:             { type: Schema.ObjectId, ref: 'User'},
@@ -208,14 +209,15 @@ var SurveySchema = new Schema({
     title:             { type : String, required: "Title can't be blank" },
     relatedSurvey:     { type : Schema.ObjectId, ref : 'Survey'}, // the manager survey for employee survey
     type:              { type : String, required: "Survey type can't be blank"  },
+    subcriptionLevel:  { type : String },
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : 'Organization', required: "Organization can't be blank"},
     confirmed:         { type : Boolean, default : false},
     userSteps:         [ UserStepSchema ],
-    totalParticipants: { type : Number,  default : 0},
+    totalParticipants: { type : Number, default : 0},
     dateSent:          { type : Date },
     dateClosed:        { type : Date },
-    createdAt:         { type : Date,    default : Date.now},
+    createdAt:         { type : Date, default : Date.now},
 })
 
 SurveySchema.pre('save', function(next) {
@@ -411,6 +413,10 @@ SurveySchema.methods = {
   getSurveyTypes:function (){
     return surveyTypes
   },
+  getSubscriptionLevels:function (){
+    return subscriptionLevels
+  },
+
   validQuestions:function (){
     var q = []
     _.each(this.questions, function(question){

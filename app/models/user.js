@@ -36,7 +36,7 @@ var UserSchema = new Schema({
   location:             { type: String },
 
   subscriptionLevel:      { type: String },
-  subscriptionExpiryDate: { type: Date,  },
+  subscriptionExpiryDate: { type: Date   },
 
   surveyYearStart:               { type: String },
   surveyTotalEmployees:          { type: String, validate: validate({validator: 'isNumeric'}) },

@@ -11,6 +11,19 @@
       <p class="help-block text-danger">{{ errors.organization_name.message }}</p>     
     </div>
     <div class="form-group">
+      <label>Subscription Level</label>
+      <select class="form-control" name="subscriptionLevel">
+        <option value="Level 1">Level 1($25/user/month)</option>
+        <option value="Level 2" {% if organization.subscriptionLevel == "Level 2" %} selected {% endif %}>Level 2($30/user/month)</option>
+        <option value="Level 3" {% if organization.subscriptionLevel == "Level 3" %} selected {% endif %}>Level 3($35/user/month)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="sr-only" for="cname">Subscription Expiry Date</label>
+      <input type="text" class="form-control datepicker" name="subscriptionExpiryDate" placeholder="Subscription Expiry Date" value="{{ organization.getSubscriptionExpiryDate() }}"/>
+      <p class="help-block text-danger">{{ errors.subscriptionExpiryDate.message }}</p>
+    </div>
+    <div class="form-group">
       <label>Admin Emails, up to 3 comma separated emails</label>
       <input type="text" class="form-control" name="admin_emails" placeholder="Admins Emails" value="{{ organization.admin_emails }}"/> 
       <p class="help-block text-danger">{{ errors.admin_emails.message }}</p>        

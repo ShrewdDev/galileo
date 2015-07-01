@@ -46,6 +46,13 @@
 		}).done(function( data ) {			
 			$('#myModal').find('div.modal-content').html(data)
 	  		$('#myModal').modal('show')
+			$('input.datepicker').datepicker({
+			    format: 'MM,dd yyyy',
+			    autoclose: true,
+			    startDate: today,
+			    endDate: endDate,
+			    enableOnReadonly: false
+			})	  		
 	  		if (typeof initialize == 'function') { initialize() }
 		});  		
 	});
