@@ -270,15 +270,16 @@ SurveySchema.methods = {
           userStep.finished = true
             if(this.type == 'Manager Survey'){
               this.model('Survey').find({relatedSurvey: this.id}, function(err, surveys){
-                console.log(surveys)
-              if(surveys.length > 0) User.sendSurveyNotification(_this, user.department, 'Customer_TeamMember')
+                _.each(surveys, function(survey){
+                  User.sendSurveyNotification(survey, user.department, 'Customer_TeamMember')
+                })
             })
           }
         }
       }
       else{
        this.userSteps.push({_id: user.id, department: user.department, step: step}) 
-      }      
+      }
       this.save(function(err){
         cb()
       })    

@@ -84,8 +84,7 @@
                       <option value="department" {% if question.type == "department" %} selected {% endif %}>Department</option>
                       <option value="department_response" {% if question.type == "department_response" %} selected {% endif %}>Department Response</option>
                     </select>            
-                  </div>
-                  
+                  </div>                  
                     {% for response in question.responses %}
                       <div class="form-group response_div">
                       {% if !(survey.confirmed) and question.type !== "bin_sort" and question.type !== "slider" %}
@@ -98,8 +97,7 @@
                       <div class="form-group">
                         <a class="add_question_response" href="#">Add response</a>       
                       </div>
-                    {% endif %}             
-                                   
+                    {% endif %}                                   
                 </div>   
               {% endif %}                                                
             {% endfor %}      
@@ -107,11 +105,13 @@
               <div class="questions">  </div>
               <a id="add_survey_question" href="#">Add question</a>
             {% endif %}
+            {% if req.user.hasRole('Customer_Admin')%}
               <div class="checkbox">
                 <label>
                <input type="checkbox" value="confirmed" id="confirmed" name="confirmed" {% if survey.confirmed %} checked="true" {% endif %}> Confirm and send notification (can't be updated later)
                 </label>
               </div>
+            {% endif %}  
             {% if !(survey.confirmed)%}
               <div class="text-center">
                 <button type="submit" class="btn btn-round btn-d">Submit</button>

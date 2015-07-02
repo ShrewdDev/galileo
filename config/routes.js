@@ -82,7 +82,7 @@ module.exports = function (app, passport) {
   app.post('/surveys/:id/takesurvey/:step', auth.requiresLogin, survey_controller.post_survey_result)
   app.delete('/survey/:id/update', auth.requiresLogin, survey_controller.destroy)
 
-  app.get('/users/account', auth.requiresLogin, main_controller.account)
+  //app.get('/users/account', auth.requiresLogin, main_controller.account)
 
   app.get('/', main_controller.index)
 
