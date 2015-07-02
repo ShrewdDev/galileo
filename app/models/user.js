@@ -171,7 +171,7 @@ UserSchema.statics = {
     //types = {'Manager Survey': 'Customer_Manager', 'Employee Survey':'Customer_TeamMember'}
     var query = {organization: survey.organization, role: role}
     if(department) query = {organization: survey.organization, department: department, role: role}
-    this.find(query, function(err, users){        
+    this.find(query, function(err, users){
         for(user in users){
           _user = users[user]
           console.log('sending to ' + _user.email)

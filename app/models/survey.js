@@ -261,14 +261,18 @@ SurveySchema.methods = {
     else return false
   },
   updateStep:function (user, step, cb){
+      _this = this
       var valid  = this.validQuestions()
       if(this.userSteps.id(user.id)){
         var userStep = this.userSteps.id(user.id)
         userStep.step = step
         if(step == valid.length)  {
           userStep.finished = true
-          if(this.type == 'Manager Survey'){
-            User.sendSurveyNotification(this, user.department, 'Customer_TeamMember')
+            if(this.type == 'Manager Survey'){
+              this.model('Survey').find({relatedSurvey: this.id}, function(err, surveys){
+                console.log(surveys)
+              if(surveys.length > 0) User.sendSurveyNotification(_this, user.department, 'Customer_TeamMember')
+            })
           }
         }
       }
