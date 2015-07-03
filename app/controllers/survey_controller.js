@@ -140,8 +140,7 @@ exports.user_surveys = function (req, res){
 		console.log(surveys.length)
 		if(req.user.role == 'Customer_TeamMember'){
 			User.findOne({role: 'Customer_Manager', department: req.user.department}, function(err, manager){
-				member_surveys = []
-		
+				member_surveys = []		
 				async.each(surveys, function (survey, cb) {
 					if(!survey.relatedSurvey) {
 						member_surveys.push(survey)

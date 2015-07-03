@@ -169,10 +169,10 @@
 		$("#survey :input").prop("disabled", true);
 	}
 
-	/*$(window).load(function() {
-		$('.loader').fadeOut();
-		$('.page-loader').delay(350).fadeOut('slow');
-	});*/
+	if($("#locked").val() == "true") {
+		$("#survey select").prop("disabled", true);
+		$("#add_survey_question").remove();		
+	}
 
 	$(document).ready(function() {
 

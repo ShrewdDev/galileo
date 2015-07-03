@@ -11,7 +11,10 @@
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">          
             <input type="hidden" name="_csrf" value="{{ csrf_token }}"> 
-            <input type="hidden" name="role"  value="{{ req.user.role }}">          
+            <input type="hidden" name="role"  value="{{ req.user.role }}">   
+            {% if req.user.hasRole('Customer_Admin')%}
+              <input type="hidden" id="locked"  value="{{ survey.locked }}"> 
+            {% endif %}       
             <div class="form-group">
               <label class="sr-only" for="cname">Title</label>
               <input type="text" class="form-control" name="title" placeholder="Survey Title" value="{{ survey.title }}"/> 
