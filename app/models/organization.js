@@ -17,8 +17,8 @@ extend('is3CommaSeparatedEmailsMax', function (val) {
 
 var OrganizationSchema = new Schema({
   organization_name:      { type: String, required: "Company name can't be blank", unique: true },
-  subscriptionLevel:      { type: String },
-  subscriptionExpiryDate: { type: Date   },
+  subscriptionLevel:      { type: Number, default: 1 },
+  subscriptionExpiryDate: { type: Date },
   admin_emails:           { type: String, validate: validate({validator: 'is3CommaSeparatedEmailsMax'}) }
 })
 

@@ -26,7 +26,6 @@ exports.new = function (req, res){
 exports.create = function (req, res){
 	var organization = new Organization(req.body)
 	emails = organization.getSpaceCleanedEmails()
-
 	User.validateUniqueAdminsEmails(emails, [], function(err){
 		if(err){
 		      return res.render('organization/form',{
@@ -76,6 +75,7 @@ exports.update = function (req, res){
 		console.log(emails)
 		User.validateUniqueAdminsEmails(emails, old_admin_emails, function(err){
 				if(err){
+					console.log(err)
 				      return res.render('organization/form',{
 				        errors: {admin_emails:{message: err}},
 				        organization: req.body,
@@ -86,6 +86,7 @@ exports.update = function (req, res){
 				}
 				else{
 					organization.save(function (err) {
+						console.log(err)
 						if(err){
 					      return res.render('organization/form',{
 					        errors: err.errors,

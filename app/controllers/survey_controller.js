@@ -5,7 +5,8 @@ var mongoose      = require('mongoose'),
     Department    = mongoose.model('Department'),
     Organization  = mongoose.model('Organization'),
     async         = require("async"),
-    extend        = require('util')._extend
+    extend        = require('util')._extend,
+    _             = require('underscore')
 
 exports.customer_admin_surveys = function (req, res){
 	query = req.user.hasRole('Customer_Admin') ? {organization: req.user.organization} : {}	
@@ -132,19 +133,26 @@ exports.update = function (req, res){
 }
 
 exports.user_surveys = function (req, res){
-	types = {'Customer_Manager' : 'Employee Survey', 'Customer_TeamMember' : 'Manager Survey'}	
-	query = { organization: req.user.organization, type: {$ne: types[req.user.role]}, confirmed: true}
+	types = {'Customer_Manager' : 'Employee Survey', 'Customer_TeamMember' : 'Manager Survey'}
+	query = {organization: req.user.organization, type: {$ne: types[req.user.role]}, confirmed: true}
 	//if(req.user.role == 'Customer_TeamMember') query.ready = true
 	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {	
 		console.log(surveys.length)
 		if(req.user.role == 'Customer_TeamMember'){
 			User.findOne({role: 'Customer_Manager', department: req.user.department}, function(err, manager){
 				member_surveys = []
+		
 				async.each(surveys, function (survey, cb) {
-					Survey.findOne({_id: survey.relatedSurvey}, function(err, manager_survey){
-						if(manager_survey && manager_survey.finished(manager.id)) member_surveys.push(survey)
-						cb()    
-					})					          
+					if(!survey.relatedSurvey) {
+						member_surveys.push(survey)
+						cb()
+					}
+					else{
+						Survey.findOne({_id: survey.relatedSurvey}, function(err, manager_survey){
+							if(manager_survey && manager_survey.finished(manager.id)) member_surveys.push(survey)
+							cb()    
+						})	
+					}				          
 				},function(err){
 					res.render('survey/user_survey', {
 						surveys: member_surveys,

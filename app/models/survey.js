@@ -214,7 +214,7 @@ var SurveySchema = new Schema({
     relatedSurvey:     { type : Schema.ObjectId, ref : "Survey"}, // the manager survey for employee survey
     type:              { type : String, required: "Survey type can't be blank"  },
     role:              { type : String }, // Customer_Admin or Customer_Admin
-    subscriptionLevel: { type : String, required: "Subcription level can't be blank" },
+    subscriptionLevel: { type : Number, required: "Subcription level can't be blank" },
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : "Organization"},
     confirmed:         { type : Boolean, default : false},
@@ -252,7 +252,7 @@ SurveySchema.statics = {
     return surveyItems
   },createOrganizationsSurveys: function(survey){
     _this = this
-    Organization.find({subscriptionLevel: survey.subscriptionLevel}, function(err, organizations){      
+    Organization.find({subscriptionLevel: { $gte: survey.subscriptionLevel }}, function(err, organizations){      
       _.each(organizations, function(organization){
         var _survey = new _this({ title: survey.title, 
                                   type:  survey.type, 

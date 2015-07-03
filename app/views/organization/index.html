@@ -8,7 +8,8 @@
 				<thead>
 					<tr>
 						<th>Company Name/Alias</th>
-						<th>Email</th>							
+						<th>Email</th>	
+						<th>Subcription Level</th>												
 					</tr>
 				</thead>
 				<tbody>
@@ -16,6 +17,7 @@
 						<tr>						
 							<td><a class="open-modal" data-url="/organization/{{organization.id}}/edit" href="#">{{organization.organization_name}}</a></td>
 							<td> {{organization.admin_emails}}</td>
+							<td>Level {{ organization.subscriptionLevel }}</td>
 						</tr>
 					{% endfor %}
 				</tbody>
