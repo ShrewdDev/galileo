@@ -9,6 +9,8 @@ var mongoose      = require('mongoose'),
 
 exports.customer_admin_surveys = function (req, res){
 	query = req.user.hasRole('Customer_Admin') ? {organization: req.user.organization} : {}	
+	query.role = req.user.role
+	console.log(query)
 	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {
 		res.render('survey/index', {
 			surveys: surveys,
@@ -58,10 +60,11 @@ exports.question_response_partial = function (req, res){
 exports.create = function (req, res) {	
   if(req.body.organization == "") delete (req.body.organization)	// for model validation	
   var survey = new Survey(req.body)
-  if(!survey.organization && req.user.hasRole('Customer_Admin')) survey.organization = req.user.organization
+  if(!survey.organization && survey.role == "Customer_Admin") survey.organization = req.user.organization
   survey.save(function (err){
     if (err) {
 		console.log(err)
+		survey.confirmed = false
 		Organization.find({}, function(err2, organizations){
 			req.user.getManagerSurveys(function(manager_surveys){
 		      return res.render('survey/form', {
@@ -77,7 +80,10 @@ exports.create = function (req, res) {
     }
     else {
     	survey.generateQuestions(function(){
-    		if(survey.confirmed) User.sendSurveyNotification(survey, null, 'Customer_Manager')
+    		if(survey.confirmed) {
+    			if(survey.role == 'Customer_Admin') User.sendSurveyNotification(survey, null, 'Customer_Manager')
+    			if(survey.role == 'Site_Admin')     Survey.createOrganizationsSurveys(survey)
+    		}	
       		return res.redirect('/admin/surveys')		
     	})      
     }
@@ -104,7 +110,7 @@ exports.update = function (req, res){
 		survey         = extend(survey, req.body)
 		survey.save(function (err){
 		if (err) {
-			console.log(err)
+			survey.confirmed = false
 			req.user.getManagerSurveys(function(manager_surveys){
 			  return res.render('survey/form', {
 			    errors: err.errors,
@@ -116,7 +122,8 @@ exports.update = function (req, res){
 		}
 		else { 
 	    	survey.generateQuestions(function(){
-	    		if(survey.confirmed) User.sendSurveyNotification(survey, null, 'Customer_Manager') 		
+    			if(survey.role == 'Customer_Admin') User.sendSurveyNotification(survey, null, 'Customer_Manager')
+    			if(survey.role == 'Site_Admin')     Survey.createOrganizationsSurveys(survey)
 			  	return res.redirect('/admin/surveys')      
 	    	})		  
 		}
@@ -125,8 +132,8 @@ exports.update = function (req, res){
 }
 
 exports.user_surveys = function (req, res){
-	types = {'Customer_Manager' : 'Manager Survey' , 'Customer_TeamMember' : 'Employee Survey'}	
-	query = { organization:  req.user.organization, type: types[req.user.role], confirmed: true}
+	types = {'Customer_Manager' : 'Employee Survey', 'Customer_TeamMember' : 'Manager Survey'}	
+	query = { organization: req.user.organization, type: {$ne: types[req.user.role]}, confirmed: true}
 	//if(req.user.role == 'Customer_TeamMember') query.ready = true
 	Survey.find(query).sort({createdAt: 'desc'}).exec(function (err, surveys) {	
 		console.log(surveys.length)

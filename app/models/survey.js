@@ -161,6 +161,7 @@ var employee_template = {
 var mongoose           = require('mongoose'),
     Schema             = mongoose.Schema,
     Department         = mongoose.model('Department'),
+    Organization       = mongoose.model('Organization'),
     User               = mongoose.model('User'),
     _                  = require("underscore"),    
     S                  = require('string'),
@@ -168,8 +169,8 @@ var mongoose           = require('mongoose'),
     async              = require("async"),
     validate           = require('mongoose-validator'),
     uniqueValidator    = require('mongoose-unique-validator'),
-    surveyTypes        = ['Manager Survey', 'Employee Survey'],
-    subscriptionLevels = ['Level 1', 'Level 2', 'Level 3'],
+    surveyTypes        = ['All Members Survey', 'Manager Survey', 'Employee Survey'],
+    subscriptionLevels = {1: 'Level 1($25/user/month)', 2: 'Level 2($30/user/month)', 3: 'Level 3($35/user/month)'},
     surveyItems        = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}],
     defaultCloseDays   = 45
 
@@ -210,14 +211,14 @@ var UserStepSchema = new Schema({
 
 var SurveySchema = new Schema({
     title:             { type : String, required: "Title can't be blank" },
-    relatedSurvey:     { type : Schema.ObjectId, ref : 'Survey'}, // the manager survey for employee survey
+    relatedSurvey:     { type : Schema.ObjectId, ref : "Survey"}, // the manager survey for employee survey
     type:              { type : String, required: "Survey type can't be blank"  },
-    subcriptionLevel:  { type : String },
+    role:              { type : String }, // Customer_Admin or Customer_Admin
+    subscriptionLevel: { type : String, required: "Subcription level can't be blank" },
     questions:         [ QuestionSchema ],
-    organization:      { type : Schema.ObjectId, ref : 'Organization', required: "Organization can't be blank"},
+    organization:      { type : Schema.ObjectId, ref : "Organization"},
     confirmed:         { type : Boolean, default : false},
     locked:            { type : Boolean, default : false},
-
     userSteps:         [ UserStepSchema ],
     totalParticipants: { type : Number, default : 0},
     dateSent:          { type : Date },
@@ -226,7 +227,7 @@ var SurveySchema = new Schema({
 })
 
 SurveySchema.pre('save', function(next) {
-  if (this.confirmed){
+  if (this.confirmed && this.role == "Customer_Admin"){
     var now           = new Date()
     this.dateSent     = now
     var closeDate     = new Date(now)
@@ -249,10 +250,28 @@ SurveySchema.statics = {
     return templates[type]
   },getItems:function (){
     return surveyItems
+  },createOrganizationsSurveys: function(survey){
+    _this = this
+    Organization.find({subscriptionLevel: survey.subscriptionLevel}, function(err, organizations){      
+      _.each(organizations, function(organization){
+        var _survey = new _this({ title: survey.title, 
+                                  type:  survey.type, 
+                                  locked: survey.locked,
+                                  organization: organization.id, 
+                                  role: "Customer_Admin", 
+                                  subscriptionLevel: survey.subscriptionLevel,                                  
+                                  questions: survey.questions})
+        _survey.save(function (err){ 
+          if(err) console.log(err)
+          else console.log("saved organization")  
+        })
+      })
+    })
   }
 }
 
 SurveySchema.methods = { 
+
   finished: function(user_id){    
     if(this.userSteps.id(user_id)){
       userStep = this.userSteps.id(user_id)

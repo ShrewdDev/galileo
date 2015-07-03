@@ -5,6 +5,7 @@ var  mongoose            = require('mongoose')
     ,uniqueValidator     = require('mongoose-unique-validator')
     ,extend              = require('mongoose-validator').extend
     ,moment              = require('moment')
+    ,subscriptionLevels  = {1: 'Level 1($25/user/month)', 2: 'Level 2($30/user/month)', 3: 'Level 3($35/user/month)'}
 
 extend('is3CommaSeparatedEmailsMax', function (val) {
   var valid = true;
@@ -26,8 +27,12 @@ OrganizationSchema.methods = {
     return this.admin_emails.replace(/ /g, "").split(",")
   },getSubscriptionExpiryDate:function (){
     return (this.subscriptionExpiryDate) ? moment(this.subscriptionExpiryDate).format("MMMM,D YYYY") : ''
+  },getSubscriptionLevels:function (){
+    return subscriptionLevels
   }
 }
+
+
 
 OrganizationSchema.plugin(uniqueValidator, { message: '{PATH} already in use.' })
 mongoose.model('Organization', OrganizationSchema)

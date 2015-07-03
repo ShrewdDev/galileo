@@ -10,7 +10,8 @@
       </div>
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">          
-            <input type="hidden" name="_csrf" value="{{ csrf_token }}">            
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}"> 
+            <input type="hidden" name="role"  value="{{ req.user.role }}">          
             <div class="form-group">
               <label class="sr-only" for="cname">Title</label>
               <input type="text" class="form-control" name="title" placeholder="Survey Title" value="{{ survey.title }}"/> 
@@ -24,13 +25,13 @@
                 </label>
               </div>
               <div class="form-group">
-                <select class="form-control" name="subcriptionLevel">       
-                  <option value="" >Subscription Level</option>    
-                  {% for level in survey.getSubscriptionLevels() %}
-                    <option value="{{level}}" {% if survey.subcriptionLevel == level %} selected {% endif %}>{{level}}</option>
-                  {% endfor %}
+                  <select class="form-control" name="subscriptionLevel">
+                    <option value="">Subscription level</option>
+                    {% for level in survey.getSubscriptionLevels() %}
+                      <option value="{{ loop.key }}" {% if survey.subscriptionLevel == loop.key %} selected {% endif %}>{{level}}</option>
+                    {% endfor %}
                   </select>
-                <p class="help-block text-danger">{{ errors.level.message }}</p> 
+                <p class="help-block text-danger">{{ errors.subscriptionLevel.message }}</p> 
               </div>              
             {% endif %}
             <div class="form-group">
@@ -105,13 +106,11 @@
               <div class="questions">  </div>
               <a id="add_survey_question" href="#">Add question</a>
             {% endif %}
-            {% if req.user.hasRole('Customer_Admin')%}
               <div class="checkbox">
                 <label>
                <input type="checkbox" value="confirmed" id="confirmed" name="confirmed" {% if survey.confirmed %} checked="true" {% endif %}> Confirm and send notification (can't be updated later)
                 </label>
               </div>
-            {% endif %}  
             {% if !(survey.confirmed)%}
               <div class="text-center">
                 <button type="submit" class="btn btn-round btn-d">Submit</button>

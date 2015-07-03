@@ -25,11 +25,11 @@ exports.index = function (req, res){
 	}
 }
 
-exports.account = function (req, res){
+/*exports.account = function (req, res){
 	res.render('main/account', {   
 		user: req.user 
 	})		
-}
+}*/
 
 exports.managesurveys = function (req, res){
 	res.render('main/managesurveys', {  
@@ -77,9 +77,8 @@ exports.team_members = function (req, res){
 }
 
 exports.new_team_member = function (req, res){
-	var user  = new User(req.body);
+	var user  = new User(req.body)
 	user.role = 'Customer_TeamMember'
-
 	res.render('main/team_member_form', {
 	
 	})
@@ -88,7 +87,7 @@ exports.new_team_member = function (req, res){
 exports.create_team_member = function (req, res){
 	res.render('main/team_member_form', {
 		
-	})	
+	})
 }
 
 exports.edit_department = function (req, res){

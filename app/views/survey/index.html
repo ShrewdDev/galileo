@@ -9,9 +9,13 @@
 						<tr>
 							<th>Survey Title</th>
 							<th>Survey Type</th>
-							<th>Subcription Level</th>
-							<th>Date Sent</th>
-							<th>Date closed</th>												
+							{% if (req.user.hasRole('Site_Admin') ) %}	
+								<th>Subcription Level</th>
+							{% endif %}
+							{% if (req.user.hasRole('Customer_Admin') ) %}
+								<th>Date Sent</th>
+								<th>Date closed</th>					
+							{% endif %}															
 						</tr>
 					</thead>
 					<tbody>
@@ -19,9 +23,13 @@
 							<tr>			
 								<td><a href="/survey/{{survey.id}}/edit">{{survey.title}}</a></td>
 								<td>{{ survey.type }}</td>
-								<td>{{ survey.subcriptionLevel }}</td>
-								<td>{% if survey.dateSent %}{{survey.dateSent|date('m/d/Y') }}{% endif %}</td>
-								<td>{% if survey.dateClosed %}{{survey.dateClosed|date('m/d/Y') }}{% endif %}</td>
+								{% if (req.user.hasRole('Site_Admin') ) %}	
+									<td>Level {{ survey.subscriptionLevel }}</td>
+								{% endif %}
+								{% if (req.user.hasRole('Customer_Admin') ) %}									
+									<td>{% if survey.dateSent %}{{survey.dateSent|date('m/d/Y') }}{% endif %}</td>
+									<td>{% if survey.dateClosed %}{{survey.dateClosed|date('m/d/Y') }}{% endif %}</td>
+								{% endif %}
 							</tr>
 						{% endfor %}
 					</tbody>
