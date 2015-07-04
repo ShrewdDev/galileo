@@ -253,20 +253,24 @@ SurveySchema.statics = {
   },createOrganizationsSurveys: function(survey){
     _this = this
     Organization.find({subscriptionLevel: { $gte: survey.subscriptionLevel }}, function(err, organizations){      
-      _.each(organizations, function(organization){
-        var _survey = new _this({ title: survey.title, 
+        async.each(organizations, function (organization, cb) {
+            var _survey = new _this({ title: survey.title, 
                                   type:  survey.type, 
                                   locked: survey.locked,
                                   organization: organization.id, 
                                   role: "Customer_Admin", 
                                   subscriptionLevel: survey.subscriptionLevel,                                  
                                   questions: survey.questions})
-        _survey.save(function (err){ 
-          if(err) console.log(err)
-          else console.log("saved organization")  
+          _survey.save(function (err){ 
+            if(err) console.log(err)
+            else console.log("saved organization")  
+            cb()  
+          })                           
+        },function(err){
+          console.log('finished')
         })
       })
-    })
+   
   }
 }
 

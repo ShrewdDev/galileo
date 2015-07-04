@@ -170,7 +170,10 @@
 	}
 
 	if($("#locked").val() == "true") {
-		$("#survey select").prop("disabled", true);
+		$("#survey select").each(function( index ){
+			$( this ).after('<input type="hidden" value="'+$( this ).val()+'" name="'+$( this ).attr("name")+'">');
+			$( this ).prop("disabled", true);  
+		});		
 		$("#add_survey_question").remove();		
 	}
 

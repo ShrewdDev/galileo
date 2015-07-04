@@ -109,8 +109,10 @@ exports.edit = function (req, res){
 exports.update = function (req, res){
 	Survey.findOne({ _id:  req.params.id}).exec(function (err, survey) {
 		survey         = extend(survey, req.body)
+		console.log(survey)
 		survey.save(function (err){
 		if (err) {
+			console.log(err)
 			survey.confirmed = false
 			req.user.getManagerSurveys(function(manager_surveys){
 			  return res.render('survey/form', {
