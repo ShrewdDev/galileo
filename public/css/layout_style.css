@@ -47,6 +47,10 @@ iframe {
   border: 0;
 }
 
+ #mynetwork {      
+  height: 500px;      
+}
+    
 .question_group{
   border: 1px solid #e1e1e8;
   padding: 9px 14px;

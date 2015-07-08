@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel">Documets : Departmet 1 => Department 2</h4>
+</div>        
+<div class="modal-body">              
+  <div id="visualization"></div>
+</div>  
+<script type="text/javascript">
+  var container = document.getElementById('visualization')
+  var groups = new vis.DataSet()
+  groups.add({id: 0})
+  groups.add({id: 1})
+  groups.add({id: 2})
+  groups.add({id: 3})
+  groups.add({id: 4})
+  groups.add({id: 5})
+  var items = [
+      {x: 10, y: 40, group: 0, label: {content: 'Weekly', xOffset: -15,  yOffset: 310}},
+      {x: 30, y: 25, group: 1, label: {content: 'Monthly', xOffset: -15, yOffset: 198}},
+      {x: 50, y: 30, group: 2, label: {content: 'Weekly', xOffset: -15,  yOffset: 235}},
+      {x: 70, y: 10, group: 3, label: {content: 'Weekly', xOffset: -15,  yOffset: 85}}
+  ]
+  var dataset = new vis.DataSet(items)
+  var options = {
+      start: 0,
+      end: 120,
+      style:'bar',
+      //legend: {enabled: true, left: {position: 'top-right'}},      
+      barChart: {width:10, align:'center'}, // align: left, center, right
+      drawPoints: true,
+      showMajorLabels: false,
+      dataAxis: {
+          icons: false
+      },
+      orientation:'top'
+  }
+  var graph2d = new vis.Graph2d(container, items, groups, options)
+</script>

@@ -2,18 +2,12 @@
 {% block head %} 
   <script src="/js/vis.min.js"></script>
   <link rel="stylesheet" href="/css/vis.min.css">
-   <style type="text/css">
-     #mynetwork {      
-      height: 500px;      
-    }
-  </style>
 {% endblock%}
-
 {% block content %}
 <section class="module">
   <form action="/graph" method="get" role="form" novalidate="">
           <div class="row">
-        <div class="col-sm-2 col-sm-offset-3">  
+        <div class="col-sm-2 col-sm-offset-1">  
             <div class="form-group">
               <select class="form-control" name="survey">  
                 {% for survey in surveys %}     
@@ -40,6 +34,19 @@
                 </select>
             </div>                       
             </div>
+
+            <div class="col-sm-2"> 
+              <div class="form-group">
+                <select class="form-control" name="visualize">                
+                    <option value="">Visualize by</option>
+                    <option value="expect_receive">Expect / Receive</option>
+                    <option value="between_teams">Between Teams</option>
+                    <option value="table">Table</option>
+                    <option value="key_ressource_grid">Key ressource grid</option>
+                  </select>
+              </div> 
+            </div>
+
             <div class="col-sm-1">  
             <div class="form-group">
               <button class="btn btn-default" type="submit">Go</button>
@@ -50,9 +57,10 @@
   <div class="container" id="mynetwork"> </div>
 </section>
 <script type="text/javascript">
-  var container = document.getElementById('mynetwork');
-  var nodes = new vis.DataSet({{JSON.stringify(nodes)}});
-  var edges = new vis.DataSet({{JSON.stringify(edges)}});
+  var container    = document.getElementById('mynetwork')
+      ,nodes       = new vis.DataSet({{JSON.stringify(nodes)}})
+      ,edges       = new vis.DataSet({{JSON.stringify(edges)}})
+      ,surveyIndex = {{surveyIndex}} ;
   
   var data = {
     nodes: nodes,
@@ -69,6 +77,22 @@
         }
   }
   var network = new vis.Network(container, data, options);
+
+  network.on("click", function (params) {
+      //params.event = "[original event]";
+      //alert(JSON.stringify(data.edges, null, 4))
+    if( params.edges.length > 0 ){ 
+      //alert('Click event: ' + JSON.stringify(params, null, 4)) 
+      $.ajax({
+        url: "graph/get_edge_details",
+        cache: false
+      }).done(function( data ) {      
+        $('#myModal').find('div.modal-content').html(data)
+        $('#myModal').modal('show')          
+      })
+    }
+      //document.getElementById('eventSpan').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);
+  });
 </script>
 {% endblock%}
 

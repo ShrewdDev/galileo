@@ -7,6 +7,14 @@ var mongoose      = require('mongoose'),
     _             = require("underscore"),  
     async         = require("async")
 
+
+
+exports.getEdgeDetails = function (req, res){
+	res.render('graph/_chart', {
+		
+	})
+}
+
 exports.index = function (req, res){
 	var surveyIndex  = req.query.survey   || 0,
 		itemIndex    = req.query.item     || 0,
@@ -16,7 +24,6 @@ exports.index = function (req, res){
 		edges        = [],
 		connected_departments = [],
 		colors       = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
-
 
 	Department.find({organization: req.user.organization}).exec(function (err, departments) {	
 		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
