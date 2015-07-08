@@ -67,11 +67,11 @@
     edges: edges
   };
   var options = {
-    "interaction": {
-      "dragNodes": true,
-      "dragView": true,
+      "interaction": {
+      "dragNodes":  true,
+      "dragView":   true,
       "selectable": true,
-      "zoomView": true
+      "zoomView":   true
     }, nodes: {
           shape: 'dot'
         }
@@ -79,13 +79,14 @@
   var network = new vis.Network(container, data, options);
 
   network.on("click", function (params) {
-      //params.event = "[original event]";
-      //alert(JSON.stringify(data.edges, null, 4))
     if( params.edges.length > 0 ){ 
-      //alert('Click event: ' + JSON.stringify(params, null, 4)) 
+      var edge = params.edges
+          edge = edge[0]      
       $.ajax({
-        url: "graph/get_edge_details",
-        cache: false
+         type: "POST"
+        ,url: "graph/get_edge_details"
+        ,data: {_csrf: "{{ csrf_token }}", surveyIndex: {{surveyIndex}}, itemIndex: {{itemIndex}}, edge: edge }
+        ,cache: false
       }).done(function( data ) {      
         $('#myModal').find('div.modal-content').html(data)
         $('#myModal').modal('show')          

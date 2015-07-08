@@ -255,6 +255,12 @@ SurveySchema.statics = {
     return templates[type]
   },getItems:function (){
     return surveyItems
+  },getItem:function (itemIndex){
+    var val = 'not found'
+    _.each(surveyItems, function(surveyItem){      
+      if(surveyItem.id == parseInt(itemIndex)) {val = surveyItem.value }
+    })    
+    return val
   },createOrganizationsSurveys: function(survey){
     _this = this
     Organization.find({subscriptionLevel: { $gte: survey.subscriptionLevel }}, function(err, organizations){      

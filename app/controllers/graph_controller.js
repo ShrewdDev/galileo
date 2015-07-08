@@ -10,8 +10,26 @@ var mongoose      = require('mongoose'),
 
 
 exports.getEdgeDetails = function (req, res){
-	res.render('graph/_chart', {
-		
+	var  items          = Survey.getItems()
+		,surveyIndex    = req.body.surveyIndex
+		,itemIndex      = req.body.itemIndex
+		,edge           = req.body.edge
+	console.log(edge)
+	edge           = edge.split('-')
+	fromDepartment = edge[0]
+	toDepartment   = edge[1]
+
+	Department.findOne({_id: fromDepartment}, function (err, from_department) {	
+	Department.findOne({_id: toDepartment}, function (err, to_department) {		
+		console.log(from_department)
+		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {		
+			title = Survey.getItem(itemIndex) + ', '+ from_department.departmentName + ' => ' + to_department.departmentName
+			survey = surveys[surveyIndex]
+			res.render('graph/_chart', {
+				title: title
+			})
+		})
+	})
 	})
 }
 
@@ -32,7 +50,7 @@ exports.index = function (req, res){
 			
 			Result.find({ survey: survey.id, object: 'department', action: {$in:['give', 'receive']}}, function(err, results){
 				_.each(results, function(result){
-					_.each(result.response, function(response){
+					_.each(result.response, function(response, index){
 						if(_.contains(response, itemIndex)){
 							var from, to 
 							if(result.action == 'give'){
@@ -45,7 +63,12 @@ exports.index = function (req, res){
 							}
 							connected_departments.push(to.toString())
 							connected_departments.push(from.toString())
-							edges.push({from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
+							id = from+"-"+to+"-"+index
+							duplicate = false
+							_.each(edges, function(edge, index){		
+								if(edge.id == id) {	duplicate = true }
+							})
+							if(! duplicate) edges.push({id: from+"-"+to+"-"+index, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
 						}
 					})
 				})

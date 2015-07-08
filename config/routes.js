@@ -12,7 +12,7 @@ var auth                     = require('./middlewares/authorization');
 module.exports = function (app, passport) {
 
   app.get('/graph', graph_controller.index)
-  app.get('/graph/get_edge_details', graph_controller.getEdgeDetails)  
+  app.post('/graph/get_edge_details', graph_controller.getEdgeDetails)  
 
   app.get('/signup', users_controller.signup)
   app.post('/signup', users_controller.post_signup)
