@@ -37,12 +37,12 @@
 
             <div class="col-sm-2"> 
               <div class="form-group">
-                <select class="form-control" name="visualize">                
-                    <option value="">Visualize by</option>
-                    <option value="expect_receive">Expect / Receive</option>
+                <select class="form-control" name="visualization" id="visualization">
                     <option value="between_teams">Between Teams</option>
-                    <option value="table">Table</option>
-                    <option value="key_ressource_grid">Key ressource grid</option>
+                    <option value="key_ressource_grid" {% if visualization == "key_ressource_grid" %} selected {% endif %}>Key ressource grid</option>
+                    <option value="expect_receive" {% if visualization == "expect_receive" %} selected {% endif %}>Expect / Receive</option>
+                    <option value="table" {% if visualization == "table" %} selected {% endif %}>Table</option>
+                    
                   </select>
               </div> 
             </div>
@@ -85,7 +85,7 @@
       $.ajax({
          type: "POST"
         ,url: "graph/get_edge_details"
-        ,data: {_csrf: "{{ csrf_token }}", surveyIndex: {{surveyIndex}}, itemIndex: {{itemIndex}}, edge: edge }
+        ,data: {_csrf: "{{ csrf_token }}", surveyIndex: {{surveyIndex}}, itemIndex: {{itemIndex}}, visualization: "{{visualization}}", edge: edge }
         ,cache: false
       }).done(function( data ) {      
         $('#myModal').find('div.modal-content').html(data)

@@ -14,12 +14,7 @@
   groups.add({id: 3})
   groups.add({id: 4})
   groups.add({id: 5})
-  var items = [
-      {x: 10, y: 40, group: 0, label: {content: 'Weekly', xOffset: -15,  yOffset: 310}},
-      {x: 30, y: 25, group: 1, label: {content: 'Monthly', xOffset: -15, yOffset: 198}},
-      {x: 50, y: 30, group: 2, label: {content: 'Weekly', xOffset: -15,  yOffset: 235}},
-      {x: 70, y: 10, group: 3, label: {content: 'Weekly', xOffset: -15,  yOffset: 85}}
-  ]
+  var items = {{JSON.stringify(items)}}
   var dataset = new vis.DataSet(items)
   var options = {
       start: 0,

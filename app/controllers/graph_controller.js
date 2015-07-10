@@ -7,43 +7,69 @@ var mongoose      = require('mongoose'),
     _             = require("underscore"),  
     async         = require("async")
 
-
-
 exports.getEdgeDetails = function (req, res){
 	var  items          = Survey.getItems()
 		,surveyIndex    = req.body.surveyIndex
 		,itemIndex      = req.body.itemIndex
+		,visualization  = req.body.visualization
 		,edge           = req.body.edge
-	console.log(edge)
-	edge           = edge.split('-')
-	fromDepartment = edge[0]
-	toDepartment   = edge[1]
+		edge            = edge.split('-')
+		fromDepartment  = edge[0]
+		toDepartment    = edge[1]
 
-	Department.findOne({_id: fromDepartment}, function (err, from_department) {	
-	Department.findOne({_id: toDepartment}, function (err, to_department) {		
-		console.log(from_department)
-		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {		
-			title = Survey.getItem(itemIndex) + ', '+ from_department.departmentName + ' => ' + to_department.departmentName
-			survey = surveys[surveyIndex]
-			res.render('graph/_chart', {
-				title: title
+	Department.findOne({_id: fromDepartment}, function (err, from_department){
+		Department.findOne({_id: toDepartment}, function (err, to_department){
+			Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
+				title  = Survey.getItem(itemIndex) + ', '+ from_department.departmentName + ' => ' + to_department.departmentName
+				survey = surveys[surveyIndex]
+			    //query = {survey: survey.id, objectvalue: toDepartment, department: fromDepartment, ressource: itemIndex}
+			    query = { survey: survey.id, ressource: itemIndex }
+			    _data = {} // {Weekly: 0, Monthly: 0, Quarterly: 0}
+			    items = []
+			    Result.find(query).exec(function (err, results) {
+			    	_.each(results, function(result, index){
+				    	q = survey.questions.id(result.question)
+				    	//if((q.question.indexOf('frequently') > -1) && (q.question.indexOf('sharing') > -1)) {
+				    	if(q.question.indexOf('frequently') > -1) {
+				    		val = q.responses.id(result.response).response
+				    		_data[val] = _data[val] ? _data[val] + 1 : 1
+				    	}
+			    	})
+			    	i = 0
+			    	_.each(_data, function(value, key){			    		
+			    		var x = 20*(1+i), yOffset = parseInt(330 - ((value/5) * 50)) // 335
+			    		items.push({ x: x, y: value, group: i, label: { content: key,  xOffset: -20, yOffset: -10 }})
+			    		i++
+			    	})
+			    	if(visualization == 'between_teams'){
+						res.render('graph/_between_teams', {
+							 title: title
+							,items: items
+						})
+					}
+					if(visualization == 'key_ressource_grid'){
+						res.render('graph/_key_ressource_grid',{
+							 title: title
+						})	
+					}					
+				})
 			})
 		})
-	})
 	})
 }
 
 exports.index = function (req, res){
-	var surveyIndex  = req.query.survey   || 0,
-		itemIndex    = req.query.item     || 0,
-		workflow     = req.query.workflow || "global",
-		items        = Survey.getItems(),
-		nodes        = [],
-		edges        = [],
+	var surveyIndex   = req.query.survey   || 0,
+		itemIndex     = req.query.item     || 0,
+		visualization = req.query.visualization || 'between_teams',
+		workflow      = req.query.workflow || 'global',
+		items         = Survey.getItems(),
+		nodes         = [],
+		edges         = [],
 		connected_departments = [],
 		colors       = ['#97C2FC', '#FFFF00', '#FB7E81', '#7BE141', '#6E6EFD', '#C2FABC', '#FFA807', '#6E6EFD']
 
-	Department.find({organization: req.user.organization}).exec(function (err, departments) {	
+	Department.find({organization: req.user.organization}).exec(function (err, departments) {
 		Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
 			survey = surveys[surveyIndex],
 			usersThatfinishedSurvey = []
@@ -63,12 +89,13 @@ exports.index = function (req, res){
 							}
 							connected_departments.push(to.toString())
 							connected_departments.push(from.toString())
-							id = from+"-"+to+"-"+index
-							duplicate = false
+							var  id = from+"-"+to//+"-"+index
+							    ,duplicate = false
 							_.each(edges, function(edge, index){		
 								if(edge.id == id) {	duplicate = true }
 							})
-							if(! duplicate) edges.push({id: from+"-"+to+"-"+index, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
+							//if(! duplicate) edges.push({id: from+"-"+to+"-"+index, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
+							if(! duplicate) edges.push({id: id, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
 						}
 					})
 				})
@@ -87,13 +114,14 @@ exports.index = function (req, res){
 					}
 				})
 			    res.render('graph/index', {
-					surveys: surveys,
-					surveyIndex:  surveyIndex,
-					itemIndex: itemIndex,
-					items: items,
-					nodes: nodes,
-					edges: edges,
-					workflow: workflow
+					surveys: surveys
+					,surveyIndex:  surveyIndex
+					,itemIndex: itemIndex
+					,items: items
+					,nodes: nodes
+					,edges: edges
+					,workflow: workflow
+					,visualization: visualization
 				})
 			})
 		})

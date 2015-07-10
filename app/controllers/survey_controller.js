@@ -178,7 +178,7 @@ exports.take_survey = function (req, res){
 		survey.updateStep(req.user, step, function(){			
 			if(step < validQuestions.length){
 				question 		= validQuestions[step]
-				survey.setQuestionTitle(req.user, question,	function(title, object, action, objectvalue){
+				survey.setQuestionTitle(req.user, question,	function(title, object, action, objectvalue, ressource){
 					question.question = title
 					Result.findOne({user: req.user.id, survey: survey.id, question: question.id}, function(err, result){
 						result = result ? result.response : null
@@ -190,7 +190,8 @@ exports.take_survey = function (req, res){
 							step:        step,
 							object:      object,
 							objectvalue: objectvalue,
-							action:      action
+							action:      action,
+							ressource:   ressource
 						})
 					})
 				})

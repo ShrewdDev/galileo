@@ -188,6 +188,7 @@ var ResultSchema = new Schema({
   object:           { type: String }, // departmet
   action:           { type: String }, // give or receive
   objectvalue:      { type: String }, //
+  ressource:        { type: String },
   response:         [ ResponseSchema ],
   value:            { type: String}
 })
@@ -372,7 +373,6 @@ SurveySchema.methods = {
               split   = tag1.split('_')
               tag1    = split[0]
               number1 = parseInt(split[2]) + 1
-
               tag2    = S(question.question).between('{manager_tag_', '}').s
               _tag2   = '{manager_tag_'+tag2+'}'
               split   = tag2.split('_')
@@ -485,9 +485,9 @@ SurveySchema.methods = {
 
   setQuestionTitle:function (user, question, cb){
       _this = this
-      var title = question.question      
+      var title = question.question
       var tags  = question.question.match(/\{(.*?)\}/g)
-      var action = object = objectvalue = ''
+      var action = object = objectvalue = ressource = ''
       if(S(title).include('receive')) action = 'receive'
       if(S(title).include('give'))    action = 'give'  
       
@@ -519,9 +519,13 @@ SurveySchema.methods = {
                     result   = prior_results.response
                     q        = (relatedSurvey && related)? relatedSurvey.questions.id(prior_results.question) : _this.questions.id(prior_results.question)
                     title    = title.replace(tag, q.responses.id(result[index-1]).response)
+                    
                     if(S(_tag).include("department")) {
                       object      = 'department'
                       objectvalue = q.responses.id(result[index-1]).id
+                    }
+                    else{
+                      ressource = q.responses.id(result[index-1]).id
                     }
                     callback() 
                   }
@@ -530,10 +534,10 @@ SurveySchema.methods = {
             })
           })
         }, function(err){
-          cb(title, object, action, objectvalue)
+          cb(title, object, action, objectvalue, ressource)
         })         
       }   
-      else cb(title, object, action, objectvalue)
+      else cb(title, object, action, objectvalue, ressource)
     }
 }
 
