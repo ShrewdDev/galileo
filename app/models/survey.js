@@ -176,7 +176,8 @@ var mongoose           = require('mongoose'),
     defaultCloseDays   = 45
 
 extend('nullOrRequired', function (val) {
-  return (val == null || val =! "")
+  if(val != null && val.trim() == "") return false
+  else return true  
 }, 'Invalid');
 
 var ResultSchema = new Schema({
