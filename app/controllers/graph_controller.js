@@ -53,16 +53,19 @@ exports.getEdgeDetails = function (req, res){
 				else if(visualization == 'key_ressource_grid'){
 					User.findOne({department: to_department, role: 'Customer_Manager'}, function (err, departmentManager){
 						Survey.findOne({_id: survey.relatedSurvey}, function (err, relatedSurvey){
-							question_id = ''
+							var question_id = '', ressources
 							_.each(relatedSurvey.questions, function(question){
 								if(!question.generic && (question.question.indexOf('Select the resources most important to your group') > -1))
 									question_id = question.id
 							})
 							Result.findOne({question: question_id, user: departmentManager.id, survey: relatedSurvey.id}).exec(function (err, result) {
+								ressources = result.response	
+								
+
 								res.render('graph/_key_ressource_grid',{
-									title: title
-									,items: Survey.get_Items()
-									,ressources: result.response	
+									title: 		 title
+									,items: 	 Survey.get_Items()
+									,ressources: ressources
 								})
 							})
 						})
