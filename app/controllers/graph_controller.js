@@ -47,7 +47,7 @@ exports.getEdgeDetails = function (req, res){
 							,items: items
 						})
 					}
-					if(visualization == 'key_ressource_grid'){
+					else if(visualization == 'key_ressource_grid'){
 						res.render('graph/_key_ressource_grid',{
 							 title: title
 						})	
@@ -95,6 +95,7 @@ exports.index = function (req, res){
 								if(edge.id == id) {	duplicate = true }
 							})
 							//if(! duplicate) edges.push({id: from+"-"+to+"-"+index, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
+							//if(! duplicate) edges.push({id: id, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
 							if(! duplicate) edges.push({id: id, from: from, to: to, arrows: {to: true}, color:{color:'blue'}, length: 200})
 						}
 					})
