@@ -175,10 +175,8 @@ var mongoose           = require('mongoose'),
     surveyItems        = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}],
     defaultCloseDays   = 45
 
-extend('nullOrRequired', function (val) {
-  //if(val != null && val.trim() == "") return false
-  //else 
-  return true  
+extend('nullOrRequired', function (val) {  
+  return true
 }, 'Invalid');
 
 var ResultSchema = new Schema({
@@ -222,7 +220,7 @@ var SurveySchema = new Schema({
     relatedSurvey:     { type : Schema.ObjectId, ref : "Survey"}, // the manager survey for employee survey
     type:              { type : String, required: "Survey type can't be blank"  },
     role:              { type : String }, // Customer_Admin or Customer_Admin
-    subscriptionLevel: { type : Number}, validate: validate({validator: 'nullOrRequired'}) },
+    subscriptionLevel: { type : Number, validate: validate({validator: 'nullOrRequired'}) },
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : "Organization"},
     confirmed:         { type : Boolean, default : false},
