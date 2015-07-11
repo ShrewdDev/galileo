@@ -13,24 +13,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th scope="row">Ressource 1</th>
-          <td class="label-danger">&nbsp;</td>
-          <td class="label-warning">&nbsp;</td>
-          <td class="label-success">&nbsp;</td>
-        </tr>
-        <tr>
-          <th scope="row">Ressource 2</th>
-          <td class="label-danger">&nbsp;</td>
-          <td class="label-warning">&nbsp;</td>
-          <td class="label-success">&nbsp;</td>
-        </tr>
-        <tr>
-          <th scope="row">Ressource 3</th>
-          <td class="label-danger">&nbsp;</td>
-          <td class="label-warning">&nbsp;</td>
-          <td class="label-success">&nbsp;</td>
-        </tr>
+        {% for ressource in ressources %}  
+          <tr>
+            <th scope="row">{{ items[ressource] }}</th>
+            <td class="label-danger">&nbsp;</td>
+            <td class="label-warning">&nbsp;</td>
+            <td class="label-success">&nbsp;</td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
 </div>  

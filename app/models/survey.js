@@ -172,6 +172,7 @@ var mongoose           = require('mongoose'),
     extend             = require('mongoose-validator').extend,
     surveyTypes        = ['All Members Survey', 'Manager Survey', 'Employee Survey'],
     subscriptionLevels = {1: 'Level 1($25/user/month)', 2: 'Level 2($30/user/month)', 3: 'Level 3($35/user/month)'},
+    _surveyItems       = {0: 'Documents',1: 'Document numbers or specification numbers', 2: 'Signature approval', 3: 'Funds', 4: 'Material resources', 5: 'Production process knowledge', 6: 'Business process knowledge', 7: 'Product knowledge', 8: 'Technical knowledge', 9: 'Manufacturing knowledge', 10: 'Contacts', 11: 'Document design/review', 12: 'Training', 13: 'FYI emails or memos', 14: 'Technical services'},
     surveyItems        = [{id: 0, value: 'Documents'}, {id: 1, value: 'Document numbers or specification numbers'}, {id: 2, value: 'Signature approval'}, {id: 3, value: 'Funds'}, {id: 4, value: 'Material resources'}, {id: 5, value: 'Production process knowledge'}, {id: 6, value: 'Business process knowledge'}, {id: 7, value: 'Product knowledge'}, {id: 8, value: 'Technical knowledge'}, {id: 9, value: 'Manufacturing knowledge'}, {id: 10, value: 'Contacts'}, {id: 11, value: 'Document design/review'}, {id: 12, value: 'Training'}, {id: 13, value: 'FYI emails or memos'}, {id: 14, value: 'Technical services'}],
     defaultCloseDays   = 45
 
@@ -256,6 +257,10 @@ SurveySchema.statics = {
     return templates[type]
   },getItems:function (){
     return surveyItems
+  },get_Items:function (){
+    return _surveyItems
+  },get_Item:function (item){
+    return _surveyItems[item]
   },getItem:function (itemIndex){
     var val = 'not found'
     _.each(surveyItems, function(surveyItem){      
