@@ -176,8 +176,9 @@ var mongoose           = require('mongoose'),
     defaultCloseDays   = 45
 
 extend('nullOrRequired', function (val) {
-  if(val != null && val.trim() == "") return false
-  else return true  
+  //if(val != null && val.trim() == "") return false
+  //else 
+  return true  
 }, 'Invalid');
 
 var ResultSchema = new Schema({
@@ -221,7 +222,7 @@ var SurveySchema = new Schema({
     relatedSurvey:     { type : Schema.ObjectId, ref : "Survey"}, // the manager survey for employee survey
     type:              { type : String, required: "Survey type can't be blank"  },
     role:              { type : String }, // Customer_Admin or Customer_Admin
-    subscriptionLevel: { type : Number, validate: validate({validator: 'nullOrRequired'}) },
+    subscriptionLevel: { type : Number}, validate: validate({validator: 'nullOrRequired'}) },
     questions:         [ QuestionSchema ],
     organization:      { type : Schema.ObjectId, ref : "Organization"},
     confirmed:         { type : Boolean, default : false},
