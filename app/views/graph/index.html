@@ -54,7 +54,14 @@
             </div>            
             </div>
   </form>
-  <div class="container" id="mynetwork"> </div>
+  <div class="container" >
+  <div class="row">
+    <div class="col-md-4" id="visualization_div"></div>
+    <div class="col-md-8">
+      <div id="mynetwork"> </div>
+    </div>  
+  </div>
+  </div>
 </section>
 <script type="text/javascript">
   var container    = document.getElementById('mynetwork')
@@ -80,6 +87,7 @@
 
   network.on("click", function (params) {
     if( params.edges.length > 0 ){ 
+      $('#visualization_div').html('<img src="/img/ajax-loader.gif">')
       var edge = params.edges
           edge = edge[0]      
       $.ajax({
@@ -87,9 +95,12 @@
         ,url: "graph/get_edge_details"
         ,data: {_csrf: "{{ csrf_token }}", surveyIndex: {{surveyIndex}}, itemIndex: {{itemIndex}}, visualization: "{{visualization}}", edge: edge }
         ,cache: false
-      }).done(function( data ) {      
-        $('#myModal').find('div.modal-content').html(data)
-        $('#myModal').modal('show')          
+      }).done(function( data ) {  
+        $('#visualization_div').html(data)
+        /*    
+          $('#myModal').find('div.modal-content').html(data)
+          $('#myModal').modal('show')          
+        */
       })
     }
       //document.getElementById('eventSpan').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);

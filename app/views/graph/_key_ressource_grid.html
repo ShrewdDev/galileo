@@ -1,27 +1,22 @@
-<div class="modal-header">
-  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  <p class="modal-title" id="myModalLabel">{{title}}</p>
-</div>        
-<div class="modal-body">              
-  <table class="table">
-      <thead>
+<table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Receive it ?</th>
+        <th>On Time ?</th>
+        <th>Acceptable quality ?</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ressource in ressources %}  
         <tr>
-          <th>#</th>
-          <th>Receive it ?</th>
-          <th>On Time ?</th>
-          <th>Acceptable quality ?</th>
+          <th scope="row">{{ items[ressource] }}</th>
+          <td class="label-success">&nbsp;</td>
+          <td class="label-warning">&nbsp;</td>
+          <td class="label-danger">&nbsp;</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for ressource in ressources %}  
-          <tr>
-            <th scope="row">{{ items[ressource] }}</th>
-            <td class="label-success">&nbsp;</td>
-            <td class="label-warning">&nbsp;</td>
-            <td class="label-danger">&nbsp;</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-</div>  
+      {% endfor %}
+    </tbody>
+  </table>
+<p>{{title}}</p>
 

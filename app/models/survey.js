@@ -114,7 +114,25 @@ var employee_template = {
                     "response" : "Always"
                 }
             ]
-        } ,   
+        }, 
+        {
+            "question" : "How frequently are you expecting {tag_ressource_repeat_3} from {tag_department_repeat_3} ?",
+            "type" : "unique_choice",
+            "responses" : [ 
+                {
+                    "response" : "Weekly"
+                }, 
+                {
+                    "response" : "Monthly"
+                }, 
+                {
+                    "response" : "Quarterly"
+                }, 
+                {
+                    "response" : "Less often"
+                }
+            ]
+        },   
         {
             "question" : "What is the level of quality of {tag_ressource_repeat_3} from {manager_tag_department_repeat_3} ?",
             "type" : "unique_choice",
