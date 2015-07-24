@@ -1,4 +1,6 @@
-<table class="table">
+<br>
+<p>{{title}}</p>
+<table class="table table-bordered">
     <thead>
       <tr>
         <th>#</th>
@@ -16,7 +18,59 @@
           <td class="label-danger">&nbsp;</td>
         </tr>
       {% endfor %}
-    </tbody>
-  </table>
-<p>{{title}}</p>
+  </tbody>
+</table>
 
+<form id="comments_form" action="/comments/add">
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="hidden" name="view_tag" value="{{ view_tag }}">
+  <div class="form-group" id="comment_text" >
+    <textarea name="text"  id="comment_textarea" class="form-control" placeholder="Enter comment"></textarea>
+  </div>
+  <div class="form-inline">
+    <div class="form-group">      
+      <select name="privacy" class="form-control">                
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </select>
+      <select name="type" class="form-control">                
+        <option value="comment">Comment</option>
+        <option value="action">Action</option>
+      </select>      
+    </div>      
+    <button type="submit" class="btn btn-default pull-right">Save</button>
+  </div>
+</form>
+
+<div id="comments_div" >
+<table id="comments_table" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Comment</th>
+          <th>Privacy</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comment in comments %}
+          <tr>          
+            <td>{{ comment.createdAt | date('F jS, Y g:i A') }}  <br>
+            <a>{{ comment.user.email }}</a> : 
+            {{ comment.text }} </td>
+            <td>{{ comment.privacy }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+  $(function(){
+    $('#comments_div').slimScroll({
+        width: '100%',     
+        alwaysVisible: false,       
+        railVisible: true,        
+        railOpacity: 0.3,
+        wheelStep: 10        
+    })
+  })
+</script>

@@ -1,10 +1,31 @@
 (function($){
 	$('[data-toggle="tooltip"]').tooltip();
+
+	$(document).on('submit', "#comments_form", function(event) {
+		event.preventDefault()
+  		var form = $("#comments_form")	
+  		data     = form.serializeJSON()
+		$.ajax({
+			type: "POST",
+			url: form.attr("action"),
+			data: data
+		}).done(function( response ) {
+			if(response.status == 'error'){
+				$("#comment_text").addClass('has-error')	
+			}
+			else {
+				$("#comments_table tbody").prepend(response)
+				$("#comment_text").removeClass('has-error')
+				$("#comment_textarea").val('')
+			}
+		}); 
+	})
+
 	$( "#take_survey" ).submit(function( event ) {	  
 	  var valid = false
 	  if(($("#validate").data("type") == "checkbox") && $("[type='checkbox']:checked").length > 0) valid = true
-	  if(($("#validate").data("type") == "radio") && $("[type='radio']:checked").length > 0)       valid = true
-	  if(($("#validate").data("type") == "text") && $("input:text").val())       valid = true
+	  if(($("#validate").data("type") == "radio")    && $("[type='radio']:checked").length > 0)       valid = true
+	  if(($("#validate").data("type") == "text")     && $("input:text").val())       valid = true
 	  if(!valid) {
 	  	$( "#validation_message" ).text( "invalid response !" ).show().fadeOut( 3000 )
 	  	event.preventDefault()

@@ -1,10 +1,11 @@
-var   mongoose      = require('mongoose'),
-      User          = mongoose.model('User'),
-      Organization  = mongoose.model('Organization'),
-      Department    = mongoose.model('Department'),
-      Survey        = mongoose.model('Survey'),
-      _             = require("underscore"),
-      extend        = require('util')._extend
+var    mongoose      = require('mongoose')
+      ,User          = mongoose.model('User')
+      ,Organization  = mongoose.model('Organization')
+      ,Department    = mongoose.model('Department')
+      ,Survey        = mongoose.model('Survey')
+      ,Comment       = mongoose.model('Comment')
+      ,_             = require("underscore")
+      ,extend        = require('util')._extend
 
 exports.index = function (req, res) {
   query = {}
@@ -34,6 +35,22 @@ exports.new = function (req, res) {
 exports.edit = function (req, res) {
   res.render('users/edit', {
     user: req.user
+  })
+}
+
+exports.add_comment = function (req, res) {
+  var comment = new Comment(req.body)
+  comment.isActionItem = (req.body.type == 'action') ? true : false  
+  comment.user = req.user
+  comment.save(function (err) {
+    if(err) res.send({status: "error"})
+    else{
+      res.render('users/_comment.html', {
+         view_tag: req.body.view_tag
+        ,comment: comment
+        ,user:    req.user
+      })      
+    }    
   })
 }
 

@@ -2,6 +2,7 @@ var mongoose      = require('mongoose'),
     User          = mongoose.model('User'),
     Survey        = mongoose.model('Survey'),
     Result        = mongoose.model('Result'),
+    Comment       = mongoose.model('Comment'),
     Department    = mongoose.model('Department'),
     Organization  = mongoose.model('Organization'),
     _             = require("underscore"),  
@@ -20,57 +21,62 @@ exports.getEdgeDetails = function (req, res){
 	Department.findOne({_id: fromDepartment}, function (err, from_department){
 		Department.findOne({_id: toDepartment}, function (err, to_department){
 			Survey.find({organization: req.user.organization, confirmed: true}).exec(function (err, surveys) {
-				title  = Survey.getItem(itemIndex) + ', '+ from_department.departmentName + ' => ' + to_department.departmentName
-				survey = surveys[surveyIndex]
+				title   = Survey.getItem(itemIndex) + ', '+ from_department.departmentName + ' => ' + to_department.departmentName
+				
+				survey    = surveys[surveyIndex]
+				view_tag  = survey.title + '_'+ Survey.getItem(itemIndex) + '_'+ from_department.departmentName + '_' + to_department.departmentName + '_' + visualization
 			    //query = {survey: survey.id, objectvalue: toDepartment, department: fromDepartment, ressource: itemIndex}
 			    query = { survey: survey.id, ressource: itemIndex }
 			    _data = {} // {Weekly: 0, Monthly: 0, Quarterly: 0}
-			    items = []
-
-		    	if(visualization == 'between_teams'){
-				    Result.find(query).exec(function (err, results) {
-				    	_.each(results, function(result, index){
-					    	q = survey.questions.id(result.question)
-					    	//if((q.question.indexOf('frequently') > -1) && (q.question.indexOf('sharing') > -1)) {
-					    	if(q.question.indexOf('frequently') > -1) {
-					    		console.log(q.question)
-					    		val = q.responses.id(result.response).response
-					    		_data[val] = _data[val] ? _data[val] + 1 : 1
-					    	}
-				    	})
-				    	i = 0
-				    	_.each(_data, function(value, key){			    		
-				    		var x = 20*(1+i), yOffset = parseInt(330 - ((value/5) * 50)) // 335
-				    		items.push({ x: x, y: value, group: i, label: { content: key,  xOffset: -20, yOffset: -10 }})
-				    		i++
-				    	})
-					res.render('graph/_between_teams', {
-							 title: title
-							,items: items
-						})
-					})
-				}
-				else if(visualization == 'key_ressource_grid'){
-					User.findOne({department: to_department, role: 'Customer_Manager'}, function (err, departmentManager){
-						Survey.findOne({_id: survey.relatedSurvey}, function (err, relatedSurvey){
-							var question_id = '', ressources
-							_.each(relatedSurvey.questions, function(question){
-								if(!question.generic && (question.question.indexOf('Select the resources most important to your group') > -1))
-									question_id = question.id
+			    items = []			    
+			    Comment.find({view_tag: view_tag}).sort({createdAt: -1}).populate('user').exec(function (err, comments) {
+			    	if(visualization == 'between_teams'){
+					    Result.find(query).exec(function (err, results) {
+					    	_.each(results, function(result, index){
+						    	q = survey.questions.id(result.question)
+						    	//if((q.question.indexOf('frequently') > -1) && (q.question.indexOf('sharing') > -1)) {
+						    	if(q.question.indexOf('frequently') > -1) {
+						    		console.log(q.question)
+						    		val = q.responses.id(result.response).response
+						    		_data[val] = _data[val] ? _data[val] + 1 : 1
+						    	}
+					    	})
+					    	i = 0
+					    	_.each(_data, function(value, key){			    		
+					    		var x = 20*(1+i), yOffset = parseInt(330 - ((value/5) * 50)) // 335
+					    		items.push({ x: x, y: value, group: i, label: { content: key,  xOffset: -20, yOffset: -10 }})
+					    		i++
+					    	})
+						res.render('graph/_between_teams', {
+								title:     title
+								,comments: comments
+								,view_tag: view_tag
+								,items:    items
 							})
-							Result.findOne({question: question_id, user: departmentManager.id, survey: relatedSurvey.id}).exec(function (err, result) {
-								ressources = result.response	
-								
-
-								res.render('graph/_key_ressource_grid',{
-									title: 		 title
-									,items: 	 Survey.get_Items()
-									,ressources: ressources
+						})
+					}
+					else if(visualization == 'key_ressource_grid'){
+						User.findOne({department: to_department, role: 'Customer_Manager'}, function (err, departmentManager){
+							Survey.findOne({_id: survey.relatedSurvey}, function (err, relatedSurvey){
+								var question_id = '', ressources
+								_.each(relatedSurvey.questions, function(question){
+									if(!question.generic && (question.question.indexOf('Select the resources most important to your group') > -1))
+										question_id = question.id
+								})
+								Result.findOne({question: question_id, user: departmentManager.id, survey: relatedSurvey.id}).exec(function (err, result) {
+									ressources = result.response
+									res.render('graph/_key_ressource_grid',{
+										 title: 	 title
+										,comments:   comments
+										,view_tag: 	 view_tag
+										,items: 	 Survey.get_Items()
+										,ressources: ressources
+									})
 								})
 							})
 						})
-					})
-				}				
+					}	
+				})
 			})
 		})
 	})
